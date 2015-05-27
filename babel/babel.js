@@ -17,6 +17,7 @@ Babel.transformMeteor = function (code, extraOptions) {
       "es6.parameters.default",
       "es6.spread",
       "es6.destructuring",
+      "es7.objectRestSpread",
       "flow"
     ].concat(extraOptions.extraWhitelist || []),
     externalHelpers: true,
