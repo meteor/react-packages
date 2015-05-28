@@ -82,7 +82,21 @@ babelHelpers = {
       }
     }
     return target;
-  })
+  }),
+  // used by es6.destructuring
+  objectWithoutProperties: function (obj, keys) {
+    var target = {};
+    for (var i in obj) {
+      if (keys.indexOf(i) >= 0) continue;
+      if (! _hasOwnProperty.call(obj, i)) continue;
+      target[i] = obj[i];
+    }
+    return target;
+  },
+  // used by es6.destructuring
+  objectDestructuringEmpty: function (obj) {
+    if (obj == null) throw new TypeError("Cannot destructure undefined");
+  }
 };
 
 var _hasOwnProperty = Object.prototype.hasOwnProperty;
