@@ -85,7 +85,7 @@ const List = React.createClass({
       this.data.tasks.map(function (task) {
         return <li>task.content</li> 
       })
-    }</ul>;
+    }</ul>
   }
 });
 
@@ -102,6 +102,15 @@ const NewTaskForm = React.createClass({
     </form>
   }
 })
+
+const App = React.createClass({
+  render() {
+    return <div>
+      <List />
+      <NewTaskForm />
+    </div>
+  }
+});
 
 Meteor.methods({
   insertTask: function (task) {
