@@ -18,7 +18,7 @@ First, let's delete the `my-react-app.js` file that Meteor generated for us, and
 
 We'll write our code in a new file we'll call `my-react-app.jsx`. In that file, put the following code:
 
-```jsx
+```js
 var App = React.createClass({
   render: function () {
     return <div>Hello world!</div>;
@@ -38,7 +38,7 @@ In this file we just created, we have defined a React component with `createClas
 
 Add a collection, blah blah
 
-```jsx
+```js
 const Tasks = new Mongo.Collection("tasks");
 
 const App = React.createClass({
@@ -46,14 +46,17 @@ const App = React.createClass({
     // This function knows how to listen to Meteor's reactive data sources,
     // such as collection queries
     return {
-      // Returns an array
+      // Returns an array with all items in the collection
       tasks: Tasks.find().fetch()
     }
   },
   render() {
-    return <ul>
-      { this.tasks.map(task => <li>task.text</li>) }
-    </ul>;
+    return <ul>{
+      // Access the data from track() on this.data
+      this.data.tasks.map(function (task) {
+        return <li>task.text</li> 
+      })
+    }</ul>;
   }
 });
 
