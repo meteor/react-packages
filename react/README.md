@@ -1,4 +1,4 @@
-# react
+# Meteor ♥ React
 
 Using Meteor and React together is awesome. You get Meteor's ease of use, data
 loading and full-stack reactivity, and React's component-style UI.
