@@ -4,8 +4,8 @@ features to be used in today's browsers and runtimes.
 
 Meteor's Babel support consists of the following core packages:
 
-* `babel` - Exposes the [Babel API](https://babeljs.io/docs/usage/api/) on the
-  symbol `Babel`.  For example, `Babel.transform(code, options)`.
+* `babel-compiler` - Exposes the [Babel API](https://babeljs.io/docs/usage/api/)
+  on the symbol `Babel`.  For example, `Babel.transform(code, options)`.
 
 * `babel-runtime` - Meteor versions of the external
   helpers used by Babel-generated code.  Meteor's core packages must run
@@ -18,9 +18,9 @@ Meteor's Babel support consists of the following core packages:
 
 ### Babel API
 
-The `babel` package exports the `Babel` symbol, which is the same object
-you get in Node from `require("babel-core")`.  You can only use it on
-the server.
+The `babel-compiler` package exports the `Babel` symbol, which is the same
+object you get in Node from `require("babel-core")`.  You can only use it on the
+server.
 
 Example:
 
