@@ -1,7 +1,8 @@
 # react-runtime
 
 Imports Facebook's React user interface library into your app. Access it from
-the `React` namespace.
+the `React` namespace. Includes the development or production versions,
+depending on the mode in which your app is running.
 
 This package only provides the runtime library. If you need JSX compilation,
 Meteor reactive data integration, and other commonly used functionality, add
