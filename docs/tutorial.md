@@ -16,7 +16,7 @@ To run your app, type the `meteor` command in your app directory.
 
 ## Step 2: Adding your first component
 
-First, let's delete the `my-react-app.js` file that Meteor generated for us, and everything except the `<head>...</head>` tag in `my-react-app.html`.
+First, let's delete the `my-react-app.js` file that Meteor generated for us, and everything except the `<head>...</head>` tag in `my-react-app.html`. Instead of writing HTML, we'll be constructing our page from React components.
 
 We'll write our code in a new file we'll call `my-react-app.jsx`. In that file, put the following code:
 
@@ -32,9 +32,11 @@ if (Meteor.isClient) {
 }
 ```
 
-JSX is a special file format that React developers use which lets you embed snippets of HTML-like markup inside your JavaScript. This markup is compiled to regular JavaScript code by Meteor. [Read more about JSX here.](http://buildwithreact.com/tutorial/jsx)
+JSX is a special file format that React developers use which lets you embed snippets of HTML-like markup inside your JavaScript. This markup is compiled to regular JavaScript code by Meteor. [Read more about JSX here.](jsx.md)
 
-In this file we just created, we have defined a React component with `createClass` and then rendered it to the `<body>` element of the page. If you run your app, you will see the text `Hello world!` displayed on the screen, indicating that you have successfully compiled and run an app with Meteor and React. Read on to see how to use Meteor data in your component.
+In this file we just created, we have defined a React component with `createClass` and then rendered it to the `<body>` element of the page. If you run your app, you will see the text `Hello world!` displayed on the screen, indicating that you have successfully compiled and run an app with Meteor and React. Congratulations!
+
+Read on to see how to use Meteor data in your component.
 
 ## Step 3: Displaying reactive data
 

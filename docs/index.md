@@ -11,15 +11,17 @@ If you want to get going as fast as possible, you just need to add the `react` p
 meteor add react
 ```
 
-This includes:
+### What's in the box?
 
 1. The `React` runtime library for defining and rendering components
 2. A compiler that automatically transforms `.jsx` files into JavaScript, and lets you use some ES6 features
 3. A `ReactData` mixin that lets you easily use data from Meteor collections and other reactive sources in your components
 
-Now you're ready to try using Meteor and React together. Try one of the following:
+### Next steps
 
-1. Read the tutorial
+Now that you have created an app and added everything you need, do these next:
+
+1. Follow the [tutorial](tutorial.md)
 2. Check out the example apps
 
 ## Adding individual packages

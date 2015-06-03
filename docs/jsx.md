@@ -32,7 +32,7 @@ React.render(React.createElement(HelloMessage, {name: "John"}), mountNode);
 
 As you can see, JSX lets you write code that looks more like HTML but is actually JavaScript, reducing the need for a completely separate templating language.
 
-## Enabled EcmaScript 5, 6, 7 transforms
+## Enabled EcmaScript transforms
 
 The JSX transpilation also includes some commonly-used future JavaScript features. We have picked the same ones as [React Native](https://facebook.github.io/react-native/docs/javascript-environment.html#javascript-syntax-transformers), listed below:
 
@@ -50,7 +50,7 @@ The JSX transpilation also includes some commonly-used future JavaScript feature
 - Object Consise Method: `var obj = { method() { return 10; } };`
 - Object Short Notation: `var name = 'vjeux'; var obj = { name };`
 - Rest Params: `function(type, ...args) { }`
-- Template Literals: `var who = 'world'; var str = `Hello ${who}`;`
+- Template Literals: ``var who = 'world'; var str = `Hello ${who}`;``
 
 ### ES7
 
