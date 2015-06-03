@@ -3,3 +3,4 @@ theme: readthedocs
 pages:
 - Getting started: index.md
 - Tutorial: tutorial.md
+- JSX transpilation and ES6 features: jsx.md

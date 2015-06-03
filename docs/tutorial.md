@@ -1,3 +1,5 @@
+# Meteor and React integration tutorial
+
 This short tutorial will get you acquainted with building a simple app that uses Meteor and React together. This isn't meant to be an introduction to React itself; if you haven't yet, [read Facebook's tutorial about React](https://facebook.github.io/react/docs/tutorial.html) to get acquainted.
 
 ## Step 1: Creating an app, adding React
