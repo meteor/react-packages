@@ -1,5 +1,5 @@
 Package.describe({
-  name: 'mdg:isoquery',
+  name: 'isoquery',
   version: '0.0.1',
   // Brief, one-line summary of the package.
   summary: 'A way to reuse queries between server publish and data filtering in client views',

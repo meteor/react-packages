@@ -1,12 +1,12 @@
 Package.describe({
-  name: "mdg:jsx",
+  name: "jsx",
   summary: "Build plugin that transpiles .jsx files using Babel",
   version: '1.0.0'
 });
 
 Package.registerBuildPlugin({
   name: 'transpileJSX',
-  use: ['mdg:babel'],
+  use: ['babel-compiler'],
   sources: [
     'jsx-plugin.js'
   ]
@@ -14,5 +14,5 @@ Package.registerBuildPlugin({
 
 Package.onUse(function (api) {
   // We need the Babel helpers as a run-time dependency of the generated code.
-  api.imply('mdg:babel-runtime');
+  api.imply('babel-runtime');
 });

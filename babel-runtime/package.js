@@ -1,5 +1,5 @@
 Package.describe({
-  name: "mdg:babel-runtime",
+  name: "babel-runtime",
   summary: "Runtime support for output of Babel transpiler",
   version: '1.0.0'
 });

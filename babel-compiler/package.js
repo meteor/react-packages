@@ -1,5 +1,5 @@
 Package.describe({
-  name: "mdg:babel",
+  name: "babel-compiler",
   summary: "Parser/transpiler for ECMAScript 6+ syntax",
   // Tracks the npm version below.  Use wrap numbers to increment
   // without incrementing the npm version.
