@@ -1,5 +1,5 @@
 var EmptyReactComponent = React.createClass({
-  render: function () {
+  render() {
     return <div></div>
   }
 });
@@ -17,5 +17,5 @@ Tinytest.add(
     test.throws(function () {
       renderToDiv(tmpl);
       Tracker.flush({_throwFirstError: true});
-    }, /EmptyComponentTemplateWithoutContainerElement/);
+    }, /EmptyComponentTemplateWithoutContainerElement.*EmptyReactComponent.*only child/);
   });

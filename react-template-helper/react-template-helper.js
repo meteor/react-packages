@@ -6,18 +6,23 @@ Template.React.onRendered(function () {
     var self = this;
     var data = Blaze.getData();
 
+    var comp = data.component;
+    if (! comp) {
+      throw new Error(
+        "Template " + parentTemplate + " calls `{{> React ... }}` without " +
+          "`component` argument specifying which React component to render.");
+    }
+
     var container = self.firstNode().parentNode;
     var expectedContainerChildElements = c.firstRun ? 0 : 1;
     if (numChildElements(container) > expectedContainerChildElements) {
+      var compDescriptor = comp.displayName
+            ? "the React component " + comp.displayName
+            : "a React component";
+
       throw new Error(
-        "In template " + parentTemplate + ", a React component must be " +
-          "rendered within an empty container element. Learn more here: XXX");
-    }
-
-    var comp = data.component;
-
-    if (! comp) {
-      throw new Error("In template " + parentTemplate + ", missing `component` argument to `{{> React ... }}` specifying which React component to render.");
+        "Template " + parentTemplate + " must render " + compDescriptor +
+          "as the only child of its parent element. Learn more here: XXX");
     }
 
     var props = _.omit(data, 'component');
