@@ -1,4 +1,4 @@
-# Using reactive Meteor data inside React components
+<h1>Using reactive Meteor data inside React components</h1>
 
 Many data sources in Meteor are "reactive" - that is, they use Meteor's [Tracker](https://www.meteor.com/tracker) library to notify data consumers when something has changed. These data sources include the following:
 
@@ -7,16 +7,18 @@ Many data sources in Meteor are "reactive" - that is, they use Meteor's [Tracker
 - [`reactiveVar.get()`](http://docs.meteor.com/#/full/reactivevar_set)
 - Many packages on Atmosphere that provide other data, like geolocation
 
-In order to make it easy to use these data sources together with React components, we have created `MeteorDataMixin`, a React mixin that lets you define an extra method on your component called `trackMeteorData`, which can consume reactive data and puts it on `this.data` inside your component.
+## MeteorDataMixin
 
-## Examples
+In order to make it easy to use these data sources together with React components, we have created a React mixin called `MeteorDataMixin`. Once you have added this mixin to your component, you can define an extra method called `trackMeteorData`. `trackMeteorData` receives your component's `props` and `state` as arguments and can access any reactive state from Meteor. The data the method returns is put on `this.data` so that you can access it from the `render` function.
+
+### Examples
 
 A simple component that just says hello to the currently logged in user:
 
 ```js
 var HelloUser = React.createClass({
   mixins: [MeteorDataMixin],
-  trackMeteorData() {
+  trackMeteorData(props, state) {
     return {
       currentUser: Meteor.user()
     };
@@ -32,7 +34,7 @@ A component that fetches some data based on an ID passed as a prop and passes it
 ```js
 var TodoListLoader = React.createClass({
   mixins: [MeteorDataMixin],
-  trackMeteorData() {
+  trackMeteorData(props, state) {
     // This is the place to subscribe to any data you need
     var handle = Meteor.subscribe("todoList", this.props.id);
 
