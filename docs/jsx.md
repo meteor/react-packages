@@ -36,11 +36,11 @@ As you can see, JSX lets you write code that looks more like HTML but is actuall
 
 The JSX transpilation also includes some commonly-used future JavaScript features. We have picked the same ones as [React Native](https://facebook.github.io/react-native/docs/javascript-environment.html#javascript-syntax-transformers), listed below:
 
-### ES5
+**ES5**
 
 - Reserved Words: `promise.catch(function() { });`
 
-### ES6
+**ES6**
 
 - Arrow functions: `<C onPress={() => this.setState({pressed: true})}`
 - Call spread: `Math.max(...array);`
@@ -52,7 +52,7 @@ The JSX transpilation also includes some commonly-used future JavaScript feature
 - Rest Params: `function(type, ...args) { }`
 - Template Literals: ``var who = 'world'; var str = `Hello ${who}`;``
 
-### ES7
+**ES7**
 
 - Object Spread: `var extended = { ...obj, a: 10 };`
 - Function Trailing Comma: `function f(a, b, c,) { }`
