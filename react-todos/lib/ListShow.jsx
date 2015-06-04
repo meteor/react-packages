@@ -1,6 +1,7 @@
 // @jsx React.DOM
 
-ListShow = ReactMeteor.createClass({
+ListShow = React.createClass({
+  mixins: [MeteorDataMixin],
   getInitialState: function () {
     return {
       tasks: [],
@@ -10,12 +11,13 @@ ListShow = ReactMeteor.createClass({
   },
   startMeteorSubscriptions: function () {
     var self = this;
-    Meteor.subscribe("todos", self.props.listId);
+    
   },
-  getMeteorState: function () {
+  trackMeteorData: function (props, state) {
     var self = this;
 
-    var listId = self.props.listId;
+    var listId = props.listId;
+    Meteor.subscribe("todos", listId);
 
     return {
       tasks: Todos.find({ listId: listId }, {sort: {createdAt : -1}}).fetch(),
@@ -113,7 +115,7 @@ ListShow = ReactMeteor.createClass({
   },
   render: function () {
     var self = this;
-    var list = self.state.list;
+    var list = self.data.list;
 
     var newTaskForm = <form className="todo-new input-symbol"
         onSubmit={ self.onSubmitNewTask }>
@@ -184,7 +186,7 @@ ListShow = ReactMeteor.createClass({
     return <div className="page lists-show">
       { nav }
       <div className="content-scrollable list-items">
-        { self.state.tasks.map(function (task) {
+        { self.data.tasks.map(function (task) {
           return <TodoItem
             key={ task._id }
             task={ task }

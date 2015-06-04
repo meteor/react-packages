@@ -8,5 +8,5 @@ meteor-platform
 insecure
 less
 accounts-password
-reactjs:react
 meteorhacks:flow-router
+react

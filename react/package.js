@@ -14,9 +14,10 @@ Package.onUse(function(api) {
   api.versionsFrom('1.1.0.2');
   api.addFiles('react.js');
 
-  api.use([
+  api.imply([
     'jsx',
-    'react-runtime'
+    'react-runtime',
+    'react-meteor-data'
   ]);
 });
 

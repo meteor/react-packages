@@ -1,6 +1,6 @@
 // @jsx React.DOM
 
-TodoItem = ReactMeteor.createClass({
+TodoItem = React.createClass({
   componentWillMount: function () {
     this.throttledOnKeyUp = _.throttle(function (event) {
       Todos.update(this.props.task._id,

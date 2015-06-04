@@ -1,13 +1,14 @@
 // @jsx React.DOM
 
-AppBody = ReactMeteor.createClass({
+AppBody = React.createClass({
+  mixins: [MeteorDataMixin],
   getInitialState: function () {
     return {
       lists: []
     };
   },
-  getMeteorState: function () {
-    subsReady = _.all(this.props.handles, function (handle) {
+  trackMeteorData: function (props, state) {
+    subsReady = _.all(props.handles, function (handle) {
       return handle.ready();
     });
 
@@ -36,7 +37,7 @@ AppBody = ReactMeteor.createClass({
             <span className="icon-plus"></span>
             New List
           </a>
-          { self.state.lists.map(function (list) {
+          { self.data.lists.map(function (list) {
 
             var className = "list-todo";
             if (FlowRouter.current().params.listId === list._id) {
@@ -58,7 +59,7 @@ AppBody = ReactMeteor.createClass({
       </section>
       <div className="content-overlay"></div>
       <div id="content-container">
-        { self.state.listsSubscriptionsReady ?
+        { self.data.listsSubscriptionsReady ?
           <ListShow listId={ self.props.params.listId } /> :
           <AppLoading /> }
       </div>

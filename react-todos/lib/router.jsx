@@ -1,4 +1,6 @@
 if (Meteor.isClient) {
+  var subsReady;
+
   FlowRouter.route("/", {
     name: "root",
     action: function () {
@@ -14,8 +16,6 @@ if (Meteor.isClient) {
       React.render(<AppBody params={ params } />, document.body);
     }
   });
-
-  var subsReady;
 
   // This data is used on every page; also we want to make sure we route to the
   // first list instead of no list at all
