@@ -4,4 +4,5 @@ pages:
 - Getting started: index.md
 - Tutorial: tutorial.md
 - JSX transpilation and ES6 features: jsx.md
+- Using reactive Meteor data in React: meteor-data.md
 - React in Blaze: react-in-blaze.md
