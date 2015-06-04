@@ -1,4 +1,4 @@
-# JSX transpilation and ES6 features
+<h1>JSX transpilation and ES6 features</h1>
 
 All you have to do to enable JSX transpilation in Meteor is add the `jsx` package or the `react` meta-package. Then, all files in your app with the `.jsx` extension will be transpiled automatically and loaded on the server and the client according to [Meteor's file loading rules](http://docs.meteor.com/#/full/structuringyourapp).
 

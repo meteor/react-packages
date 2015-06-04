@@ -1,4 +1,0 @@
-/* Makes the first heading in each file not appear in the ToC */
-li.toctree-l3:first-child {
-    display: none;
-}
