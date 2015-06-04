@@ -7,7 +7,7 @@ Many useful React components and React-related modules are available on NPM, and
 - `cosmos:browserify` [GitHub page](https://github.com/elidoran/cosmos-browserify/), [Atmosphere page](https://atmospherejs.com/cosmos/browserify)
 - `meteorhacks:npm` [GitHub page](https://github.com/meteorhacks/npm), [Atmosphere page](https://atmospherejs.com/meteorhacks/npm)
 
-You can use this package along with `meteorhacks:npm` to include NPM modules on the client. Here's how:
+You can use these Meteor packages together to bundle NPM modules for the client. Here's how:
 
 ### 1. Add the relevant Meteor packages
 
