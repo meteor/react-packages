@@ -2,19 +2,23 @@
 
 AppBody = React.createClass({
   mixins: [MeteorDataMixin],
+  propTypes: {
+    handles: React.PropTypes.array.isRequired,
+    listId: React.PropTypes.string.isRequired
+  },
   getInitialState: function () {
     return {
       lists: []
     };
   },
   trackMeteorData: function (props, state) {
-    subsReady = _.all(props.handles, function (handle) {
+    var subsReady = _.all(props.handles, function (handle) {
       return handle.ready();
     });
 
     return {
-      lists: Lists.find().fetch(),
-      listsSubscriptionsReady: subsReady
+      subsReady: subsReady,
+      lists: Lists.find().fetch()
     };
   },
   addList: function () {
@@ -40,7 +44,7 @@ AppBody = React.createClass({
           { self.data.lists.map(function (list) {
 
             var className = "list-todo";
-            if (FlowRouter.current().params.listId === list._id) {
+            if (self.props.listId === list._id) {
               className += " active";
             }
 
@@ -59,8 +63,8 @@ AppBody = React.createClass({
       </section>
       <div className="content-overlay"></div>
       <div id="content-container">
-        { self.data.listsSubscriptionsReady ?
-          <ListShow listId={ self.props.params.listId } /> :
+        { self.data.subsReady ?
+          <ListShow listId={ self.props.listId } /> :
           <AppLoading /> }
       </div>
     </div>

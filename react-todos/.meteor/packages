@@ -10,3 +10,8 @@ less
 accounts-password
 meteorhacks:flow-router
 react
+meteorhacks:npm
+
+
+npm-container
+cosmos:browserify

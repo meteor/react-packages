@@ -1,4 +1,10 @@
 if (Meteor.isClient) {
+  // This data is used on every page; also we want to make sure we route to the
+  // first list instead of no list at all
+  var handles = [
+    Meteor.subscribe("publicLists"),
+    Meteor.subscribe("privateLists")
+  ];
   var subsReady;
 
   FlowRouter.route("/", {
@@ -7,22 +13,19 @@ if (Meteor.isClient) {
       if (subsReady) {
         FlowRouter.go("todoList", { listId: Lists.findOne()._id });
       }
+
+      React.render(<AppBody listId={ null } handles={ handles } />,
+        document.body);
     }
   });
 
   FlowRouter.route("/lists/:listId", {
     name: "todoList",
     action: function (params) {
-      React.render(<AppBody params={ params } />, document.body);
+      React.render(<AppBody listId={ params.listId } handles={ handles } />,
+        document.body);
     }
   });
-
-  // This data is used on every page; also we want to make sure we route to the
-  // first list instead of no list at all
-  var handles = [
-    Meteor.subscribe("publicLists"),
-    Meteor.subscribe("privateLists")
-  ];
 
   // XXX this should be replaced by promises, probably...
   Tracker.autorun(function (computation) {

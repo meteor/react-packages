@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "react": {
-      "version": "0.13.2",
+      "version": "0.13.3",
       "dependencies": {
         "envify": {
           "version": "3.4.0",
