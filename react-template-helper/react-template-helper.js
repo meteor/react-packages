@@ -6,11 +6,11 @@ Template.React.onRendered(function () {
     var self = this;
     var data = Blaze.getData();
 
-    var comp = data.component;
+    var comp = data && data.component;
     if (! comp) {
       throw new Error(
-        "Template " + parentTemplate + " calls `{{> React ... }}` without " +
-          "`component` argument specifying which React component to render.");
+        "In template " + parentTemplate + ", call to `{{> React ... }}` missing " +
+          "`component` argument.");
     }
 
     var container = self.firstNode().parentNode;
@@ -22,7 +22,7 @@ Template.React.onRendered(function () {
 
       throw new Error(
         "Template " + parentTemplate + " must render " + compDescriptor +
-          "as the only child of its parent element. Learn more here: XXX");
+          " as the only child of its parent element. Learn more here: XXX");
     }
 
     var props = _.omit(data, 'component');

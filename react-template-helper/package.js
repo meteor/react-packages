@@ -19,6 +19,7 @@ Package.onUse(function(api) {
 Package.onTest(function(api) {
   api.use('templating');
   api.use('tinytest');
+  api.use('reactive-var');
   api.use('react-template-helper');
   api.use('test-helpers');
   api.use('jsx');

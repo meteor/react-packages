@@ -1,22 +1,39 @@
+<template name="ReactTemplateWithoutComponent">
+  {{> React}}
+</template>
+
 <template name="EmptyComponentTemplateWithoutContainerElement">
   {{> React component=emptyComponent}}
 </template>
 
 <!-- used to test our error when rendering a react component with siblings -->
-<template name="UsesEmptyComponentTemplateWithSiblings">
+<template name="UsesEmptyComponentTemplateWithSibling">
   <div>
     <div>Sibling</div>
     {{> EmptyComponentTemplateWithoutContainerElement }}
   </div>
 </template>
 
+<template name="UsesEmptyComponentTemplateWithConditionalSibling">
+  <div>
+    {{#if sibling}}
+      <div>Sibling</div>
+    {{/if}}
+    {{> EmptyComponentTemplateWithoutContainerElement }}
+  </div>
+</template>
+
 <!--
 More tests:
-* "no sibling" detection works with an `{{#if}}` that starts empty
 * pass in props
 * props changing
 * pass in callbacks
 * callbacks changing
 * component type changing
+
+SIBLING DETECTION: (may be impossible -- see commented test in react-template-helper.jsx)
+  * text node siblings are also bad
+  * whitespace text node siblings are fine.
+  * "no sibling" detection works with an `{{#if}}` that starts empty
 -->
 
