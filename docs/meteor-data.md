@@ -2,9 +2,9 @@
 
 Many data sources in Meteor are "reactive" - that is, they use Meteor's [Tracker](https://www.meteor.com/tracker) library to notify data consumers when something has changed. These data sources include the following:
 
-- [`Meteor.user()`](http://docs.meteor.com/#/full/meteor_user)
-- [`collection.find()`](http://docs.meteor.com/#/full/find) and [`collection.findOne()`](http://docs.meteor.com/#/full/findone)
-- [`reactiveVar.get()`](http://docs.meteor.com/#/full/reactivevar_set)
+- [`Meteor.user()`](http://docs.meteor.com/#/full/meteor_user) - the currently logged-in user
+- [`Mongo.Collection`](http://docs.meteor.com/#/full/collections) - a persistent collection that can be accessed from the client
+- [`ReactiveVar`](http://docs.meteor.com/#/full/reactivevar_pkg) - store a single value reactively
 - Many packages on Atmosphere that provide other data, like geolocation
 
 ## MeteorDataMixin

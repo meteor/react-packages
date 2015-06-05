@@ -15,7 +15,7 @@ meteor add react
 
 1. The `React` runtime library for defining and rendering components
 2. A compiler that automatically transforms `.jsx` files into JavaScript, and lets you use some ES6 features
-3. A `ReactData` mixin that lets you easily use data from Meteor collections and other reactive sources in your components
+3. A React mixin called `MeteorDataMixin` that lets you easily use data from Meteor collections and other reactive sources in your components
 
 ### Next steps
 
@@ -30,5 +30,5 @@ If you would rather pick and choose individual packages to include rather than u
 
 1. `react-runtime` - the React library itself
 2. `jsx` - a compiler to compile files with the `.jsx` extension to JavaScript
-3. `react-data` - a mixin to integrate Meteor reactive data sources with React components
-4. `react-in-blaze` - include a React component inside your Blaze template
+3. `react-meteor-data` - a mixin to integrate Meteor reactive data sources with React components
+4. `react-template-helper` - include a React component inside your Meteor template

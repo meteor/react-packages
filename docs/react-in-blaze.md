@@ -5,21 +5,21 @@ We have built a convenient package that enables you to use React components anyw
 To start, add the package:
 
 ```sh
-meteor add react-in-blaze
+meteor add react-template-helper
 ```
 
 ## Including a component
 
-To include a React component inside your Blaze template, use the `ReactComponent` template like so:
+To include a React component inside your Blaze template, use the `React` template like so:
 
 ```html
 <template name="userDisplay">
   <div>Hello, {{username}}</div>
-  <div>{{> ReactComponent name="UserAvatar" propA=_id}}</div>
+  <div>{{> React component=UserAvatar propA=_id}}</div>
 </template>
 ```
 
-The `name` argument is interpreted as the variable name of the React component to include, in the global scope, and any other argument is passed as a prop to the component when it is rendered.
+The `component` argument is the React component to include, which should be passed in with a helper. Every other argument is passed as a prop to the component when it is rendered.
 
 ## React components must be the only thing in the wrapper element
 
@@ -33,7 +33,7 @@ React components can't have siblings:
 <template name="userDisplay">
   <div>
     <div>Hello, {{username}}</div>
-    {{> ReactComponent name="UserAvatar" propA=_id}}
+    {{> React component=UserAvatar propA=_id}}
   </div>
 </template>
 ```
@@ -42,6 +42,6 @@ A component also can't be the only thing in a template, because it's impossible 
 
 ```html
 <template name="userDisplay">
-  {{> ReactComponent name="UserAvatar" propA=_id}}
+  {{> React component=UserAvatar propA=_id}}
 </template>
 ```
