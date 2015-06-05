@@ -7,17 +7,13 @@ MeteorDataMixin = {
     var newData = this._meteorDataManager.calculateData(
       this, this.props, this.state);
 
-    if (newData) {
-      this._meteorDataManager.updateData(this.data, newData);
-    }
+    this._meteorDataManager.updateData(this.data, newData);
   },
   componentWillUpdate(nextProps, nextState) {
     var newData = this._meteorDataManager.calculateData(
       this, nextProps, nextState);
 
-    if (newData) {
-      this._meteorDataManager.updateData(this.data, newData);
-    }
+    this._meteorDataManager.updateData(this.data, newData);
   },
   componentWillUnmount() {
     this._meteorDataManger.dispose();
@@ -62,15 +58,18 @@ class MeteorDataManager {
   }
 
   updateData(componentData, newData) {
+    if (! (newData && (typeof newData) === 'object')) {
+      throw new Error("Expected object returned from trackMeteorData");
+    }
     // update componentData in place based on newData
     for (var key in newData) {
       componentData[key] = newData[key];
     }
-    // if there is oldData (every time this method is called
-    // except the first),
-    // delete keys in newData that aren't in oldData.
-    // don't interfere with other keys, in case we are co-existing
-    // with something else that writes to a component's this.data.
+    // if there is oldData (which is every time this method is called
+    // except the first), delete keys in newData that aren't in
+    // oldData.  don't interfere with other keys, in case we are
+    // co-existing with something else that writes to a component's
+    // this.data.
     if (this.oldData) {
       for (var key in this.oldData) {
         if (! (key in newData)) {
