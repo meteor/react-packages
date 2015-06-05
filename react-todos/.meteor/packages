@@ -8,10 +8,10 @@ meteor-platform
 insecure
 less
 accounts-password
-meteorhacks:flow-router
 react
 meteorhacks:npm
+meteorhacks:flow-router
+cosmos:browserify
 
 
 npm-container
-cosmos:browserify

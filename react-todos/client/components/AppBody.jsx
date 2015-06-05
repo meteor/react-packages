@@ -4,7 +4,7 @@ AppBody = React.createClass({
   mixins: [MeteorDataMixin],
   propTypes: {
     handles: React.PropTypes.array.isRequired,
-    listId: React.PropTypes.string.isRequired
+    listId: React.PropTypes.string
   },
   getInitialState: function () {
     return {
@@ -63,7 +63,7 @@ AppBody = React.createClass({
       </section>
       <div className="content-overlay"></div>
       <div id="content-container">
-        { self.data.subsReady ?
+        { self.data.subsReady && self.props.listId ?
           <ListShow listId={ self.props.listId } /> :
           <AppLoading /> }
       </div>
