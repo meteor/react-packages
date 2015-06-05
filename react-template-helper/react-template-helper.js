@@ -41,7 +41,7 @@ function parentTemplateName () {
   while (! view.template)
     view = view.parentView;
 
-  var match = view.name.match(/Template.(.*)/);
+  var match = view.name.match(/Template\.(.*)/);
   if (! match)
     throw new Error("Unexpected: View doesn't correspond to a template? " + view.name);
 
