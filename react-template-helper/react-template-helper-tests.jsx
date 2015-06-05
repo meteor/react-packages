@@ -1,15 +1,33 @@
+/// Define React components
 var EmptyReactComponent = React.createClass({
   render() {
     return <div></div>
   }
 });
 
+var TextReactComponent = React.createClass({
+  propTypes: {
+    text: React.PropTypes.string
+  },
+  render() {
+    return <div>{this.props.text}</div>
+  }
+});
+
+/// Set up Blaze templates
 Template.EmptyComponentTemplateWithoutContainerElement.helpers({
   emptyComponent() {
     return EmptyReactComponent;
   }
 });
 
+Template.UsesTextReactComponent.helpers({
+  textComponent() {
+    return TextReactComponent;
+  }
+});
+
+/// Tests
 Tinytest.add(
   "react-template-helper-tests - must pass `component` into `{{> React}}`",
   function (test) {
@@ -58,3 +76,23 @@ Tinytest.add(
     }, /EmptyComponentTemplateWithoutContainerElement.*EmptyReactComponent.*only child/);
   });
 */
+
+Tinytest.add(
+  "react-template-helper-tests - pass props into `{{> React}}`",
+  function (test) {
+    var tmpl = Template.UsesTextReactComponent;
+    var text = new ReactiveVar("one");
+    tmpl.helpers({
+      text() {
+        return text.get();
+      }
+    });
+
+    var div = renderToDiv(tmpl);
+    Tracker.flush({_throwFirstError: true});
+    test.equal(canonicalizeHtml($(div).text()), "one");
+    text.set("two");
+    Tracker.flush({_throwFirstError: true});
+    test.equal(canonicalizeHtml($(div).text()), "two");
+  });
+

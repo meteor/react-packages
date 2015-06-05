@@ -23,10 +23,14 @@
   </div>
 </template>
 
+<template name="UsesTextReactComponent">
+  <span>
+    {{> React component=textComponent text=text}}
+  </span>
+</template>
+
 <!--
 More tests:
-* pass in props
-* props changing
 * pass in callbacks
 * callbacks changing
 * component type changing

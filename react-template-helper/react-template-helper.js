@@ -1,9 +1,8 @@
 Template.React.onRendered(function () {
-  var tmpl = this;
   var parentTemplate = parentTemplateName();
+  var container = this.firstNode.parentNode;
 
   this.autorun(function (c) {
-    var self = this;
     var data = Blaze.getData();
 
     var comp = data && data.component;
@@ -13,7 +12,6 @@ Template.React.onRendered(function () {
           "`component` argument.");
     }
 
-    var container = self.firstNode().parentNode;
     var expectedContainerChildElements = c.firstRun ? 0 : 1;
     if (numChildElements(container) > expectedContainerChildElements) {
       var compDescriptor = comp.displayName
