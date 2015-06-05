@@ -34,7 +34,7 @@ Tracker.autorun(function (computation) {
   });
 
   // If they are, and we are at the root route, we should go to a valid list
-  if (subsReady && FlowRouter.current().name === "root") {
+  if (subsReady && FlowRouter.getRouteName() === "root") {
     FlowRouter.go("todoList", { listId: Lists.findOne()._id });
     computation.stop();
   }
