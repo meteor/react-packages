@@ -4,6 +4,6 @@ pages:
 - Getting started: index.md
 - Tutorial: tutorial.md
 - JSX transpilation and ES6 features: jsx.md
-- Using reactive Meteor data in React: meteor-data.md
-- Using client-side modules from NPM with Browserify: client-npm.md
-- React in Blaze: react-in-blaze.md
+- Reactive Meteor data in React: meteor-data.md
+- Client-side NPM modules with Browserify: client-npm.md
+- React components inside Meteor templates: react-in-blaze.md

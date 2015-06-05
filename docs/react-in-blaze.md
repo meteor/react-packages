@@ -1,4 +1,4 @@
-<h1>Including React components inside Blaze templates</h1>
+<h1>Including React components inside Meteor templates</h1>
 
 We have built a convenient package that enables you to use React components anywhere inside an existing Meteor app that uses Blaze, Meteor's default built-in templating system. You can use this if you are interested in building part of your UI with reusable React components, or if you are looking to gradually transition your entire app to React.
 
