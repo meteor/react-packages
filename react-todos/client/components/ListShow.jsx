@@ -95,7 +95,7 @@ ListShow = React.createClass({
   onSubmitNewTask: function (event) {
     event.preventDefault();
 
-    var listId = this.state.list._id;
+    var listId = this.data.list._id;
 
     var input = event.target.text;
     if (! input.value) {
