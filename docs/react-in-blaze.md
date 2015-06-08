@@ -19,6 +19,18 @@ To include a React component inside your Blaze template, use the `React` templat
 </template>
 ```
 
+You will need to pass in the component class with a helper:
+
+```js
+var UserAvatar = React.createClass( ... );
+
+Template.userDisplay.helpers({
+  UserAvatar() {
+    return UserAvatar;
+  }
+})
+```
+
 The `component` argument is the React component to include, which should be passed in with a helper. Every other argument is passed as a prop to the component when it is rendered.
 
 ## React components must be the only thing in the wrapper element
@@ -43,5 +55,31 @@ A component also can't be the only thing in a template, because it's impossible 
 ```html
 <template name="userDisplay">
   {{> React component=UserAvatar propA=_id}}
+</template>
+```
+
+## Passing callbacks to a React component
+
+To pass a callback to a React component that you are including, simply make a helper that returns a function, and pass it in as a prop, like so:
+
+```js
+Template.userDisplay.helpers({
+  onClick() {
+    var self = Template.instance();
+
+    // Return a function from this helper, where the template instance is in
+    // a closure
+    return function () {
+      self.hasBeenClicked.set(true)
+    }
+  }
+})
+```
+
+How to use it in Spacebars:
+
+```html
+<template name="userDisplay">
+  <div>{{> React component=UserAvatar propA=_id onClick=onClick}}</div>
 </template>
 ```

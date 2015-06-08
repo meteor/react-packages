@@ -1,3 +1,5 @@
+# This page is deprecated, waiting on a better solution
+
 <h1>Using client-side modules from NPM with Browserify</h1>
 
 Many useful React components and React-related modules are available on NPM, and can be bundled for the client with the popular Browserify tool. Meteor currently doesn't have first-party support for using these modules, but there are some community-maintained packages that work great!
