@@ -22,3 +22,14 @@ ClickableReactComponent = React.createClass({
   }
 });
 
+OneReactComponent = React.createClass({
+  render() {
+    return <div>One</div>;
+  }
+});
+
+TwoReactComponent = React.createClass({
+  render() {
+    return <div>Two</div>;
+  }
+});

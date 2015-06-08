@@ -35,9 +35,14 @@
   </span>
 </template>
 
+<template name="UsesGenericComponent">
+  <span>
+    {{> React component=component}}
+  </span>
+</template>
+
 <!--
 More tests:
-* component type changing
 * subling detection: text node siblings are bad, but whitespace text node siblings are OK
 -->
 

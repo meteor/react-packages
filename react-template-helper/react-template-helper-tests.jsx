@@ -98,3 +98,25 @@ Tinytest.add(
     document.body.removeChild(div);
   });
 
+Tinytest.add(
+  "react-template-helper-tests - pass changing component to `{{> React}}`",
+  function (test) {
+    var tmpl = Template.UsesGenericComponent;
+
+    var component = new ReactiveVar(OneReactComponent);
+    tmpl.helpers({
+      component() {
+        return component.get();
+      }
+    });
+
+    var div = renderToDiv(tmpl);
+
+    Tracker.flush({_throwFirstError: true});
+    test.equal($(div).text(), "One");
+
+    component.set(TwoReactComponent);
+    Tracker.flush({_throwFirstError: true});
+    test.equal($(div).text(), "Two");
+  });
+
