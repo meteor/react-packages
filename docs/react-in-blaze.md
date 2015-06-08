@@ -60,7 +60,7 @@ A component also can't be the only thing in a template, because it's impossible 
 
 ## Passing callbacks to a React component
 
-To pass a callback to a React component that you are including, simply make a helper that returns a function, and pass it in as a prop, like so:
+To pass a callback to a React component that you are including with this helper, simply make a template helper that returns a function, and pass it in as a prop, like so:
 
 ```js
 Template.userDisplay.helpers({
