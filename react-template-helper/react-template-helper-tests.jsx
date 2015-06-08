@@ -1,4 +1,6 @@
+///
 /// Define React components
+///
 var EmptyReactComponent = React.createClass({
   render() {
     return <div></div>
@@ -7,14 +9,25 @@ var EmptyReactComponent = React.createClass({
 
 var TextReactComponent = React.createClass({
   propTypes: {
-    text: React.PropTypes.string
+    text: React.PropTypes.string.isRequired
   },
   render() {
     return <div>{this.props.text}</div>
   }
 });
 
+var ClickableReactComponent = React.createClass({
+  propTypes: {
+    onClick: React.PropTypes.func.isRequired
+  },
+  render() {
+    return <div className="click-me" onClick={this.props.onClick}></div>;
+  }
+});
+
+///
 /// Set up Blaze templates
+///
 Template.EmptyComponentTemplateWithoutContainerElement.helpers({
   emptyComponent() {
     return EmptyReactComponent;
@@ -27,7 +40,19 @@ Template.UsesTextReactComponent.helpers({
   }
 });
 
+Template.UsesClickableReactComponent.onCreated(function () {
+  this.clicked = false;
+});
+
+Template.UsesClickableReactComponent.helpers({
+  clickableComponent() {
+    return ClickableReactComponent;
+  }
+});
+
+///
 /// Tests
+///
 Tinytest.add(
   "react-template-helper-tests - must pass `component` into `{{> React}}`",
   function (test) {
@@ -94,5 +119,26 @@ Tinytest.add(
     text.set("two");
     Tracker.flush({_throwFirstError: true});
     test.equal(canonicalizeHtml($(div).text()), "two");
+  });
+
+Tinytest.add(
+  "react-template-helper-tests - pass callbacks into `{{> React}}`",
+  function (test) {
+    var tmpl = Template.UsesClickableReactComponent;
+    var clicked = false;
+    tmpl.helpers({
+      onClick: function () {
+        clicked = true;
+      }
+    });
+
+    var div = renderToDiv(tmpl);
+    Tracker.flush({_throwFirstError: true});
+    document.body.appendChild(div);
+
+    clickIt(div.querySelector(".click-me"));
+    test.equal(clicked, true);
+
+    document.body.removeChild(div);
   });
 

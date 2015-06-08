@@ -29,9 +29,14 @@
   </span>
 </template>
 
+<template name="UsesClickableReactComponent">
+  <span>
+    {{> React component=clickableComponent onClick=onClick }}
+  </span>
+</template>
+
 <!--
 More tests:
-* pass in callbacks
 * callbacks changing
 * component type changing
 
