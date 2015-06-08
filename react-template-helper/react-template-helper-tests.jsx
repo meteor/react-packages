@@ -1,58 +1,3 @@
-///
-/// Define React components
-///
-var EmptyReactComponent = React.createClass({
-  render() {
-    return <div></div>
-  }
-});
-
-var TextReactComponent = React.createClass({
-  propTypes: {
-    text: React.PropTypes.string.isRequired
-  },
-  render() {
-    return <div>{this.props.text}</div>
-  }
-});
-
-var ClickableReactComponent = React.createClass({
-  propTypes: {
-    onClick: React.PropTypes.func.isRequired
-  },
-  render() {
-    return <div className="click-me" onClick={this.props.onClick}></div>;
-  }
-});
-
-///
-/// Set up Blaze templates
-///
-Template.EmptyComponentTemplateWithoutContainerElement.helpers({
-  emptyComponent() {
-    return EmptyReactComponent;
-  }
-});
-
-Template.UsesTextReactComponent.helpers({
-  textComponent() {
-    return TextReactComponent;
-  }
-});
-
-Template.UsesClickableReactComponent.onCreated(function () {
-  this.clicked = false;
-});
-
-Template.UsesClickableReactComponent.helpers({
-  clickableComponent() {
-    return ClickableReactComponent;
-  }
-});
-
-///
-/// Tests
-///
 Tinytest.add(
   "react-template-helper-tests - must pass `component` into `{{> React}}`",
   function (test) {
@@ -128,7 +73,9 @@ Tinytest.add(
     var clicked = false;
     tmpl.helpers({
       onClick: function () {
-        clicked = true;
+        return function () {
+          clicked = true;
+        }
       }
     });
 
@@ -136,6 +83,7 @@ Tinytest.add(
     Tracker.flush({_throwFirstError: true});
     document.body.appendChild(div);
 
+    test.equal(clicked, false);
     clickIt(div.querySelector(".click-me"));
     test.equal(clicked, true);
 
