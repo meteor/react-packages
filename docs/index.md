@@ -3,6 +3,8 @@
 Using Meteor and React together is awesome. Meteor gives you a fast, easy to use solution
 for client-side data management, and React gives you a way to structure your app's UI from reusable components.
 
+> <span style="color: red">Warning: this guide is for a set of packages that are currently in development, so you will not be able to install them yet. When we are done, we'll do an official announcement!</span>
+
 ## Quick start
 
 If you want to get going as fast as possible, you just need to add the `react` package that bundles together everything you need:
