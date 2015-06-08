@@ -21,7 +21,7 @@ First, let's delete the `my-react-app.js` file that Meteor generated for us, and
 We'll write our code in a new file we'll call `my-react-app.jsx`. In that file, put the following code:
 
 ```js
-const App = React.createClass({
+var App = React.createClass({
   render: function () {
     return <div>Hello world!</div>;
   }
@@ -43,10 +43,11 @@ Read on to see how to use Meteor data in your component.
 Add a collection, blah blah
 
 ```js
-const Tasks = new Mongo.Collection("tasks");
+var Tasks = new Mongo.Collection("tasks");
 
-const App = React.createClass({
-  track() {
+var App = React.createClass({
+  mixins: [MeteorDataMixin],
+  trackMeteorData() {
     // This function knows how to listen to Meteor's reactive data sources,
     // such as collection queries
     return {
@@ -56,7 +57,7 @@ const App = React.createClass({
   },
   render() {
     return <ul>{
-      // Access the data from track() on this.data
+      // Access the data from trackMeteorData() on this.data
       this.data.tasks.map(function (task) {
         return <li>task.content</li> 
       })
@@ -72,10 +73,11 @@ if (Meteor.isClient) {
 ## Step 4: Modifying data from a user event
 
 ```js
-const Tasks = new Mongo.Collection("tasks");
+var Tasks = new Mongo.Collection("tasks");
 
-const List = React.createClass({
-  track() {
+var List = React.createClass({
+  mixins: [MeteorDataMixin],
+  trackMeteorData() {
     // This function knows how to listen to Meteor's reactive data sources,
     // such as collection queries
     return {
@@ -85,7 +87,7 @@ const List = React.createClass({
   },
   render() {
     return <ul>{
-      // Access the data from track() on this.data
+      // Access the data from trackMeteorData() on this.data
       this.data.tasks.map(function (task) {
         return <li>task.content</li> 
       })
@@ -93,9 +95,9 @@ const List = React.createClass({
   }
 });
 
-const NewTaskForm = React.createClass({
+var NewTaskForm = React.createClass({
   onSubmit(event) {
-    const taskContent = event.target.content.value;
+    var taskContent = event.target.content.value;
     Meteor.call('insertTask', {
       content: taskContent
     });
@@ -107,7 +109,7 @@ const NewTaskForm = React.createClass({
   }
 })
 
-const App = React.createClass({
+var App = React.createClass({
   render() {
     return <div>
       <List />
