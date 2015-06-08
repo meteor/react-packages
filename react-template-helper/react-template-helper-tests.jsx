@@ -70,11 +70,15 @@ Tinytest.add(
   "react-template-helper-tests - pass callbacks into `{{> React}}`",
   function (test) {
     var tmpl = Template.UsesClickableReactComponent;
-    var clicked = false;
+    var reactiveNum = new ReactiveVar(1);
+    var numWhenClicked = 0;
     tmpl.helpers({
       onClick: function () {
+        // intentionally call `get` outside of the callback function inside
+        // so that we test replacing the callback with a different one.
+        var num = reactiveNum.get();
         return function () {
-          clicked = true;
+          numWhenClicked = num;
         }
       }
     });
@@ -83,9 +87,13 @@ Tinytest.add(
     Tracker.flush({_throwFirstError: true});
     document.body.appendChild(div);
 
-    test.equal(clicked, false);
+    test.equal(numWhenClicked, 0);
     clickIt(div.querySelector(".click-me"));
-    test.equal(clicked, true);
+    test.equal(numWhenClicked, 1);
+    reactiveNum.set(2);
+    Tracker.flush({_throwFirstError: true});
+    clickIt(div.querySelector(".click-me"));
+    test.equal(numWhenClicked, 2);
 
     document.body.removeChild(div);
   });
