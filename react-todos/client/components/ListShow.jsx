@@ -38,7 +38,7 @@ ListShow = React.createClass({
 
     self.setState({
       editingTitle: true,
-      nameInputValue: self.state.list.name
+      nameInputValue: self.data.list.name
     }, function () {
       React.findDOMNode(self.refs.nameInput).focus();
     });
@@ -48,7 +48,9 @@ ListShow = React.createClass({
       nameInputValue: event.target.value
     });
   },
-  stopEditingTitle() {
+  stopEditingTitle(event) {
+    event.preventDefault();
+
     this.setState({
       editingTitle: false,
       nameInputValue: undefined

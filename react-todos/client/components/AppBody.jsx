@@ -28,7 +28,6 @@ AppBody = React.createClass({
   },
   getInitialState() {
     return {
-      lists: [],
       menuOpen: false
     };
   },
