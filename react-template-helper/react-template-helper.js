@@ -22,7 +22,8 @@ Template.React.onRendered(function () {
 
       throw new Error(
         "Template " + parentTemplate + " must render " + compDescriptor +
-          " as the only child of its parent element. Learn more here: XXX");
+          " as the only child of its parent element. Learn more here: " +
+          "http://goo.gl/EamCy8");
     }
 
     var props = _.omit(data, 'component');
