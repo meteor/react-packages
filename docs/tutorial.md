@@ -16,7 +16,7 @@ To run your app, type the `meteor` command in your app directory.
 
 ## Step 2: Adding your first component
 
-First, let's delete the `my-react-app.js` file that Meteor generated for us, and everything except the `<head>...</head>` tag in `my-react-app.html`. Instead of writing HTML, we'll be constructing our page from React components.
+First, let's delete the `my-react-app.js` file that Meteor generated for us, and everything except the `<head>...</head>` tag in `my-react-app.html`. Instead of writing HTML templates, we'll be constructing our page from React components.
 
 We'll write our code in a new file we'll call `my-react-app.jsx`. In that file, put the following code:
 
@@ -40,7 +40,7 @@ Read on to see how to use Meteor data in your component.
 
 ## Step 3: Displaying reactive data
 
-Add a collection, blah blah
+In this step, we will throw in a `Mongo.Collection` so that our app has data. This class should be instantiated on the client and server, and the data will be automatically synchronized between the two. For more about collections, see the [Meteor tutorial](https://www.meteor.com/try/3).
 
 ```js
 var Tasks = new Mongo.Collection("tasks");
@@ -48,10 +48,10 @@ var Tasks = new Mongo.Collection("tasks");
 var App = React.createClass({
   mixins: [MeteorDataMixin],
   trackMeteorData() {
-    // This function knows how to listen to Meteor's reactive data sources,
+    // This method knows how to listen to Meteor's reactive data sources,
     // such as collection queries
     return {
-      // Returns an array with all items in the collection
+      // Return an array with all items in the collection
       tasks: Tasks.find().fetch()
     }
   },
@@ -71,6 +71,8 @@ if (Meteor.isClient) {
 ```
 
 ## Step 4: Modifying data from a user event
+
+Now that our app is getting more complicated, we should split it into multiple components. Also, to modify the database in a validated way we have added a Method. Read more about methods in the [Meteor tutorial](https://www.meteor.com/try/10).
 
 ```js
 var Tasks = new Mongo.Collection("tasks");
