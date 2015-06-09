@@ -10,11 +10,15 @@ Tinytest.add(
 Tinytest.add(
   "react-template-helper-tests - rendering react component with sibling gives helpful error",
   function (test) {
-    var tmpl = Template.UsesEmptyComponentTemplateWithSibling;
-    test.throws(function () {
-      renderToDiv(tmpl);
-      Tracker.flush({_throwFirstError: true});
-    }, /EmptyComponentTemplateWithoutContainerElement.*EmptyReactComponent.*only child/);
+    var fails = function (tmpl) {
+      test.throws(function () {
+        renderToDiv(tmpl);
+        Tracker.flush({_throwFirstError: true});
+      }, /EmptyComponentTemplateWithoutContainerElement.*EmptyReactComponent.*only child/);
+    };
+
+    fails(Template.UsesEmptyComponentTemplateWithSiblingElement);
+    fails(Template.UsesEmptyComponentTemplateWithSiblingTextNode);
   });
 
 

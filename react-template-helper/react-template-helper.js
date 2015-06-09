@@ -12,8 +12,9 @@ Template.React.onRendered(function () {
           "`component` argument.");
     }
 
-    var expectedContainerChildElements = c.firstRun ? 0 : 1;
-    if (numChildElements(container) > expectedContainerChildElements) {
+    // expected nodes that aren't whitespace-only text nodes
+    var expectedContainerChildNodes = c.firstRun ? 0 : 1;
+    if (numChildNodes(container) > expectedContainerChildNodes) {
       var compDescriptor = comp.displayName
             ? "the React component " + comp.displayName
             : "a React component";
@@ -46,14 +47,15 @@ function parentTemplateName () {
   return match[1];
 };
 
-function numChildElements (el) {
-  var numChildElements = 0;
+// Gets the number of child nodes of `el` that aren't only whitespace
+function numChildNodes (el) {
+  var numChildNodes = 0;
   for (var node = el.firstChild; node; node = node.nextSibling) {
-    if (node.nodeType === Node.ELEMENT_NODE) {
-      numChildElements++;
+    if (!(node.nodeType === Node.TEXT_NODE && node.nodeValue.match(/^\s*$/))) {
+      numChildNodes++;
     }
   }
 
-  return numChildElements;
+  return numChildNodes;
 };
 

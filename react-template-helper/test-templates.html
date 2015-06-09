@@ -7,9 +7,16 @@
 </template>
 
 <!-- used to test our error when rendering a react component with siblings -->
-<template name="UsesEmptyComponentTemplateWithSibling">
+<template name="UsesEmptyComponentTemplateWithSiblingElement">
   <div>
     <div>Sibling</div>
+    {{> EmptyComponentTemplateWithoutContainerElement }}
+  </div>
+</template>
+
+<template name="UsesEmptyComponentTemplateWithSiblingTextNode">
+  <div>
+    Sibling
     {{> EmptyComponentTemplateWithoutContainerElement }}
   </div>
 </template>
@@ -40,9 +47,3 @@
     {{> React component=component}}
   </span>
 </template>
-
-<!--
-More tests:
-* subling detection: text node siblings are bad, but whitespace text node siblings are OK
--->
-
