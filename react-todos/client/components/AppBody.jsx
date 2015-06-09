@@ -122,7 +122,9 @@ AppBody = React.createClass({
       </section>
       <div className="content-overlay"></div>
       <div id="content-container">
-        <RouteHandler />
+        { self.data.subsReady ?
+          <RouteHandler /> :
+          <AppLoading /> }
       </div>
     </div>
   }

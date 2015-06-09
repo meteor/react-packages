@@ -116,6 +116,11 @@ ListShow = React.createClass({
   render() {
     var self = this;
     var list = self.data.list;
+    var tasks = self.data.tasks;
+
+    if (! list) {
+      return <ListNotFound />
+    }
 
     var newTaskForm = <form className="todo-new input-symbol"
         onSubmit={ self.onSubmitNewTask }>
@@ -140,7 +145,7 @@ ListShow = React.createClass({
         </form>
         { newTaskForm }
       </nav>
-    } else if (list) {
+    } else if (tasks) {
       nav = <nav>
         <div className="nav-group">
           <a className="nav-item">
@@ -175,7 +180,7 @@ ListShow = React.createClass({
         </div>
         { newTaskForm }
       </nav>
-    } else {
+    } else if (list) {
       nav = <nav>
         <div className="wrapper-message">
           <div className="title-message">Loading tasks...</div>
