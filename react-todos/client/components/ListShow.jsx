@@ -147,11 +147,7 @@ ListShow = React.createClass({
       </nav>
     } else if (tasks) {
       nav = <nav>
-        <div className="nav-group">
-          <a className="nav-item">
-            <span className="icon-list-unordered" title="Show menu" />
-          </a>
-        </div>
+        <MenuOpenToggle />
         <h1 className="title-page" onClick={ self.startEditingTitle }>
           <span className="title-wrapper">{ list.name }</span>
           <span className="count-list">{ list.incompleteCount }</span>

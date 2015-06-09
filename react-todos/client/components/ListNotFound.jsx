@@ -4,11 +4,7 @@ AppNotFound = React.createClass({
   render() {
     return <div className="page not-found">
       <nav>
-        <div className="nav-group">
-          <a href="#" className="js-menu nav-item">
-            <span className="icon-list-unordered" />
-          </a>
-        </div>
+        <MenuOpenToggle />
       </nav>
       <div className="content-scrollable">
         <div className="wrapper-message">

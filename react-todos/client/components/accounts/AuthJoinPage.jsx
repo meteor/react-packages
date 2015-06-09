@@ -64,11 +64,7 @@ AuthJoinPage = React.createClass({
 
     return <div className="page auth">
       <nav>
-        <div className="nav-group">
-          <a href="#" className="nav-item">
-            <span className="icon-list-unordered"></span>
-          </a>
-        </div>
+        <MenuOpenToggle />
       </nav>
       <div className="content-scrollable">
         <div className="wrapper-auth">

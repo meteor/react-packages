@@ -25,12 +25,20 @@ AppBody = React.createClass({
   mixins: [MeteorDataMixin, Navigation, State],
   propTypes: {
     handles: React.PropTypes.array.isRequired,
-    listId: React.PropTypes.string
   },
   getInitialState() {
     return {
-      lists: []
+      lists: [],
+      menuOpen: false
     };
+  },
+  childContextTypes: {
+    toggleMenuOpen: React.PropTypes.func.isRequired
+  },
+  getChildContext() {
+    return {
+      toggleMenuOpen: this.toggleMenuOpen
+    }
   },
   trackMeteorData(props, state) {
     var subsReady = _.all(props.handles, function (handle) {
@@ -43,6 +51,12 @@ AppBody = React.createClass({
       currentUser: Meteor.user(),
       disconnected: ShowConnectionIssues.get() && (! Meteor.status().connected)
     };
+  },
+  toggleMenuOpen() {
+    console.log("hello");
+    this.setState({
+      menuOpen: ! this.state.menuOpen
+    });
   },
   addList() {
     var list = {
@@ -60,7 +74,17 @@ AppBody = React.createClass({
   render() {
     var self = this;
 
-    return <div id="container">
+    var appBodyContainerClass = "";
+
+    if (Meteor.isCordova) {
+      appBodyContainerClass += " cordova";
+    }
+
+    if (self.state.menuOpen) {
+      appBodyContainerClass += " menu-open";
+    }
+
+    return <div id="container" className={ appBodyContainerClass }>
       <section id="menu">
         <UserSidebarSection user={ self.data.currentUser } />
         <div className="list-todos">
@@ -90,7 +114,7 @@ AppBody = React.createClass({
         </div>
       </section>
       { self.data.disconnected ? <ConnectionIssueDialog /> : "" }
-      <div className="content-overlay"></div>
+      <div className="content-overlay" onClick={ self.toggleMenuOpen }></div>
       <div id="content-container">
         { self.data.subsReady ?
           <RouteHandler /> :
