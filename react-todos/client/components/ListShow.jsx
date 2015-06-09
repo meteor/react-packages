@@ -1,9 +1,12 @@
 // @jsx React.DOM
 
-var Navigation = ReactRouter.Navigation;
+var {
+  Navigation,
+  State
+} = ReactRouter;
 
 ListShow = React.createClass({
-  mixins: [MeteorDataMixin, Navigation],
+  mixins: [MeteorDataMixin, Navigation, State],
   getInitialState() {
     return {
       tasks: [],
@@ -18,7 +21,7 @@ ListShow = React.createClass({
   trackMeteorData(props, state) {
     var self = this;
 
-    var listId = props.listId;
+    var listId = self.getParams().listId;
     Meteor.subscribe("todos", listId);
 
     return {

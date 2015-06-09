@@ -82,7 +82,7 @@ AuthJoinPage = React.createClass({
             <button type="submit" className="btn-primary">Join Now</button>
           </form>
         </div>
-        <Link to="signin" className="link-auth-alt">Have an account? Sign in</Link>
+        <Link to="signin" className="link-auth-alt">Have an account? Sign in.</Link>
       </div>
     </div>
   }
