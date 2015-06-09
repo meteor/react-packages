@@ -7,51 +7,19 @@ var {
   RouteHandler
 } = ReactRouter;
 
-UserSidebarSection = React.createClass({
-  getInitialState() {
-    return {
-      menuOpen: false
-    };
-  },
-  propTypes: {
-    user: React.PropTypes.object
-  },
-  toggleMenuOpen(event) {
-    event.preventDefault();
+// true if we should show an error dialog when there is a connection error.
+// Exists so that we don't show a connection error dialog when the app is just
+// starting and hasn't had a chance to connect yet.
+var ShowConnectionIssues = new ReactiveVar(false);
 
-    this.setState({
-      menuOpen: ! this.state.menuOpen
-    });
-  },
-  logout() {
-    Meteor.logout();
-  },
-  render() {
-    var self = this;
+var CONNECTION_ISSUE_TIMEOUT = 5000;
 
-    if (self.props.user) {
-      var email = self.props.user.emails[0].address;
-      var emailUsername = email.substring(0, email.indexOf('@'));
-
-      var arrowDirection = self.state.menuOpen ? "up" : "down";
-      var arrowIconClass = "icon-arrow-" + arrowDirection;
-
-      return <div className="btns-group-vertical">
-        <a href="#" className="btn-secondary" onClick={ self.toggleMenuOpen }>
-          <span className={ arrowIconClass } />
-          { emailUsername }
-        </a>
-        { self.state.menuOpen ?
-          <a className="btn-secondary" onClick={ self.logout } >Logout</a> : ""}
-      </div>
-    } else {
-      return <div className="btns-group">
-        <Link to="signin" className="btn-secondary">Sign in</Link>
-        <Link to="join" className="btn-secondary">Join</Link>
-      </div>
-    }
-  }
-});
+// Only show the connection error box if it has been 5 seconds since
+// the app started
+setTimeout(function () {
+  // Show the connection error box
+  ShowConnectionIssues.set(true);
+}, CONNECTION_ISSUE_TIMEOUT);
 
 AppBody = React.createClass({
   mixins: [MeteorDataMixin, Navigation, State],
@@ -72,7 +40,8 @@ AppBody = React.createClass({
     return {
       subsReady: subsReady,
       lists: Lists.find().fetch(),
-      currentUser: Meteor.user()
+      currentUser: Meteor.user(),
+      disconnected: ShowConnectionIssues.get() && (! Meteor.status().connected)
     };
   },
   addList() {
@@ -120,6 +89,7 @@ AppBody = React.createClass({
           }) }
         </div>
       </section>
+      { self.data.disconnected ? <ConnectionIssueDialog /> : "" }
       <div className="content-overlay"></div>
       <div id="content-container">
         { self.data.subsReady ?
