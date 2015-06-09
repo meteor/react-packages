@@ -1,6 +1,6 @@
 // @jsx React.DOM
 
-ListNotFound = React.createClass({
+AppNotFound = React.createClass({
   render() {
     return <div className="page not-found">
       <nav>

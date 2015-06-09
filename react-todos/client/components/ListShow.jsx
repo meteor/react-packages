@@ -119,7 +119,7 @@ ListShow = React.createClass({
     var tasks = self.data.tasks;
 
     if (! list) {
-      return <ListNotFound />
+      return <AppNotFound />
     }
 
     var newTaskForm = <form className="todo-new input-symbol"

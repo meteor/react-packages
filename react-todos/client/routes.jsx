@@ -1,10 +1,16 @@
-var Route = ReactRouter.Route;
+var {
+  Route,
+  NotFoundRoute,
+  DefaultRoute
+} = ReactRouter;
 
 var routes = (
   <Route name="root" handler={AppBody} path="/">
     <Route name="todoList" path="/lists/:listId" handler={ListShow} />
     <Route name="join" path="/join" handler={AuthJoinPage} />
     <Route name="signin" path="/signin" handler={AuthSignInPage} />
+    <DefaultRoute handler={AppLoading} />
+    <NotFoundRoute handler={AppNotFound} />
   </Route>
 )
 
@@ -29,7 +35,7 @@ var handles = [
 Meteor.startup(function () {
   router.run(function (Handler, state) {
     // If we are at the root and our subscriptions are done
-    if (! state.routes[1] && subsReady) {
+    if (state.routes.length > 1 && state.routes[1].isDefault && subsReady) {
       showFirstList();
     }
 
@@ -45,7 +51,8 @@ Tracker.autorun(function (computation) {
   });
 
   // If they are, and we are at the root route, we should go to a valid list
-  if (subsReady && ! router.getRouteAtDepth(1)) {
+  if (subsReady && router.getRouteAtDepth(1) &&
+      router.getRouteAtDepth(1).isDefault) {
     // Workaround for bug in react Meteor package that means we can't run
     // render inside an autorun and then stop the autorun
     Meteor.defer(function () {

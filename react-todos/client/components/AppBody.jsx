@@ -37,8 +37,8 @@ UserSidebarSection = React.createClass({
       var arrowIconClass = "icon-arrow-" + arrowDirection;
 
       return <div className="btns-group-vertical">
-        <a href="#" className="btn-secondary">
-          <span className={ arrowIconClass } onClick={ self.toggleMenuOpen } />
+        <a href="#" className="btn-secondary" onClick={ self.toggleMenuOpen }>
+          <span className={ arrowIconClass } />
           { emailUsername }
         </a>
         { self.state.menuOpen ?
