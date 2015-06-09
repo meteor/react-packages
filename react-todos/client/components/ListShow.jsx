@@ -17,11 +17,12 @@ ListShow = React.createClass({
     var self = this;
 
     var listId = self.getParams().listId;
-    Meteor.subscribe("todos", listId);
+    var tasksSubHandle = Meteor.subscribe("todos", listId);
 
     return {
       tasks: Todos.find({ listId: listId }, {sort: {createdAt : -1}}).fetch(),
-      list: Lists.findOne({ _id: listId })
+      list: Lists.findOne({ _id: listId }),
+      tasksLoading: ! tasksSubHandle.ready()
     };
   },
   setTaskBeingEdited(taskId) {
@@ -145,7 +146,7 @@ ListShow = React.createClass({
         </form>
         { newTaskForm }
       </nav>
-    } else if (tasks) {
+    } else if (list && ! self.data.tasksLoading) {
       nav = <nav>
         <MenuOpenToggle />
         <h1 className="title-page" onClick={ self.startEditingTitle }>
