@@ -1,6 +1,9 @@
 // @jsx React.DOM
 
-var Navigation = ReactRouter.Navigation;
+var {
+  Navigation,
+  Link
+} = ReactRouter;
 
 AuthJoinPage = React.createClass({
   mixins: [Navigation],
@@ -62,7 +65,7 @@ AuthJoinPage = React.createClass({
     return <div className="page auth">
       <nav>
         <div className="nav-group">
-          <a href="#" className="js-menu nav-item">
+          <a href="#" className="nav-item">
             <span className="icon-list-unordered"></span>
           </a>
         </div>
@@ -79,7 +82,7 @@ AuthJoinPage = React.createClass({
             <button type="submit" className="btn-primary">Join Now</button>
           </form>
         </div>
-        <a href="{{pathFor 'signin'}}" className="link-auth-alt">Have an account? Sign in</a>
+        <Link to="signin" className="link-auth-alt">Have an account? Sign in</Link>
       </div>
     </div>
   }
