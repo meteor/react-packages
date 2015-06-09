@@ -1,7 +1,9 @@
 // @jsx React.DOM
 
+var Navigation = ReactRouter.Navigation;
+
 ListShow = React.createClass({
-  mixins: [MeteorDataMixin],
+  mixins: [MeteorDataMixin, Navigation],
   getInitialState: function () {
     return {
       tasks: [],
@@ -50,12 +52,12 @@ ListShow = React.createClass({
       nameInputValue: undefined
     });
 
-    Lists.update(this.state.list._id, {
+    Lists.update(this.data.list._id, {
       $set: { name: this.state.nameInputValue }
     });
   },
   toggleListPrivacy: function () {
-    var list = this.state.list;
+    var list = this.data.list;
 
     if (! Meteor.user()) {
       return alert("Please sign in or create an account to make private lists.");
@@ -73,7 +75,7 @@ ListShow = React.createClass({
     }
   },
   deleteList: function () {
-    var list = this.state.list;
+    var list = this.data.list;
 
     // ensure the last public list cannot be deleted.
     if (! list.userId && Lists.find({userId: {$exists: false}}).count() === 1) {
@@ -89,7 +91,7 @@ ListShow = React.createClass({
       });
       Lists.remove(list._id);
 
-      FlowRouter.go("root");
+      this.transitionTo("root");
     }
   },
   onSubmitNewTask: function (event) {

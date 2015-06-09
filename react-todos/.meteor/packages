@@ -9,9 +9,3 @@ insecure
 less
 accounts-password
 react
-meteorhacks:npm
-meteorhacks:flow-router
-cosmos:browserify
-
-
-npm-container

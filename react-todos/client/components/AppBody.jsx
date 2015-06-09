@@ -1,7 +1,13 @@
 // @jsx React.DOM
 
+var {
+  Link,
+  Navigation,
+  State
+} = ReactRouter;
+
 AppBody = React.createClass({
-  mixins: [MeteorDataMixin],
+  mixins: [MeteorDataMixin, Navigation, State],
   propTypes: {
     handles: React.PropTypes.array.isRequired,
     listId: React.PropTypes.string
@@ -29,7 +35,10 @@ AppBody = React.createClass({
 
     var listId = Lists.insert(list);
 
-    FlowRouter.go('todoList', { listId: listId });
+    this.transitionTo('todoList', { listId: listId });
+  },
+  getListId() {
+    return this.getParams().listId;
   },
   render: function () {
     var self = this;
@@ -44,27 +53,28 @@ AppBody = React.createClass({
           { self.data.lists.map(function (list) {
 
             var className = "list-todo";
-            if (self.props.listId === list._id) {
+            if (self.getListId() === list._id) {
               className += " active";
             }
 
-            return <a
+            return <Link
               className={ className }
               key={ list._id }
-              href={ FlowRouter.path("todoList", { listId: list._id }) } >
+              to="todoList" 
+              params={{ listId: list._id }}>
                 { list.name }
                 { list.incompleteCount ?
                   <span className="count-list">
                     { list.incompleteCount }
                   </span> : "" }
-            </a>
+            </Link>
           }) }
         </div>
       </section>
       <div className="content-overlay"></div>
       <div id="content-container">
-        { self.data.subsReady && self.props.listId ?
-          <ListShow listId={ self.props.listId } /> :
+        { self.data.subsReady && self.getListId() ?
+          <ListShow listId={ self.getListId() } /> :
           <AppLoading /> }
       </div>
     </div>
