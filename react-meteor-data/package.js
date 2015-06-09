@@ -20,6 +20,8 @@ Package.onTest(function (api) {
   api.use('react-runtime');
   api.use('jsx');
   api.use('reactive-var');
+  api.use('underscore');
 
+  api.addFiles('mixin-tests-server.jsx', 'server');
   api.addFiles('mixin-tests.jsx', 'client');
 });
