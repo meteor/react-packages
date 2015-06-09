@@ -47,3 +47,10 @@
     {{> React component=component}}
   </span>
 </template>
+
+<template name="UsesUnmountableComponent">
+  <span>
+    {{> React component=unmountableComponent onUnmounted=onUnmounted}}
+  </span>
+</template>
+

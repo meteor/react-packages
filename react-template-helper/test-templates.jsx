@@ -20,3 +20,8 @@ Template.UsesClickableReactComponent.helpers({
   }
 });
 
+Template.UsesUnmountableComponent.helpers({
+  unmountableComponent() {
+    return UnmountableReactComponent;
+  }
+});

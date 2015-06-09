@@ -33,3 +33,16 @@ TwoReactComponent = React.createClass({
     return <div>Two</div>;
   }
 });
+
+UnmountableReactComponent = React.createClass({
+  propTypes: {
+    onUnmounted: React.PropTypes.func.isRequired
+  },
+  render() {
+    return <div></div>;
+  },
+  componentWillUnmount() {
+    this.props.onUnmounted();
+  }
+});
+

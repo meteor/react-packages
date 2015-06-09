@@ -124,3 +124,23 @@ Tinytest.add(
     test.equal($(div).text(), "Two");
   });
 
+Tinytest.add(
+  "react-template-helper-tests - component unmount",
+  function (test) {
+    var tmpl = Template.UsesUnmountableComponent;
+    var unmounted = false;
+
+    tmpl.helpers({
+      onUnmounted() {
+        return function () {
+          unmounted = true;
+        }
+      }
+    });
+
+    var div = renderToDiv(tmpl);
+    Tracker.flush({_throwFirstError: true});
+    test.equal(unmounted, false);
+    $(div).remove();
+    test.equal(unmounted, true);
+  });
