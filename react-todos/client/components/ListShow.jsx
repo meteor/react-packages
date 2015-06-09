@@ -14,10 +14,6 @@ ListShow = React.createClass({
       editingTitle: false
     };
   },
-  startMeteorSubscriptions() {
-    var self = this;
-    
-  },
   trackMeteorData(props, state) {
     var self = this;
 
