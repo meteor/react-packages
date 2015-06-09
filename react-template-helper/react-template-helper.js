@@ -1,6 +1,8 @@
 Template.React.onRendered(function () {
   var parentTemplate = parentTemplateName();
   var container = this.firstNode.parentNode;
+  this._blazeId = Math.random().toString();
+  container.setAttribute('data-blaze-id', this._blazeId);
 
   this.autorun(function (c) {
     var data = Blaze.getData();
@@ -26,6 +28,14 @@ Template.React.onRendered(function () {
     var props = _.omit(data, 'component');
     React.render(React.createElement(comp, props), container);
   });
+});
+
+Template.React.onDestroyed(function () {
+  var selector = "[data-blaze-id='" + this._blazeId + "']";
+  var container = document.querySelectorAll(selector)[0];
+  if (container) {
+    React.unmountComponentAtNode(container);
+  }
 });
 
 // Gets the name of the template inside of which this instance of `{{>
