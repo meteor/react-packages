@@ -9,7 +9,6 @@ ListShow = React.createClass({
   mixins: [MeteorDataMixin, Navigation, State],
   getInitialState() {
     return {
-      tasks: [],
       taskBeingEditedId: null,
       editingTitle: false
     };
