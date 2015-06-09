@@ -5,23 +5,23 @@ Players = new Mongo.Collection("players");
 
 if (Meteor.isClient) {
   Template.leaderboard.helpers({
-    players: function () {
+    players() {
       return Players.find({}, { sort: { score: -1, name: 1 } });
     },
-    selectedName: function () {
+    selectedName() {
       var player = Players.findOne(Session.get("selectedPlayer"));
       return player && player.name;
     },
-    selectedPlayerId: function () {
+    selectedPlayerId() {
       return Session.get("selectedPlayer");
     },
-    Leaderboard: function () {
+    Leaderboard() {
       return Leaderboard;
     }
   });
 
   Template.leaderboard.events({
-    'click .inc': function () {
+    'click .inc'() {
       Players.update(Session.get("selectedPlayer"), {$inc: {score: 5}});
     }
   });

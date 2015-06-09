@@ -5,6 +5,9 @@ Leaderboard = React.createClass({
     selectedPlayerId: React.PropTypes.string,
     players: React.PropTypes.array.isRequired
   },
+  selectPlayer(playerId) {
+    Session.set("selectedPlayer", playerId);
+  },
   render() {
     var self = this;
 
@@ -15,9 +18,8 @@ Leaderboard = React.createClass({
           className += " selected";
         }
 
-        return <li className={ className } key={ player._id } onClick={() => {
-          Session.set("selectedPlayer", player._id);
-        }}>
+        return <li className={ className } key={ player._id }
+            onClick={ self.selectPlayer.bind(self, player._id) }>
           <span className="name">{ player.name }</span>
           <span className="score">{ player.score }</span>
         </li>
