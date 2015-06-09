@@ -47,7 +47,7 @@ var Tasks = new Mongo.Collection("tasks");
 
 var App = React.createClass({
   mixins: [MeteorDataMixin],
-  trackMeteorData() {
+  trackMeteorData(props, state) {
     // This method knows how to listen to Meteor's reactive data sources,
     // such as collection queries
     return {
@@ -79,7 +79,7 @@ var Tasks = new Mongo.Collection("tasks");
 
 var List = React.createClass({
   mixins: [MeteorDataMixin],
-  trackMeteorData() {
+  trackMeteorData(props, state) {
     // This function knows how to listen to Meteor's reactive data sources,
     // such as collection queries
     return {

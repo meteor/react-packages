@@ -11,6 +11,8 @@ Many data sources in Meteor are "reactive" - that is, they use Meteor's [Tracker
 
 In order to make it easy to use these data sources together with React components, we have created a React mixin called `MeteorDataMixin`. Once you have added this mixin to your component, you can define an extra method called `trackMeteorData`. `trackMeteorData` receives your component's `props` and `state` as arguments and can access any reactive state from Meteor. The data the method returns is put on `this.data` so that you can access it from the `render` function.
 
+Note:  You may not access `this.props` or `this.state` from `trackMeteorData`.  You must use the arguments `props` and `state`, or you will get incorrect behavior.  This is a consequence of how React's lifecycle hooks work.
+
 ### Examples
 
 A simple component that just says hello to the currently logged in user:
