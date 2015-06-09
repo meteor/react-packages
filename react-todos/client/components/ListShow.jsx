@@ -16,7 +16,10 @@ ListShow = React.createClass({
   trackMeteorData(props, state) {
     var self = this;
 
+    // Get list ID from ReactRouter
     var listId = self.getParams().listId;
+
+    // Subscribe to the tasks we need to render this component
     var tasksSubHandle = Meteor.subscribe("todos", listId);
 
     return {
