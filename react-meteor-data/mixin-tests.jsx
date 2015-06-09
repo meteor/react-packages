@@ -3,7 +3,7 @@ getInnerHtml = function (elem) {
   return canonicalizeHtml(elem.innerHTML).replace(/ data-reactid=".*?"/g, '');
 };
 
-Tinytest.add('react-meteor-mixin - basic track', function (test) {
+Tinytest.add('react-meteor-data - basic track', function (test) {
   var div = document.createElement("DIV");
 
   var x = new ReactiveVar('aaa');
@@ -34,7 +34,7 @@ Tinytest.add('react-meteor-mixin - basic track', function (test) {
   test.equal(x._numListeners(), 0);
 });
 
-Tinytest.add('react-meteor-mixin - render in autorun', function (test) {
+Tinytest.add('react-meteor-data - render in autorun', function (test) {
   var div = document.createElement("DIV");
 
   var x = new ReactiveVar('aaa');
@@ -65,7 +65,7 @@ Tinytest.add('react-meteor-mixin - render in autorun', function (test) {
   React.unmountComponentAtNode(div);
 });
 
-Tinytest.add('react-meteor-mixin - track based on props and state', function (test) {
+Tinytest.add('react-meteor-data - track based on props and state', function (test) {
   var div = document.createElement("DIV");
 
   var xs = [new ReactiveVar('aaa'),
