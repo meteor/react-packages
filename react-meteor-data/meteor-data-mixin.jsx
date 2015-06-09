@@ -16,7 +16,7 @@ MeteorDataMixin = {
     this._meteorDataManager.updateData(this.data, newData);
   },
   componentWillUnmount() {
-    this._meteorDataManger.dispose();
+    this._meteorDataManager.dispose();
   }
 };
 
