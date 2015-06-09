@@ -24,9 +24,9 @@ Package.onTest(function(api) {
   api.use('test-helpers');
   api.use('jsx');
   api.addFiles([
-    'react-template-helper-tests.html',
-    'react-template-helper-test-components.jsx',
-    'react-template-helper-test-templates.jsx',
-    'react-template-helper-tests.jsx'
+    'test-templates.html',
+    'test-components.jsx',
+    'test-templates.jsx',
+    'tests.jsx'
   ], 'client');
 });
