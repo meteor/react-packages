@@ -18,7 +18,7 @@ var HelloMessage = React.createClass({
 React.render(<HelloMessage name="John" />, mountNode);
 ```
 
-JavaScript after transpilation:
+JavaScript after compilation:
 
 ```js
 var HelloMessage = React.createClass({displayName: "HelloMessage",
