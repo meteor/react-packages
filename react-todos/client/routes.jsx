@@ -1,4 +1,4 @@
-var { Route } = ReactRouter;
+var Route = ReactRouter.Route;
 
 var routes = (
   <Route name="root" handler={AppBody} path="/">
