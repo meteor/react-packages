@@ -28,7 +28,7 @@ var App = React.createClass({
 });
 
 if (Meteor.isClient) {
-  React.render(App, document.body);
+  React.render(<App />, document.body);
 }
 ```
 
@@ -59,14 +59,14 @@ var App = React.createClass({
     return <ul>{
       // Access the data from trackMeteorData() on this.data
       this.data.tasks.map(function (task) {
-        return <li>task.content</li> 
+        return <li>task.content</li>
       })
     }</ul>;
   }
 });
 
 if (Meteor.isClient) {
-  React.render(App, document.body);
+  React.render(<App />, document.body);
 }
 ```
 
@@ -91,7 +91,7 @@ var List = React.createClass({
     return <ul>{
       // Access the data from trackMeteorData() on this.data
       this.data.tasks.map(function (task) {
-        return <li>task.content</li> 
+        return <li>task.content</li>
       })
     }</ul>
   }
@@ -133,7 +133,6 @@ Meteor.methods({
 });
 
 if (Meteor.isClient) {
-  React.render(App, document.body);
+  React.render(<App />, document.body);
 }
 ```
-
