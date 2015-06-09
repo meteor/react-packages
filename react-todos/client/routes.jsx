@@ -53,12 +53,7 @@ Tracker.autorun(function (computation) {
   // If they are, and we are at the root route, we should go to a valid list
   if (subsReady && router.getRouteAtDepth(1) &&
       router.getRouteAtDepth(1).isDefault) {
-    // Workaround for bug in react Meteor package that means we can't run
-    // render inside an autorun and then stop the autorun
-    Meteor.defer(function () {
-      showFirstList();
-    });
-
+    showFirstList();
     computation.stop();
   }
 });
