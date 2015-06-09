@@ -3,8 +3,55 @@
 var {
   Link,
   Navigation,
-  State
+  State,
+  RouteHandler
 } = ReactRouter;
+
+UserSidebarSection = React.createClass({
+  getInitialState() {
+    return {
+      menuOpen: false
+    };
+  },
+  propTypes: {
+    user: React.PropTypes.object
+  },
+  toggleMenuOpen(event) {
+    event.preventDefault();
+
+    this.setState({
+      menuOpen: ! this.state.menuOpen
+    });
+  },
+  logout() {
+    Meteor.logout();
+  },
+  render() {
+    var self = this;
+
+    if (self.props.user) {
+      var email = self.props.user.emails[0].address;
+      var emailUsername = email.substring(0, email.indexOf('@'));
+
+      var arrowDirection = self.state.menuOpen ? "up" : "down";
+      var arrowIconClass = "icon-arrow-" + arrowDirection;
+
+      return <div className="btns-group-vertical">
+        <a href="#" className="btn-secondary">
+          <span className={ arrowIconClass } onClick={ self.toggleMenuOpen } />
+          { emailUsername }
+        </a>
+        { self.state.menuOpen ?
+          <a className="btn-secondary" onClick={ self.logout } >Logout</a> : ""}
+      </div>
+    } else {
+      return <div className="btns-group">
+        <Link to="signin" className="btn-secondary">Sign in</Link>
+        <Link to="join" className="btn-secondary">Join</Link>
+      </div>
+    }
+  }
+});
 
 AppBody = React.createClass({
   mixins: [MeteorDataMixin, Navigation, State],
@@ -24,7 +71,8 @@ AppBody = React.createClass({
 
     return {
       subsReady: subsReady,
-      lists: Lists.find().fetch()
+      lists: Lists.find().fetch(),
+      currentUser: Meteor.user()
     };
   },
   addList() {
@@ -45,6 +93,7 @@ AppBody = React.createClass({
 
     return <div id="container">
       <section id="menu">
+        <UserSidebarSection user={ self.data.currentUser } />
         <div className="list-todos">
           <a className="link-list-new" onClick={ self.addList }>
             <span className="icon-plus"></span>
@@ -73,9 +122,7 @@ AppBody = React.createClass({
       </section>
       <div className="content-overlay"></div>
       <div id="content-container">
-        { self.data.subsReady && self.getListId() ?
-          <ListShow listId={ self.getListId() } /> :
-          <AppLoading /> }
+        <RouteHandler />
       </div>
     </div>
   }

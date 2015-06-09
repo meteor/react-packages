@@ -3,6 +3,8 @@ var Route = ReactRouter.Route;
 var routes = (
   <Route name="root" handler={AppBody} path="/">
     <Route name="todoList" path="/lists/:listId" handler={ListShow} />
+    <Route name="join" path="/join" handler={AuthJoinPage} />
+    <Route name="signin" path="/signin" handler={AuthSignInPage} />
   </Route>
 )
 
