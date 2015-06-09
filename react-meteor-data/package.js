@@ -12,3 +12,14 @@ Package.onUse(function (api) {
 
   api.addFiles('meteor-data-mixin.jsx');
 });
+
+Package.onTest(function (api) {
+  api.use('tinytest');
+  api.use('test-helpers');
+  api.use('react-meteor-data');
+  api.use('react-runtime');
+  api.use('jsx');
+  api.use('reactive-var');
+
+  api.addFiles('mixin-tests.jsx', 'client');
+});
