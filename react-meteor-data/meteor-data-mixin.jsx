@@ -45,12 +45,13 @@ class MeteorDataManager {
     }
 
     var data;
-    this.computation = Tracker.autorun((c) => {
-      data = component.trackMeteorData(props, state);
-      Tracker.onInvalidate(() => {
-        if (! c.stopped) {
-          component.forceUpdate();
+    this.computation = Tracker.nonreactive(() => {
+      return Tracker.autorun((c) => {
+        if (c.firstRun) {
+          data = component.trackMeteorData(props, state);
+        } else {
           c.stop();
+          component.forceUpdate();
         }
       });
     });
