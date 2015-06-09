@@ -4,18 +4,18 @@ var Navigation = ReactRouter.Navigation;
 
 ListShow = React.createClass({
   mixins: [MeteorDataMixin, Navigation],
-  getInitialState: function () {
+  getInitialState() {
     return {
       tasks: [],
       taskBeingEditedId: null,
       editingTitle: false
     };
   },
-  startMeteorSubscriptions: function () {
+  startMeteorSubscriptions() {
     var self = this;
     
   },
-  trackMeteorData: function (props, state) {
+  trackMeteorData(props, state) {
     var self = this;
 
     var listId = props.listId;
@@ -26,12 +26,12 @@ ListShow = React.createClass({
       list: Lists.findOne({ _id: listId })
     };
   },
-  setTaskBeingEdited: function (taskId) {
+  setTaskBeingEdited(taskId) {
     this.setState({
       taskBeingEditedId: taskId
     });
   },
-  startEditingTitle: function () {
+  startEditingTitle() {
     var self = this;
 
     self.setState({
@@ -41,12 +41,12 @@ ListShow = React.createClass({
       React.findDOMNode(self.refs.nameInput).focus();
     });
   },
-  titleChanged: function (event) {
+  titleChanged(event) {
     this.setState({
       nameInputValue: event.target.value
     });
   },
-  stopEditingTitle: function () {
+  stopEditingTitle() {
     this.setState({
       editingTitle: false,
       nameInputValue: undefined
@@ -56,7 +56,7 @@ ListShow = React.createClass({
       $set: { name: this.state.nameInputValue }
     });
   },
-  toggleListPrivacy: function () {
+  toggleListPrivacy() {
     var list = this.data.list;
 
     if (! Meteor.user()) {
@@ -74,7 +74,7 @@ ListShow = React.createClass({
       Lists.update(list._id, {$set: {userId: Meteor.userId()}});
     }
   },
-  deleteList: function () {
+  deleteList() {
     var list = this.data.list;
 
     // ensure the last public list cannot be deleted.
@@ -94,7 +94,7 @@ ListShow = React.createClass({
       this.transitionTo("root");
     }
   },
-  onSubmitNewTask: function (event) {
+  onSubmitNewTask(event) {
     event.preventDefault();
 
     var listId = this.data.list._id;
@@ -115,7 +115,7 @@ ListShow = React.createClass({
 
     input.value = "";
   },
-  render: function () {
+  render() {
     var self = this;
     var list = self.data.list;
 

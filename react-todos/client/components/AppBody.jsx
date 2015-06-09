@@ -12,12 +12,12 @@ AppBody = React.createClass({
     handles: React.PropTypes.array.isRequired,
     listId: React.PropTypes.string
   },
-  getInitialState: function () {
+  getInitialState() {
     return {
       lists: []
     };
   },
-  trackMeteorData: function (props, state) {
+  trackMeteorData(props, state) {
     var subsReady = _.all(props.handles, function (handle) {
       return handle.ready();
     });
@@ -27,7 +27,7 @@ AppBody = React.createClass({
       lists: Lists.find().fetch()
     };
   },
-  addList: function () {
+  addList() {
     var list = {
       name: Lists.defaultName(),
       incompleteCount: 0
@@ -40,7 +40,7 @@ AppBody = React.createClass({
   getListId() {
     return this.getParams().listId;
   },
-  render: function () {
+  render() {
     var self = this;
 
     return <div id="container">

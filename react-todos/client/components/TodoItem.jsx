@@ -1,25 +1,25 @@
 // @jsx React.DOM
 
 TodoItem = React.createClass({
-  componentWillMount: function () {
+  componentWillMount() {
     this.throttledOnKeyUp = _.throttle(function (event) {
       Todos.update(this.props.task._id,
         {$set: {text: event.target.value}});
     }, 300);
   },
-  onFocus: function () {
+  onFocus() {
     this.props.onInitiateEdit();
   },
-  onBlur: function () {
+  onBlur() {
     this.props.onStopEdit();
   },
-  onKeyUp: function (event) {
+  onKeyUp(event) {
     // This is a weird thing you have to do in React if you want to handle an
     // event asynchronously
     event.persist();
     this.throttledOnKeyUp(event);
   },
-  onCheckboxChange: function () {
+  onCheckboxChange() {
     var checked = ! this.props.task.checked;
 
     Todos.update(this.props.task._id,
@@ -28,14 +28,14 @@ TodoItem = React.createClass({
     Lists.update(this.props.task.listId,
       {$inc: {incompleteCount: checked ? -1 : 1}});
   },
-  removeThisItem: function () {
+  removeThisItem() {
     Todos.remove(this.props.task._id);
 
     if (! this.props.task.checked) {
       Lists.update(this.props.task.listId, {$inc: {incompleteCount: -1}});
     }
   },
-  render: function () {
+  render() {
     var self = this;
 
     var className = "list-item";
