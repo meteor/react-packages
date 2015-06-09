@@ -50,6 +50,7 @@ The JSX transpilation also includes some commonly-used future JavaScript feature
 - Object Consise Method: `var obj = { method() { return 10; } };`
 - Object Short Notation: `var name = 'vjeux'; var obj = { name };`
 - Rest Params: `function(type, ...args) { }`
+- Default Params: `function(a, b = 1) { }`
 - Template Literals: ``var who = 'world'; var str = `Hello ${who}`;``
 
 **ES7**

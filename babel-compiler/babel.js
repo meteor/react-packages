@@ -7,6 +7,8 @@ Babel.transformMeteor = function (code, extraOptions) {
 
   var options = {
     whitelist: [
+      'es3.propertyLiterals',
+      'es3.memberExpressionLiterals',
       'es6.arrowFunctions',
       'es6.templateLiterals',
       'es6.classes',
@@ -18,6 +20,7 @@ Babel.transformMeteor = function (code, extraOptions) {
       "es6.spread",
       "es6.destructuring",
       "es7.objectRestSpread",
+      'es7.trailingFunctionCommas',
       "flow"
     ].concat(extraOptions.extraWhitelist || []),
     externalHelpers: true,
