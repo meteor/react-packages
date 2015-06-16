@@ -53,13 +53,13 @@ var App = React.createClass({
     return {
       // Return an array with all items in the collection
       tasks: Tasks.find().fetch()
-    }
+    };
   },
   render() {
     return <ul>{
       // Access the data from trackMeteorData() on this.data
       this.data.tasks.map(function (task) {
-        return <li>task.content</li>
+        return <li key={task._id}>{task.content}</li>;
       })
     }</ul>;
   }
