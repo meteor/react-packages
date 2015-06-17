@@ -28,7 +28,9 @@ var App = React.createClass({
 });
 
 if (Meteor.isClient) {
-  React.render(<App />, document.body);
+  Meteor.startup(function () {
+    React.render(<App />, document.body);
+  });
 }
 ```
 
@@ -61,12 +63,14 @@ var App = React.createClass({
       this.data.tasks.map(function (task) {
         return <li key={task._id}>{task.content}</li>;
       })
-    }</ul>;
+    }</ul>
   }
 });
 
 if (Meteor.isClient) {
-  React.render(<App />, document.body);
+  Meteor.startup(function () {
+    React.render(<App />, document.body);
+  });
 }
 ```
 
@@ -91,7 +95,7 @@ var List = React.createClass({
     return <ul>{
       // Access the data from trackMeteorData() on this.data
       this.data.tasks.map(function (task) {
-        return <li>task.content</li>
+        return <li key={task._id}>{task.content}</li>
       })
     }</ul>
   }
@@ -99,10 +103,15 @@ var List = React.createClass({
 
 var NewTaskForm = React.createClass({
   onSubmit(event) {
+    event.preventDefault();
+
     var taskContent = event.target.content.value;
+
     Meteor.call('insertTask', {
       content: taskContent
     });
+
+    event.target.content.value = "";
   },
   render() {
     return <form onSubmit={this.onSubmit}>
@@ -123,8 +132,8 @@ var App = React.createClass({
 Meteor.methods({
   insertTask: function (task) {
     // Validate the data
-    check(content, {
-      text: String
+    check(task, {
+      content: String
     });
 
     // Insert into MongoDB and Minimongo
@@ -133,6 +142,8 @@ Meteor.methods({
 });
 
 if (Meteor.isClient) {
-  React.render(<App />, document.body);
+  Meteor.startup(function () {
+    React.render(<App />, document.body);
+  });
 }
 ```
