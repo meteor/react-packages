@@ -1,10 +1,10 @@
-# This page is deprecated, waiting on a better solution
-
 <h1>Using client-side modules from NPM with Browserify</h1>
 
 Many useful React components and React-related modules are available on NPM, and can be bundled for the client with the popular Browserify tool. Meteor currently doesn't have first-party support for using these modules, but there are some community-maintained packages that work great!
 
 ## meteorhacks:npm and cosmos:browserify
+
+We'll use the following community tools to load NPM packages on the client:
 
 - `meteorhacks:npm` for loading NPM modules into your app: [GitHub page](https://github.com/meteorhacks/npm), [Atmosphere page](https://atmospherejs.com/meteorhacks/npm)
 - `cosmos:browserify` for bundling NPM modules for the client using Browserify: [GitHub page](https://github.com/elidoran/cosmos-browserify/), [Atmosphere page](https://atmospherejs.com/cosmos/browserify)
@@ -19,11 +19,12 @@ meteor add meteorhacks:npm cosmos:browserify
 
 ### 2. Add the npm modules you want to packages.json
 
-After you have added the packages, run your app once to let some initial setup happen. Then, you should have a file called `packages.json` in the root of your app. Put any NPM packages you would like to load here. We'll use `react-router` as an example:
+After you have added the packages, run your app once to let some initial setup happen. Then, you should have a file called `packages.json` in the root of your app. Put any NPM packages you would like to load here. You'll also want the `exposify` package for step 4. We'll use `react-router` as an example:
 
 ```js
 {
-  "react-router": "0.13.3"
+  "react-router": "0.13.3",
+  "exposify": "0.4.3"
 }
 ```
 
@@ -36,13 +37,30 @@ Currently, Meteor doesn't support using `require` to load modules, so we will us
 ReactRouter = require("react-router");
 ```
 
-Now, you can use React Router anywhere! You can use the same method to load any React component modules you find on [react-components.com](http://react-components.com/).
+### 4. Configure Browserify and transforms in app.browserify.options.json
 
-### Module load order
+Browserify supports numerous transforms, which let you change the way NPM packages are bundled. In particular, you will want to use the `exposify` transform so that React Router uses Meteor's React package instead of one from NPM. In the same directory as the file above, create a file called `lib/app.browserify.options.json` defining browserify options and transforms:
+
+```js
+{
+  "transforms": {
+    "exposify": {
+      "global": true,
+      "expose": {
+        "react": "React"
+      }
+    }
+  }
+}
+```
+
+Now, you can use React Router anywhere in your app! You can use the same method to load any React component modules you find on [react-components.com](http://react-components.com/).
+
+## Module load order
 
 The NPM modules you require are loaded based on where your `app.browserify.js` file is located. This is why we recommend putting it in `lib/`, a special directory for files that need to be loaded before the rest of your app code. Read more about file load order in the [Meteor docs](http://docs.meteor.com/#/full/fileloadorder).
 
-### Future improvements
+## Future improvements
 
 This method of loading client-side NPM code works, but is not ideal in the long term. Some caveats:
 
