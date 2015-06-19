@@ -1,6 +1,6 @@
 <h1>Using client-side modules from NPM with Browserify</h1>
 
-Many useful React components and React-related modules are available on NPM, and can be bundled for the client with the popular Browserify tool. Meteor currently doesn't have first-party support for using these modules, but there are some community-maintained packages that work great!
+Many useful React components and React-related modules are available on NPM, and can be bundled for the client with the popular Browserify tool. We are still working on adding first-party support for using these modules to Meteor core, but there are community-maintained packages that work great!
 
 ## meteorhacks:npm and cosmos:browserify
 
@@ -19,7 +19,7 @@ meteor add meteorhacks:npm cosmos:browserify
 
 ### 2. Add the npm modules you want to packages.json
 
-After you have added the packages, run your app once to let some initial setup happen. Then, you should have a file called `packages.json` in the root of your app. Put any NPM packages you would like to load here. You'll also want the `exposify` package for step 4. We'll use `react-router` as an example:
+After you have added the packages, run your app once to let some initial setup happen. Then, you should have a file called `packages.json` in the root of your app. Put any NPM packages you would like to load here. We'll use `react-router` as an example, and you'll also want the `exposify` package for step 4:
 
 ```js
 {
@@ -55,6 +55,14 @@ Browserify supports numerous transforms, which let you change the way NPM packag
 ```
 
 Now, you can use React Router anywhere in your app! You can use the same method to load any React component modules you find on [react-components.com](http://react-components.com/).
+
+### See it in action in the React Todos example app
+
+- [Meteor packages](https://github.com/meteor/react-packages/blob/e0c3c38cd8117eb9500e7c90fcaa05ab0fb7f638/react-todos/.meteor/packages#L13-L14)
+- [NPM dependencies in packages.json](https://github.com/meteor/react-packages/blob/master/react-todos/packages.json)
+- [Loading React Router in app.browserify.js](https://github.com/meteor/react-packages/blob/master/react-todos/client/lib/app.browserify.js)
+- [Configuring a transform with app.browserify.options.json](https://github.com/meteor/react-packages/blob/master/react-todos/client/lib/app.browserify.options.json)
+- [Defining routes with React Router](https://github.com/meteor/react-packages/blob/master/react-todos/client/routes.jsx)
 
 ## Module load order
 
