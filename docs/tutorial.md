@@ -22,7 +22,7 @@ We'll write our code in a new file we'll call `my-react-app.jsx`. In that file, 
 
 ```js
 var App = React.createClass({
-  render: function () {
+  render() {
     return <div>Hello world!</div>;
   }
 });
@@ -58,12 +58,14 @@ var App = React.createClass({
     };
   },
   render() {
-    return <ul>{
-      // Access the data from trackMeteorData() on this.data
-      this.data.tasks.map(function (task) {
-        return <li key={task._id}>{task.content}</li>;
-      })
-    }</ul>
+    return (
+      <ul>
+        {/* Access the data from trackMeteorData() on this.data */}
+        {this.data.tasks.map(function (task) {
+          return <li key={task._id}>{task.content}</li>;
+        })}
+      </ul>
+    );
   }
 });
 
@@ -92,12 +94,14 @@ var List = React.createClass({
     }
   },
   render() {
-    return <ul>{
-      // Access the data from trackMeteorData() on this.data
-      this.data.tasks.map(function (task) {
-        return <li key={task._id}>{task.content}</li>
-      })
-    }</ul>
+    return (
+      <ul>
+        {/* Access the data from trackMeteorData() on this.data */}
+        {this.data.tasks.map(function (task) {
+          return <li key={task._id}>{task.content}</li>;
+        })}
+      </ul>
+    );
   }
 });
 
@@ -105,27 +109,31 @@ var NewTaskForm = React.createClass({
   onSubmit(event) {
     event.preventDefault();
 
-    var taskContent = event.target.content.value;
+    var taskContent = React.findDOMNode(this.refs.content).value;
 
-    Meteor.call('insertTask', {
+    Meteor.call("insertTask", {
       content: taskContent
     });
 
-    event.target.content.value = "";
+    React.findDOMNode(this.refs.content).value = "";
   },
   render() {
-    return <form onSubmit={this.onSubmit}>
-      <input type='text' name='content' placeholder='Add a task...'/>
-    </form>
+    return (
+      <form onSubmit={this.onSubmit}>
+        <input type="text" ref="content" placeholder="Add a task..." />
+      </form>
+    );
   }
 })
 
 var App = React.createClass({
   render() {
-    return <div>
-      <List />
-      <NewTaskForm />
-    </div>
+    return (
+      <div>
+        <List />
+        <NewTaskForm />
+      </div>
+    );
   }
 });
 
