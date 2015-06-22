@@ -13,6 +13,14 @@ Template.React.onRendered(function () {
           "`component` argument.");
     }
 
+    // Remove this block of code once we ship Meteor 1.1.1 or above,
+    // where we detect these cases (and more) when templates are
+    // compiled:
+    // https://github.com/meteor/meteor/commit/29d907e8365fa28b22994cb63311de60fd58cc1f
+    //
+    // (We no longer test the code below since the templates needed to
+    // test it won't compile on devel)
+
     // expected nodes that aren't whitespace-only text nodes
     var expectedContainerChildNodes = c.firstRun ? 0 : 1;
     if (numChildNodes(container) > expectedContainerChildNodes) {
@@ -22,9 +30,11 @@ Template.React.onRendered(function () {
 
       throw new Error(
         "Template " + parentTemplate + " must render " + compDescriptor +
-          " as the only child of its parent element. Learn more here: " +
-          "http://goo.gl/EamCy8");
+          " as the only child of its parent element. Learn more at " +
+          "https://github.com/meteor/meteor/wiki/React-components-must-be-the-only-thing-in-their-wrapper-element");
     }
+
+    // End block of code to remove with Meteor 1.1.1
 
     var props = _.omit(data, 'component');
     React.render(React.createElement(comp, props), container);

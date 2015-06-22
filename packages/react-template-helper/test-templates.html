@@ -1,32 +1,6 @@
-<template name="ReactTemplateWithoutComponent">
-  {{> React}}
-</template>
-
-<template name="EmptyComponentTemplateWithoutContainerElement">
-  {{> React component=emptyComponent}}
-</template>
-
-<!-- used to test our error when rendering a react component with siblings -->
-<template name="UsesEmptyComponentTemplateWithSiblingElement">
+<template name="ReactTemplateInDiv">
   <div>
-    <div>Sibling</div>
-    {{> EmptyComponentTemplateWithoutContainerElement }}
-  </div>
-</template>
-
-<template name="UsesEmptyComponentTemplateWithSiblingTextNode">
-  <div>
-    Sibling
-    {{> EmptyComponentTemplateWithoutContainerElement }}
-  </div>
-</template>
-
-<template name="UsesEmptyComponentTemplateWithConditionalSibling">
-  <div>
-    {{#if sibling}}
-      <div>Sibling</div>
-    {{/if}}
-    {{> EmptyComponentTemplateWithoutContainerElement }}
+    {{> React}}
   </div>
 </template>
 
