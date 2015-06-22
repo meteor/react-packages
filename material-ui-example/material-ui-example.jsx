@@ -1,5 +1,10 @@
 var ThemeManager = new mui.Styles.ThemeManager();
-var RaisedButton = mui.RaisedButton;
+
+var {
+  AppBar,
+  RaisedButton,
+  Snackbar
+} = mui;
 
 var App = React.createClass({
   childContextTypes: {
@@ -14,7 +19,14 @@ var App = React.createClass({
 
   render: function() {
     return (
-      <RaisedButton label="Default" />
+      <div>
+        <AppBar title='Title' iconClassNameRight="muidocs-icon-navigation-expand-more"/>
+        <RaisedButton label="Default" />
+        <Snackbar
+          message="Event added to your calendar"
+          action="undo"
+          onActionTouchTap={this._handleAction}/>
+      </div>
     );
   }
 });
