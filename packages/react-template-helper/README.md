@@ -1,7 +1,5 @@
 Lets you easily include React components in Meteor templates. Pass the
-component class through the `component` argument. The component passed
-can be either a string, which is looked up in the global namespace, or
-a component class directly.
+component class through the `component` argument.
 
 Examples:
 
@@ -20,7 +18,11 @@ Template.Dropdown.onCreated(function () {
 });
 
 Template.Dropdown.helpers({
-  dropdown: Dropdown,
+  dropdown: function () {
+    // Assuming this is https://github.com/fraserxu/react-dropdown, loaded
+    // elsewhere in the project.
+    return Dropdown;
+  },
   options: [
     { value: 'one', label: 'One' },
     { value: 'two', label: 'Two' },
@@ -34,8 +36,11 @@ Template.Dropdown.helpers({
   selected: function () {
     return Template.instance().state.get("selected");
   },
-  onChange: MeteorReact.asCallback(function (option) {
-    tmpl.state.set("selected", option);
-  })
+  onChange: function () {
+    var tmpl = Template.instance();
+    return function (option) {
+      tmpl.state.set("selected", option);
+    }
+  }
 });
 ```
