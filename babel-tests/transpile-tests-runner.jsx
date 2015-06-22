@@ -1,5 +1,3 @@
-var stripPipes = BabelTests.Transpile.stripPipes;
-
 _.each(BabelTests.Transpile.groups, function (group) {
   if (! (group.features && group.features.length)) {
     throw new Error("Non-empty `features` array required in group");
