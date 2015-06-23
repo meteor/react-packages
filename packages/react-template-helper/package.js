@@ -24,6 +24,9 @@ Package.onTest(function(api) {
   api.use('test-helpers');
   api.use('jsx');
   api.addFiles([
+    // remove once Meteor 1.1.1 is released:
+    'event_simulation.js', // copied from METEOR/packages/test-helpers/
+
     'test-templates.html',
     'test-components.jsx',
     'test-templates.jsx',
