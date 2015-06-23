@@ -2,7 +2,7 @@ var ThemeManager = new mui.Styles.ThemeManager();
 
 var {
   AppBar,
-  RaisedButton,
+  DatePicker,
   Snackbar
 } = mui;
 
@@ -21,7 +21,7 @@ var App = React.createClass({
     return (
       <div>
         <AppBar title='Title' iconClassNameRight="muidocs-icon-navigation-expand-more"/>
-        <RaisedButton label="Default" />
+        <DatePicker />
         <Snackbar
           message="Event added to your calendar"
           action="undo"
