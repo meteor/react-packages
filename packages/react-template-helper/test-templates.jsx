@@ -1,3 +1,9 @@
+Template.EmptyComponentTemplateWithoutContainerElement.helpers({
+  emptyComponent() {
+    return EmptyReactComponent;
+  }
+});
+
 Template.UsesTextReactComponent.helpers({
   textComponent() {
     return TextReactComponent;

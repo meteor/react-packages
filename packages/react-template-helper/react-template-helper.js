@@ -17,9 +17,6 @@ Template.React.onRendered(function () {
     // where we detect these cases (and more) when templates are
     // compiled:
     // https://github.com/meteor/meteor/commit/29d907e8365fa28b22994cb63311de60fd58cc1f
-    //
-    // (We no longer test the code below since the templates needed to
-    // test it won't compile on devel)
 
     // expected nodes that aren't whitespace-only text nodes
     var expectedContainerChildNodes = c.firstRun ? 0 : 1;

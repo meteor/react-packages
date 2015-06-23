@@ -1,6 +1,32 @@
-<template name="ReactTemplateInDiv">
+<template name="ReactTemplateWithoutComponent">
+  {{> ReactWithoutCompileTimeSiblingRestriction}}
+</template>
+
+<template name="EmptyComponentTemplateWithoutContainerElement">
+  {{> ReactWithoutCompileTimeSiblingRestriction component=emptyComponent}}
+</template>
+
+<!-- used to test our error when rendering a react component with siblings -->
+<template name="UsesEmptyComponentTemplateWithSiblingElement">
   <div>
-    {{> React}}
+    <div>Sibling</div>
+    {{> EmptyComponentTemplateWithoutContainerElement }}
+  </div>
+</template>
+
+<template name="UsesEmptyComponentTemplateWithSiblingTextNode">
+  <div>
+    Sibling
+    {{> EmptyComponentTemplateWithoutContainerElement }}
+  </div>
+</template>
+
+<template name="UsesEmptyComponentTemplateWithConditionalSibling">
+  <div>
+    {{#if sibling}}
+      <div>Sibling</div>
+    {{/if}}
+    {{> EmptyComponentTemplateWithoutContainerElement }}
   </div>
 </template>
 
