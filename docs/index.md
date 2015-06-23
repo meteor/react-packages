@@ -17,7 +17,7 @@ meteor add react
 
 1. The `React` runtime library for defining and rendering components
 2. A compiler that automatically transforms `.jsx` files into JavaScript, and lets you use some ES6 features
-3. A React mixin called `MeteorDataMixin` that lets you easily use data from Meteor collections and other reactive sources in your components
+3. A React mixin called `ReactMeteorData` that lets you easily use data from Meteor collections and other reactive sources in your components
 
 ### Next steps
 

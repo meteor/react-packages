@@ -22,7 +22,7 @@ setTimeout(function () {
 }, CONNECTION_ISSUE_TIMEOUT);
 
 AppBody = React.createClass({
-  mixins: [MeteorDataMixin, Navigation, State],
+  mixins: [ReactMeteorData, Navigation, State],
   propTypes: {
     handles: React.PropTypes.array.isRequired,
   },

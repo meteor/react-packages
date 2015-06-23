@@ -8,7 +8,7 @@ Package.describe({
 Package.onUse(function (api) {
   api.use('jsx');
 
-  api.export(['MeteorDataMixin']);
+  api.export(['ReactMeteorData']);
 
   api.addFiles('meteor-data-mixin.jsx');
 });

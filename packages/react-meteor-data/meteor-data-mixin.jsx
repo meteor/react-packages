@@ -1,4 +1,4 @@
-MeteorDataMixin = {
+ReactMeteorData = {
   componentWillMount() {
     this.data = {};
 

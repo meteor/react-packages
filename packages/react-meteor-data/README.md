@@ -1,8 +1,8 @@
-## MeteorDataMixin
+## ReactMeteorData
 
 ```
 Foo = React.createClass({
-  mixins: [MeteorDataMixin],
+  mixins: [ReactMeteorData],
   trackMeteorData(props, state) {
     return {
       foo: Session.get('foo')

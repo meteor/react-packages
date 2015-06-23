@@ -48,7 +48,7 @@ In this step, we will throw in a `Mongo.Collection` so that our app has data. Th
 var Tasks = new Mongo.Collection("tasks");
 
 var App = React.createClass({
-  mixins: [MeteorDataMixin],
+  mixins: [ReactMeteorData],
   trackMeteorData(props, state) {
     // This method knows how to listen to Meteor's reactive data sources,
     // such as collection queries
@@ -84,7 +84,7 @@ Now that our app is getting more complicated, we should split it into multiple c
 var Tasks = new Mongo.Collection("tasks");
 
 var List = React.createClass({
-  mixins: [MeteorDataMixin],
+  mixins: [ReactMeteorData],
   trackMeteorData(props, state) {
     // This function knows how to listen to Meteor's reactive data sources,
     // such as collection queries

@@ -7,9 +7,9 @@ Many data sources in Meteor are "reactive" - that is, they use Meteor's [Tracker
 - [`ReactiveVar`](http://docs.meteor.com/#/full/reactivevar_pkg) - store a single value reactively
 - Many packages on Atmosphere that provide other data, like geolocation
 
-## MeteorDataMixin
+## ReactMeteorData
 
-In order to make it easy to use these data sources together with React components, we have created a React mixin called `MeteorDataMixin`. Once you have added this mixin to your component, you can define an extra method called `trackMeteorData`. `trackMeteorData` receives your component's `props` and `state` as arguments and can access any reactive state from Meteor. The data the method returns is put on `this.data` so that you can access it from the `render` function.
+In order to make it easy to use these data sources together with React components, we have created a React mixin called `ReactMeteorData`. Once you have added this mixin to your component, you can define an extra method called `trackMeteorData`. `trackMeteorData` receives your component's `props` and `state` as arguments and can access any reactive state from Meteor. The data the method returns is put on `this.data` so that you can access it from the `render` function.
 
 Note:  You may not access `this.props` or `this.state` from `trackMeteorData`.  You must use the arguments `props` and `state`, or you will get incorrect behavior.  This is a consequence of how React's lifecycle hooks work.
 
@@ -19,7 +19,7 @@ A simple component that just says hello to the currently logged in user:
 
 ```js
 var HelloUser = React.createClass({
-  mixins: [MeteorDataMixin],
+  mixins: [ReactMeteorData],
   trackMeteorData(props, state) {
     return {
       currentUser: Meteor.user()
@@ -35,7 +35,7 @@ A component that fetches some data based on an ID passed as a prop and passes it
 
 ```js
 var TodoListLoader = React.createClass({
-  mixins: [MeteorDataMixin],
+  mixins: [ReactMeteorData],
   trackMeteorData(props, state) {
     // This is the place to subscribe to any data you need
     var handle = Meteor.subscribe("todoList", this.props.id);

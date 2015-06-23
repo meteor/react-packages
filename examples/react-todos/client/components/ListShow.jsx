@@ -6,7 +6,7 @@ var {
 } = ReactRouter;
 
 ListShow = React.createClass({
-  mixins: [MeteorDataMixin, Navigation, State],
+  mixins: [ReactMeteorData, Navigation, State],
   getInitialState() {
     return {
       taskBeingEditedId: null,
