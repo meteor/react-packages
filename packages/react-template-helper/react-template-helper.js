@@ -1,3 +1,6 @@
+// Empty template; logic in `onRendered` below
+Template.React = new Template("Template.React", function () { return []; });
+
 Template.React.onRendered(function () {
   var parentTemplate = parentTemplateName();
   var container = this.firstNode.parentNode;

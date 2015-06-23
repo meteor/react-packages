@@ -13,7 +13,7 @@ Package.describe({
 Package.onUse(function(api) {
   api.use('templating');
   api.use('react-runtime');
-  api.addFiles(['react-template-helper.html', 'react-template-helper.js'], 'client');
+  api.addFiles(['react-template-helper.js'], 'client');
 });
 
 Package.onTest(function(api) {
