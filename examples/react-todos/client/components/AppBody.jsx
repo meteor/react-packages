@@ -39,7 +39,7 @@ AppBody = React.createClass({
       toggleMenuOpen: this.toggleMenuOpen
     }
   },
-  trackMeteorData(props, state) {
+  getMeteorData(props, state) {
     var subsReady = _.all(props.handles, function (handle) {
       return handle.ready();
     });

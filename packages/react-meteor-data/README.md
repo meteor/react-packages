@@ -3,7 +3,7 @@
 ```
 Foo = React.createClass({
   mixins: [ReactMeteorData],
-  trackMeteorData(props, state) {
+  getMeteorData(props, state) {
     return {
       foo: Session.get('foo')
     };

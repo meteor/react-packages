@@ -35,7 +35,7 @@ class MeteorDataManager {
   }
 
   calculateData(component, props, state) {
-    if (! component.trackMeteorData) {
+    if (! component.getMeteorData) {
       return null;
     }
 
@@ -48,7 +48,7 @@ class MeteorDataManager {
     this.computation = Tracker.nonreactive(() => {
       return Tracker.autorun((c) => {
         if (c.firstRun) {
-          data = component.trackMeteorData(props, state);
+          data = component.getMeteorData(props, state);
         } else {
           c.stop();
           component.forceUpdate();
@@ -60,7 +60,7 @@ class MeteorDataManager {
 
   updateData(componentData, newData) {
     if (! (newData && (typeof newData) === 'object')) {
-      throw new Error("Expected object returned from trackMeteorData");
+      throw new Error("Expected object returned from getMeteorData");
     }
     // update componentData in place based on newData
     for (var key in newData) {

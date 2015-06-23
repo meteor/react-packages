@@ -49,7 +49,7 @@ var Tasks = new Mongo.Collection("tasks");
 
 var App = React.createClass({
   mixins: [ReactMeteorData],
-  trackMeteorData(props, state) {
+  getMeteorData(props, state) {
     // This method knows how to listen to Meteor's reactive data sources,
     // such as collection queries
     return {
@@ -60,7 +60,7 @@ var App = React.createClass({
   render() {
     return (
       <ul>
-        {/* Access the data from trackMeteorData() on this.data */}
+        {/* Access the data from getMeteorData() on this.data */}
         {this.data.tasks.map(function (task) {
           return <li key={task._id}>{task.content}</li>;
         })}
@@ -85,7 +85,7 @@ var Tasks = new Mongo.Collection("tasks");
 
 var List = React.createClass({
   mixins: [ReactMeteorData],
-  trackMeteorData(props, state) {
+  getMeteorData(props, state) {
     // This function knows how to listen to Meteor's reactive data sources,
     // such as collection queries
     return {
@@ -96,7 +96,7 @@ var List = React.createClass({
   render() {
     return (
       <ul>
-        {/* Access the data from trackMeteorData() on this.data */}
+        {/* Access the data from getMeteorData() on this.data */}
         {this.data.tasks.map(function (task) {
           return <li key={task._id}>{task.content}</li>;
         })}

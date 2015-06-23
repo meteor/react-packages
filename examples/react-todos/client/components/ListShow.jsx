@@ -13,7 +13,7 @@ ListShow = React.createClass({
       editingTitle: false
     };
   },
-  trackMeteorData(props, state) {
+  getMeteorData(props, state) {
     var self = this;
 
     // Get list ID from ReactRouter
