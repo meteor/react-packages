@@ -1,28 +1,24 @@
 ReactMeteorData = {
   componentWillMount() {
     this.data = {};
-
-    this._meteorDataManager = new MeteorDataManager();
-
-    var newData = this._meteorDataManager.calculateData(
-      this, this.props, this.state);
-
-    this._meteorDataManager.updateData(this.data, newData);
+    this._meteorDataManager = new MeteorDataManager(this);
+    const newData = this._meteorDataManager.calculateData(this.props, this.state);
+    this._meteorDataManager.updateData(newData);
   },
   componentWillUpdate(nextProps, nextState) {
-    var newData = this._meteorDataManager.calculateData(
-      this, nextProps, nextState);
-
-    this._meteorDataManager.updateData(this.data, newData);
+    const newData = this._meteorDataManager.calculateData(nextProps, nextState);
+    this._meteorDataManager.updateData(newData);
   },
   componentWillUnmount() {
     this._meteorDataManager.dispose();
   }
 };
 
-
+// A class to keep the state and utility methods needed to manage
+// the Meteor data for a component.
 class MeteorDataManager {
-  constructor() {
+  constructor(component) {
+    this.component = component;
     this.computation = null;
     this.oldData = null;
   }
@@ -34,7 +30,9 @@ class MeteorDataManager {
     }
   }
 
-  calculateData(component, props, state) {
+  calculateData(props, state) {
+    const component = this.component;
+
     if (! component.getMeteorData) {
       return null;
     }
@@ -44,7 +42,7 @@ class MeteorDataManager {
       this.computation = null;
     }
 
-    var data;
+    let data;
     this.computation = Tracker.nonreactive(() => {
       return Tracker.autorun((c) => {
         if (c.firstRun) {
@@ -58,13 +56,15 @@ class MeteorDataManager {
     return data;
   }
 
-  updateData(componentData, newData) {
+  updateData(newData) {
+    const component = this.component;
+
     if (! (newData && (typeof newData) === 'object')) {
       throw new Error("Expected object returned from getMeteorData");
     }
     // update componentData in place based on newData
-    for (var key in newData) {
-      componentData[key] = newData[key];
+    for (let key in newData) {
+      component.data[key] = newData[key];
     }
     // if there is oldData (which is every time this method is called
     // except the first), delete keys in newData that aren't in
@@ -72,9 +72,9 @@ class MeteorDataManager {
     // co-existing with something else that writes to a component's
     // this.data.
     if (this.oldData) {
-      for (var key in this.oldData) {
+      for (let key in this.oldData) {
         if (! (key in newData)) {
-          delete componentData[key];
+          delete component.data[key];
         }
       }
     }
