@@ -59,3 +59,12 @@ var TodoListLoader = React.createClass({
   }
 });
 ```
+
+## Design notes: Why we decided to ship a mixin
+
+React now supports [defining components in the form of ES6 classes](https://facebook.github.io/react/docs/reusable-components.html#es6-classes), but these classes [do not support mixins](https://facebook.github.io/react/docs/reusable-components.html#no-mixins). In some future version of React, mixins might not be the recommended way for shipping functionality to integrate into React components.
+
+However, after some research and discussion with React developers from different companies, we have found that mixins are currently the best practice. Popular libraries, such as ReactRouter, are [sticking with mixins](https://github.com/rackt/react-router/blob/master/UPGRADE_GUIDE.md#0132---0133) until something better comes along.
+
+Mixins are also the best way of polyfilling [React's proposed standard pattern](https://github.com/facebook/react/issues/3398) for getting reactive data into components. When the `observe` API is shopped in React, or when decorators or mixins are added to JavaScript classes, we will consider switching to those if they provide a better integration.
+
