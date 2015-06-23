@@ -13,7 +13,7 @@ ListShow = React.createClass({
       editingTitle: false
     };
   },
-  getMeteorData(props, state) {
+  getMeteorData() {
     var self = this;
 
     // Get list ID from ReactRouter
@@ -85,7 +85,7 @@ ListShow = React.createClass({
     if (! list.userId && Lists.find({userId: {$exists: false}}).count() === 1) {
       return alert("Sorry, you cannot delete the final public list!");
     }
-    
+
     var message = "Are you sure you want to delete the list " + list.name + "?";
 
     if (confirm(message)) {
@@ -107,7 +107,7 @@ ListShow = React.createClass({
     if (! input.value) {
       return;
     }
-    
+
     Todos.insert({
       listId: listId,
       text: input.value,
@@ -162,7 +162,7 @@ ListShow = React.createClass({
           <div className="nav-item options-mobile">
             <select className="list-edit">
               <option disabled>Select an action</option>
-              { list.userId ? 
+              { list.userId ?
                 <option value="public">Make Public</option> :
                 <option value="private">Make Private</option> }
               <option value="delete">Delete</option>
@@ -171,7 +171,7 @@ ListShow = React.createClass({
           </div>
           <div className="options-web">
             <a className="nav-item" onClick={ self.toggleListPrivacy }>
-              { list.userId ? 
+              { list.userId ?
                   <span className="icon-lock" title="Make list public" /> :
                   <span className="icon-unlock" title="Make list private" /> }
             </a>

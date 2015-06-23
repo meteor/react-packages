@@ -74,9 +74,9 @@ Tinytest.add('react-meteor-data - track based on props and state', function (tes
 
   var Foo = React.createClass({
     mixins: [ReactMeteorData],
-    getMeteorData(props, state) {
+    getMeteorData() {
       return {
-        x: xs[state.m + props.n].get()
+        x: xs[this.state.m + this.props.n].get()
       };
     },
     getInitialState() {
@@ -136,7 +136,7 @@ testAsyncMulti('react-meteor-data - resubscribe', [
     self.someOtherVar = new ReactiveVar('foo');
     self.Foo = React.createClass({
       mixins: [ReactMeteorData],
-      getMeteorData(props, state) {
+      getMeteorData() {
         this.handle =
           Meteor.subscribe("react-meteor-data-mixin-sub",
                            self.num.get());

@@ -39,8 +39,8 @@ AppBody = React.createClass({
       toggleMenuOpen: this.toggleMenuOpen
     }
   },
-  getMeteorData(props, state) {
-    var subsReady = _.all(props.handles, function (handle) {
+  getMeteorData() {
+    var subsReady = _.all(this.props.handles, function (handle) {
       return handle.ready();
     });
 
@@ -101,7 +101,7 @@ AppBody = React.createClass({
             return <Link
               className={ className }
               key={ list._id }
-              to="todoList" 
+              to="todoList"
               params={{ listId: list._id }}>
                 { list.name }
                 { list.incompleteCount ?

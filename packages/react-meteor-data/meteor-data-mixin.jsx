@@ -2,11 +2,28 @@ ReactMeteorData = {
   componentWillMount() {
     this.data = {};
     this._meteorDataManager = new MeteorDataManager(this);
-    const newData = this._meteorDataManager.calculateData(this.props, this.state);
+    const newData = this._meteorDataManager.calculateData();
     this._meteorDataManager.updateData(newData);
   },
   componentWillUpdate(nextProps, nextState) {
-    const newData = this._meteorDataManager.calculateData(nextProps, nextState);
+    const saveProps = this.props;
+    const saveState = this.state;
+    let newData;
+    try {
+      // Temporarily assign this.state and this.props,
+      // so that they are seen by getMeteorData!
+      // This is a simulation of how the proposed Observe API
+      // for React will work, which calls observe() after
+      // componentWillUpdate and after props and state are
+      // updated, but before render() is called.
+      this.props = nextProps;
+      this.state = nextState;
+      newData = this._meteorDataManager.calculateData();
+    } finally {
+      this.props = saveProps;
+      this.state = saveState;
+    }
+
     this._meteorDataManager.updateData(newData);
   },
   componentWillUnmount() {
@@ -30,8 +47,9 @@ class MeteorDataManager {
     }
   }
 
-  calculateData(props, state) {
+  calculateData() {
     const component = this.component;
+    const {props, state} = component;
 
     if (! component.getMeteorData) {
       return null;
@@ -46,7 +64,7 @@ class MeteorDataManager {
     this.computation = Tracker.nonreactive(() => {
       return Tracker.autorun((c) => {
         if (c.firstRun) {
-          data = component.getMeteorData(props, state);
+          data = component.getMeteorData();
         } else {
           c.stop();
           component.forceUpdate();
