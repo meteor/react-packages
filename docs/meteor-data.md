@@ -9,9 +9,7 @@ Many data sources in Meteor are "reactive" - that is, they use Meteor's [Tracker
 
 ## ReactMeteorData
 
-In order to make it easy to use these data sources together with React components, we have created a React mixin called `ReactMeteorData`. Once you have added this mixin to your component, you can define an extra method called `getMeteorData`. `getMeteorData` receives your component's `props` and `state` as arguments and can access any reactive state from Meteor. The data the method returns is put on `this.data` so that you can access it from the `render` function.
-
-Note:  You may not access `this.props` or `this.state` from `getMeteorData`.  You must use the arguments `props` and `state`, or you will get incorrect behavior.  This is a consequence of how React's lifecycle hooks work.
+In order to make it easy to use these data sources together with React components, we have created a React mixin called `ReactMeteorData`. Once you have added this mixin to your component, you can define an extra method called `getMeteorData`. Inside `getMeteorData`, you can access `this.props`, `this.state` and any reactive data from Meteor. The data this method returns is put on `this.data` so that you can access it from the `render` function.
 
 ### Examples
 
@@ -20,7 +18,7 @@ A simple component that just says hello to the currently logged in user:
 ```js
 var HelloUser = React.createClass({
   mixins: [ReactMeteorData],
-  getMeteorData(props, state) {
+  getMeteorData() {
     return {
       currentUser: Meteor.user()
     };
@@ -36,7 +34,7 @@ A component that fetches some data based on an ID passed as a prop and passes it
 ```js
 var TodoListLoader = React.createClass({
   mixins: [ReactMeteorData],
-  getMeteorData(props, state) {
+  getMeteorData() {
     // This is the place to subscribe to any data you need
     var handle = Meteor.subscribe("todoList", this.props.id);
 
