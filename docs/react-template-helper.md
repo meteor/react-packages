@@ -15,7 +15,7 @@ To include a React component inside your Blaze template, use the `React` templat
 ```html
 <template name="userDisplay">
   <div>Hello, {{username}}</div>
-  <div>{{> React component=UserAvatar propA=_id}}</div>
+  <div>{{> React component=UserAvatar userId=_id}}</div>
 </template>
 ```
 
@@ -45,7 +45,7 @@ React components can't have siblings:
 <template name="userDisplay">
   <div>
     <div>Hello, {{username}}</div>
-    {{> React component=UserAvatar propA=_id}}
+    {{> React component=UserAvatar userId=_id}}
   </div>
 </template>
 ```
@@ -54,7 +54,7 @@ A component also can't be the only thing in a template, because it's impossible 
 
 ```html
 <template name="userDisplay">
-  {{> React component=UserAvatar propA=_id}}
+  {{> React component=UserAvatar userId=_id}}
 </template>
 ```
 
@@ -80,6 +80,6 @@ How to use it in Spacebars:
 
 ```html
 <template name="userDisplay">
-  <div>{{> React component=UserAvatar propA=_id onClick=onClick}}</div>
+  <div>{{> React component=UserAvatar userId=_id onClick=onClick}}</div>
 </template>
 ```

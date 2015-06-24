@@ -11,7 +11,9 @@ Many data sources in Meteor are "reactive" &mdash; that is, they use Meteor's [T
 
 In order to make it easy to use these data sources together with React components, we have created a React mixin called `ReactMeteorData`. Once you have added this mixin to your component, you can define a method called `getMeteorData` on your component.
 
-Inside `getMeteorData`, you can access `this.props`, `this.state` and any reactive data from Meteor. `getMeteorData` will reactively rerun when the accessed data changes. The data this method returns is put on `this.data` so that you can access it from the `render` function.
+Inside `getMeteorData`, you can access any Meteor reactive data source, as well as `this.props` and `this.state`. `getMeteorData` will reactively rerun when the accessed data changes. `getMeteorData` must return an object, and the properties of the object will be copied onto the component's `this.data`.  To use the data, you access `this.data` from the `render()` method.
+
+Subscriptions that you make from `getMeteorData` using `Meteor.subscribe` will be automatically maintained across reruns of `getMeteorData`, and cleaned up when the component unmounts.  The arguments to a subscription can depend on `this.props` and `this.state`.
 
 ### Examples
 
@@ -60,15 +62,34 @@ var TodoListLoader = React.createClass({
 });
 ```
 
-### Warning: `render()` is not reactive
+## Warning: `render()` is not reactive
 
 If you access a Meteor reactive data source from your component's `render` method, the component will **not** automatically rerender when data changes. If you want your component to rerender with the most up-to-date data, access all reactive functions from inside the `getMeteorData` method.
 
-## Design notes: Why we decided to ship a mixin
+## Design notes
+
+### Why we decided to ship a mixin
 
 React now supports [defining components in the form of ES6 classes](https://facebook.github.io/react/docs/reusable-components.html#es6-classes), but these classes [do not support mixins](https://facebook.github.io/react/docs/reusable-components.html#no-mixins). In some future version of React, mixins might not be the recommended way for shipping functionality to integrate into React components.
 
 However, after some research and discussion with React developers from different companies, we have found that mixins are currently the best practice. Popular libraries, such as ReactRouter, are [sticking with mixins](https://github.com/rackt/react-router/blob/master/UPGRADE_GUIDE.md#0132---0133) until something better comes along.
 
-Mixins are also the best way of polyfilling [React's proposed standard pattern](https://github.com/facebook/react/issues/3398) for getting reactive data into components. When the `observe` API is shopped in React, or when decorators or mixins are added to JavaScript classes, we will consider switching to those if they provide a better integration.
+Mixins are also the best way of polyfilling [React's proposed standard pattern](https://github.com/facebook/react/issues/3398) for getting reactive data into components. When the `observe` API is shipped in React, or when decorators or mixins are added to JavaScript classes, we will consider switching to those if they provide a better integration.  We expect the community will also experiment with other integrations.
 
+### How the mixin works
+
+The component's `this.data` is initially populated from a `componentDidMount` callback.
+
+When the component recieves new props or state, here's what React does normally:
+
+1. Call `componentWillReceiveProps(nextProps)` (if there are new props)
+2. Call `shouldComponentUpdate(nextProps, nextState)` (and maybe stop the update)
+3. Call `componentWillUpdate(nextProps, nextState)`
+4. Assign `this.props = nextProps` and `this.state = nextState`
+5. Call `render()`
+
+React's upcoming `observe` API adds a new step between steps 4 and 5 &mdash; after assigning `this.props` and `this.state`, and before calling `render()` &mdash; in which a method named `observe()` is called, and `this.data` is updated.  To simulate this extra step, the mixin uses a `componentWillUpdate` callback (step 3) that calls `getMeteorState` while temporarily swapping in the new values for `this.props` and `this.state`, putting them right back when it's done.
+
+Note that you can still use all the lifecycle callbacks, including `shouldComponentUpdate`, for their usual purpose.  However, `shouldComponentUpdate` can only be used to stop updates caused by changes to props and state, not data.
+
+Finally, if a Meteor reactive data source changes that was accessed from `getMeteorData`, the mixin calls `forceUpdate()` on the component, which triggers the update steps listed above, leading to `getMeteorData` being called again.
