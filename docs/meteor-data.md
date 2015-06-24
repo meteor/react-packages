@@ -1,6 +1,6 @@
 <h1>Using reactive Meteor data inside React components</h1>
 
-Many data sources in Meteor are "reactive" - that is, they use Meteor's [Tracker](https://www.meteor.com/tracker) library to notify data consumers when something has changed. These data sources include the following:
+Many data sources in Meteor are "reactive" &mdash; that is, they use Meteor's [Tracker](https://www.meteor.com/tracker) library to notify data consumers when something has changed. These data sources include the following:
 
 - [`Meteor.user()`](http://docs.meteor.com/#/full/meteor_user) - the currently logged-in user
 - [`Mongo.Collection`](http://docs.meteor.com/#/full/collections) - a persistent collection that can be accessed from the client
