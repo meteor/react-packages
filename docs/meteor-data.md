@@ -62,6 +62,12 @@ var TodoListLoader = React.createClass({
 });
 ```
 
+### Preventing extra re-renders from new data
+
+React has a handy `shouldComponentUpdate` hook for preventing unnecessary rerenders. That works for `props` and `state` changes, but will not help you prevent a re-render when `this.data` is updated.
+
+If you find that your component is re-rendering too often because of spurious changes in data, you can split it into two components - a wrapper component that just loads the data, and a child that actually renders the view. Then, you can pass `this.data` into the child through `props`, and use `shouldComponentUpdate` in the child to prevent unnecessary re-renders.
+
 ## Warning: `render()` is not reactive
 
 If you access a Meteor reactive data source from your component's `render` method, the component will **not** automatically rerender when data changes. If you want your component to rerender with the most up-to-date data, access all reactive functions from inside the `getMeteorData` method.
