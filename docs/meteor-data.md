@@ -7,9 +7,11 @@ Many data sources in Meteor are "reactive" - that is, they use Meteor's [Tracker
 - [`ReactiveVar`](http://docs.meteor.com/#/full/reactivevar_pkg) - store a single value reactively
 - Many packages on Atmosphere that provide other data, like geolocation
 
-## ReactMeteorData
+## The ReactMeteorData mixin
 
-In order to make it easy to use these data sources together with React components, we have created a React mixin called `ReactMeteorData`. Once you have added this mixin to your component, you can define an extra method called `getMeteorData`. Inside `getMeteorData`, you can access `this.props`, `this.state` and any reactive data from Meteor. The data this method returns is put on `this.data` so that you can access it from the `render` function.
+In order to make it easy to use these data sources together with React components, we have created a React mixin called `ReactMeteorData`. Once you have added this mixin to your component, you can define a method called `getMeteorData` on your component.
+
+Inside `getMeteorData`, you can access `this.props`, `this.state` and any reactive data from Meteor. `getMeteorData` will reactively rerun when the accessed data changes. The data this method returns is put on `this.data` so that you can access it from the `render` function.
 
 ### Examples
 
@@ -57,6 +59,10 @@ var TodoListLoader = React.createClass({
   }
 });
 ```
+
+### Warning: `render()` is not reactive
+
+If you access a Meteor reactive data source from your component's `render` method, the component will **not** automatically rerender when data changes. If you want your component to rerender with the most up-to-date data, access all reactive functions from inside the `getMeteorData` method.
 
 ## Design notes: Why we decided to ship a mixin
 
