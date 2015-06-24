@@ -47,7 +47,8 @@ Browserify supports numerous transforms, which let you change the way NPM packag
     "exposify": {
       "global": true,
       "expose": {
-        "react": "React"
+        "react": "React",
+        "react/addons": "React"
       }
     }
   }
