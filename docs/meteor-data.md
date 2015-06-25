@@ -28,7 +28,7 @@ var HelloUser = React.createClass({
     };
   },
   render() {
-    return <span>Hello {this.data.currentUser.username}!</span>
+    return <span>Hello {this.data.currentUser.username}!</span>;
   }
 });
 ```
@@ -55,9 +55,11 @@ var TodoListLoader = React.createClass({
     }
 
     // Render a component and pass down the loaded data
-    return <TodoList
-      list={this.data.todoList}
-      tasks={this.data.todoListTasks} />
+    return (
+      <TodoList
+        list={this.data.todoList}
+        tasks={this.data.todoListTasks} />
+    );
   }
 });
 ```
