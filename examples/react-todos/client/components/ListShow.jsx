@@ -125,14 +125,14 @@ ListShow = React.createClass({
     var tasks = self.data.tasks;
 
     if (! list) {
-      return <AppNotFound />
+      return <AppNotFound />;
     }
 
     var newTaskForm = <form className="todo-new input-symbol"
         onSubmit={ self.onSubmitNewTask }>
       <input type="text" name="text" placeholder="Type to add new tasks" />
       <span className="icon-add" />
-    </form>
+    </form>;
 
     var nav;
     if (self.state.editingTitle) {
@@ -150,7 +150,7 @@ ListShow = React.createClass({
           </div>
         </form>
         { newTaskForm }
-      </nav>
+      </nav>;
     } else if (list && ! self.data.tasksLoading) {
       nav = <nav>
         <MenuOpenToggle />
@@ -187,7 +187,7 @@ ListShow = React.createClass({
         <div className="wrapper-message">
           <div className="title-message">Loading tasks...</div>
         </div>
-      </nav>
+      </nav>;
     }
 
     return <div className="page lists-show">
@@ -200,9 +200,9 @@ ListShow = React.createClass({
             beingEdited={ task._id === self.state.taskBeingEditedId }
             onInitiateEdit={ self.setTaskBeingEdited.bind(self, task._id) }
             onStopEdit={ self.setTaskBeingEdited.bind(self, null) }
-          />
+          />;
         }) }
       </div>
-    </div>
+    </div>;
   }
 });
