@@ -11,9 +11,17 @@ Package.describe({
   debugOnly: true
 });
 
-Package.onUse(function (api) {
-  api.addFiles('react-0.13.3.js');
+Npm.depends({
+  react: "0.13.3"
+});
 
-  // So that this package loads after the minified version and overwrites it
-  api.use('react-runtime-prod@=0.13.3');
+Package.onUse(function (api) {
+  api.versionsFrom('1.1.0.2');
+
+  api.use('cosmos:browserify@0.4.0');
+  api.addFiles('react.browserify.js');
+  api.addFiles('react.browserify.options.json');
+  api.addFiles('attach-require.js');
+
+  api.export('ReactDev');
 });

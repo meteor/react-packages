@@ -3,7 +3,6 @@ var ThemeManager = new mui.Styles.ThemeManager();
 var {
   AppBar,
   DatePicker,
-  Snackbar,
   TextField
 } = mui;
 
@@ -21,18 +20,10 @@ var App = React.createClass({
   },
 
   render: function() {
-
-    var dialog = <DatePicker
-  hintText="Landscape Dialog"
-  mode="landscape" onTouchTap={()=>{alert("hi")}}/>
-
     return (
       <div>
-      <TextField
-  hintText="Hint Text" />
-        { dialog }
-        <TextField
-  hintText="Hint Text" />
+        <DatePicker hintText="Landscape Dialog" mode="landscape"/>
+        <TextField hintText="Hint Text" />
       </div>
     );
   }
@@ -52,7 +43,9 @@ if (Meteor.isClient) {
       var s = document.getElementsByTagName('script')[0];
       s.parentNode.insertBefore(wf, s);
     })();
+
     injectTapEventPlugin();
+
     $(document.body).html("<div id='container'></div>");
     React.render(<App />, document.getElementById("container"));
   });
