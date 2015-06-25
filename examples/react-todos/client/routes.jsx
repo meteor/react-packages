@@ -39,7 +39,8 @@ Meteor.startup(function () {
       showFirstList();
     }
 
-    React.render(<Handler handles={ handles } />, document.body);
+    React.render(<Handler handles={ handles } />,
+      document.getElementById("app-container"));
   });
 });
 

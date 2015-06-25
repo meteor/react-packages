@@ -12,7 +12,8 @@ Package.describe({
 
 Package.registerBuildPlugin({
   name: "compileStaticHtml",
-  sources: "static-html.js"
+  sources: ["static-html.js"],
+  use: ["underscore"]
 });
 
 Package.onTest(function (api) {
