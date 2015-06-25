@@ -24,7 +24,7 @@ Tinytest.add('react-meteor-data - basic track', function (test) {
   test.equal(getInnerHtml(div), '<span>aaa</span>');
 
   x.set('bbb');
-  Tracker.flush();
+  Tracker.flush({_throwFirstError: true});
   test.equal(getInnerHtml(div), '<span>bbb</span>');
 
   test.equal(x._numListeners(), 1);
@@ -34,6 +34,11 @@ Tinytest.add('react-meteor-data - basic track', function (test) {
   test.equal(x._numListeners(), 0);
 });
 
+// Make sure that calling React.render() from an autorun doesn't
+// associate that autorun with the mixin's autorun.  When autoruns are
+// nested, invalidating the outer one stops the inner one, unless
+// Tracker.nonreactive is used.  This test tests for the use of
+// Tracker.nonreactive around the mixin's autorun.
 Tinytest.add('react-meteor-data - render in autorun', function (test) {
   var div = document.createElement("DIV");
 
@@ -59,7 +64,7 @@ Tinytest.add('react-meteor-data - render in autorun', function (test) {
   test.equal(getInnerHtml(div), '<span>aaa</span>');
 
   x.set('bbb');
-  Tracker.flush();
+  Tracker.flush({_throwFirstError: true});
   test.equal(getInnerHtml(div), '<span>bbb</span>');
 
   React.unmountComponentAtNode(div);
@@ -92,7 +97,7 @@ Tinytest.add('react-meteor-data - track based on props and state', function (tes
   test.equal(getInnerHtml(div), '<span>aaa</span>');
   xs[0].set('AAA');
   test.equal(getInnerHtml(div), '<span>aaa</span>');
-  Tracker.flush();
+  Tracker.flush({_throwFirstError: true});
   test.equal(getInnerHtml(div), '<span>AAA</span>');
 
   {
@@ -102,13 +107,13 @@ Tinytest.add('react-meteor-data - track based on props and state', function (tes
 
   test.equal(getInnerHtml(div), '<span>bbb</span>');
   xs[1].set('BBB');
-  Tracker.flush();
+  Tracker.flush({_throwFirstError: true});
   test.equal(getInnerHtml(div), '<span>BBB</span>');
 
   comp.setState({m: 1});
   test.equal(getInnerHtml(div), '<span>ccc</span>');
   xs[2].set('CCC');
-  Tracker.flush();
+  Tracker.flush({_throwFirstError: true});
   test.equal(getInnerHtml(div), '<span>CCC</span>');
 
   React.render(<Foo n={0}/>, div);
@@ -143,7 +148,7 @@ testAsyncMulti('react-meteor-data - resubscribe', [
 
         return {
           v: self.someOtherVar.get(),
-          docs: _.filter(self.collection.find().fetch(), o => o.awesome)
+          docs: self.collection.find().fetch()
         };
       },
       render() {
@@ -205,7 +210,11 @@ testAsyncMulti('react-meteor-data - resubscribe', [
   },
   function (test, expect) {
     var self = this;
-    // now we see the new data! (and maybe the old data...)
+    // now we see the new data! (and maybe the old data, because
+    // when a subscription goes away, its data doesn't disappear right
+    // away; the server has to tell the client which documents or which
+    // properties to remove, and this is not easy to wait for either; see
+    // https://github.com/meteor/meteor/issues/2440)
     test.equal(getInnerHtml(self.div).replace('<span>id1</span>', ''),
                '<div><span>id2</span></div>');
 

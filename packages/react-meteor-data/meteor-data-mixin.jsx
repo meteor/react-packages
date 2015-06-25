@@ -16,6 +16,7 @@ ReactMeteorData = {
       // for React will work, which calls observe() after
       // componentWillUpdate and after props and state are
       // updated, but before render() is called.
+      // See https://github.com/facebook/react/issues/3398.
       this.props = nextProps;
       this.state = nextState;
       newData = this._meteorDataManager.calculateData();
@@ -61,12 +62,27 @@ class MeteorDataManager {
     }
 
     let data;
+    // Use Tracker.nonreactive in case we are inside a Tracker Computation.
+    // This can happen if someone calls `React.render` inside a Computation.
+    // In that case, we want to opt out of the normal behavior of nested
+    // Computations, where if the outer one is invalidated or stopped,
+    // it stops the inner one.
     this.computation = Tracker.nonreactive(() => {
       return Tracker.autorun((c) => {
         if (c.firstRun) {
           data = component.getMeteorData();
         } else {
+          // Stop this computation instead of using the re-run.
+          // We use a brand-new autorun for each call to getMeteorData
+          // to capture dependencies on any reactive data sources that
+          // are accessed.  The reason we can't use a single autorun
+          // for the lifetime of the component is that Tracker only
+          // re-runs autoruns at flush time, while we need to be able to
+          // re-call getMeteorData synchronously whenever we want, e.g.
+          // from componentWillUpdate.
           c.stop();
+          // Calling forceUpdate() triggers componentWillUpdate which
+          // recalculates getMeteorData() and re-renders the component.
           component.forceUpdate();
         }
       });
@@ -76,6 +92,7 @@ class MeteorDataManager {
 
   updateData(newData) {
     const component = this.component;
+    const oldData = this.oldData;
 
     if (! (newData && (typeof newData) === 'object')) {
       throw new Error("Expected object returned from getMeteorData");
@@ -89,9 +106,9 @@ class MeteorDataManager {
     // oldData.  don't interfere with other keys, in case we are
     // co-existing with something else that writes to a component's
     // this.data.
-    if (this.oldData) {
-      for (let key in this.oldData) {
-        if (! (key in newData)) {
+    if (oldData) {
+      for (let key in oldData) {
+        if (!(key in newData)) {
           delete component.data[key];
         }
       }

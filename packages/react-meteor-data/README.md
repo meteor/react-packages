@@ -1,17 +1,31 @@
 ## ReactMeteorData
 
+This mixin is a convenient way to use data from a Meteor reactive data source in a React component, with automatic updates when the data changes.
+
+For example:
+
 ```
 Foo = React.createClass({
   mixins: [ReactMeteorData],
   getMeteorData() {
-    // do all your reactive data access here
+    // do all your reactive data access in this method.
+    // you can also use Meteor.subscribe here.
+    var handle = Meteor.subscribe("todoList", this.props.id);
+
     return {
-      foo: Session.get('foo')
-      // (you can also access this.props and this.state here)
+      foo: Session.get('foo'),
+      currentUser: Meteor.user(),
+      listLoading: ! handle.ready(),
+      tasks: Tasks.find({listId: this.props.id}).fetch()
     };
   },
   render() {
-    return <span>{this.data.foo}</span>
+    return <div>
+      <span>{this.data.foo}</span>
+      // ...
+    </div>;
   }
 });
 ```
+
+For more information, see [the guide](http://react-in-meteor.readthedocs.org/en/latest/meteor-data/).
