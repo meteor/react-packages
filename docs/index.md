@@ -32,3 +32,7 @@ If you would rather pick and choose individual packages to include rather than u
 2. `jsx` - a compiler to compile files with the `.jsx` extension to JavaScript
 3. `react-meteor-data` - a mixin to integrate Meteor reactive data sources with React components
 4. `react-template-helper` - include a React component inside your Meteor template
+
+## Contributing and filing bugs
+
+[See the repository on GitHub.](https://github.com/meteor/react-packages)
