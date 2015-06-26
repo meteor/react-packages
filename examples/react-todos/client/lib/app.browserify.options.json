@@ -1,9 +1,9 @@
 {
   "transforms": {
-    "exposify": {
+    "externalify": {
       "global": true,
-      "expose": {
-        "react": "React"
+      "external": {
+        "react": "React.require"
       }
     }
   }
