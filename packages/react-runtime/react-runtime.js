@@ -1,1 +1,5 @@
-// Write your package code here!
+if (Package["react-runtime-dev"]) {
+  React = Package["react-runtime-dev"].ReactDev;
+} else {
+  React = ReactProd;
+}

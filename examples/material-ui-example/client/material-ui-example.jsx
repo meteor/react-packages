@@ -3,8 +3,10 @@ var ThemeManager = new mui.Styles.ThemeManager();
 var {
   AppBar,
   DatePicker,
-  Snackbar
+  TextField
 } = mui;
+
+React.initializeTouchEvents(true)
 
 var App = React.createClass({
   childContextTypes: {
@@ -20,12 +22,8 @@ var App = React.createClass({
   render: function() {
     return (
       <div>
-        <AppBar title='Title' iconClassNameRight="muidocs-icon-navigation-expand-more"/>
-        <DatePicker />
-        <Snackbar
-          message="Event added to your calendar"
-          action="undo"
-          onActionTouchTap={this._handleAction}/>
+        <DatePicker hintText="Landscape Dialog" mode="landscape"/>
+        <TextField hintText="Hint Text" />
       </div>
     );
   }
@@ -33,6 +31,22 @@ var App = React.createClass({
 
 if (Meteor.isClient) {
   Meteor.startup(function () {
-    React.render(<App />, document.body);
+    var WebFontConfig = {
+      google: { families: [ 'Roboto:400,300,500:latin' ] }
+    };
+    (function() {
+      var wf = document.createElement('script');
+      wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+      '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+      wf.type = 'text/javascript';
+      wf.async = 'true';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(wf, s);
+    })();
+
+    injectTapEventPlugin();
+
+    $(document.body).html("<div id='container'></div>");
+    React.render(<App />, document.getElementById("container"));
   });
 }

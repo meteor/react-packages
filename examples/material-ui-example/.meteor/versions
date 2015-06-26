@@ -14,7 +14,6 @@ cosmos:browserify@0.4.0
 ddp@1.1.0
 deps@1.0.7
 ejson@1.0.6
-fastclick@1.0.3
 geojson-utils@1.0.3
 html-tools@1.0.4
 htmljs@1.0.4
@@ -24,16 +23,12 @@ insecure@1.0.3
 jquery@1.11.3_2
 json@1.0.3
 jsx@1.0.0
-launch-screen@1.0.2
-livedata@1.0.13
 logging@1.0.7
 meteor@1.1.6
-meteor-platform@1.2.2
 meteorhacks:async@1.0.0
 meteorhacks:npm@1.3.0
 minifiers@1.1.5
 minimongo@1.0.8
-mobile-status-bar@1.0.3
 mongo@1.1.0
 npm-container@1.0.0
 observe-sequence@1.0.6
@@ -44,12 +39,10 @@ react-meteor-data@0.0.1
 react-runtime@0.13.3
 react-runtime-dev@0.13.3
 react-runtime-prod@0.13.3
-reactive-dict@1.1.0
 reactive-var@1.0.5
 reload@1.1.3
 retry@1.0.3
 routepolicy@1.0.5
-session@1.1.0
 spacebars@1.0.6
 spacebars-compiler@1.0.6
 templating@1.1.1
