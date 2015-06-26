@@ -22,7 +22,7 @@ meteor add react
 Now that you have created an app and added everything you need, do these next:
 
 1. Follow the [tutorial](tutorial.md)
-2. Check out the example apps
+2. Check out the [example apps](https://github.com/meteor/react-packages/tree/master/examples)
 
 ## Adding individual packages
 
