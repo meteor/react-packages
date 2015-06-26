@@ -1,8 +1,6 @@
 # react-packages
 
-#### Meteor packages for a great React developer experience
-
-These packages are a preview of functionality that will be part of core Meteor in the future.
+Meteor packages for a great React developer experience
 
 [Read the guide.](http://react-in-meteor.readthedocs.org/en/latest/)
 
