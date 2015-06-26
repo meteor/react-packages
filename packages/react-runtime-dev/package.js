@@ -12,9 +12,8 @@ Package.describe({
 });
 
 Package.onUse(function (api) {
-  api.versionsFrom('1.1.0.2');
   api.addFiles('react-0.13.3.js');
 
   // So that this package loads after the minified version and overwrites it
-  api.use('react-runtime-prod');
+  api.use('react-runtime-prod@=0.13.3');
 });

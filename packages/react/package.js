@@ -11,7 +11,6 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-  api.versionsFrom('1.1.0.2');
   api.addFiles('react.js');
 
   api.imply([
@@ -22,6 +21,7 @@ Package.onUse(function(api) {
 });
 
 Package.onTest(function(api) {
+  api.versionsFrom('1.1.0.2');
   api.use('tinytest');
   api.use('react');
   api.addFiles('react-tests.js');

@@ -11,7 +11,6 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-  api.versionsFrom('1.1.0.2');
-  api.imply('react-runtime-dev');
-  api.imply('react-runtime-prod');
+  api.imply('react-runtime-dev@=0.13.3');
+  api.imply('react-runtime-prod@=0.13.3');
 });
