@@ -1,7 +1,8 @@
 Package.describe({
   name: 'babel-tests',
   summary: "Tests for the babel package",
-  version: '1.0.0'
+  version: '0.1.0',
+  documentation: 'README.md'
 });
 
 // These tests are in their own package because putting them in the
@@ -15,7 +16,8 @@ Package.onUse(function (api) {
   // this package.  The running happens from onTest.
   api.export('BabelTests');
 
-  api.use('jsx');
+  api.versionsFrom('METEOR@1.1.0.2');
+  api.use('jsx@0.1.0');
   api.use('underscore');
 
   // Tests that call the transpiler (which is only possible on the server)
@@ -25,11 +27,12 @@ Package.onUse(function (api) {
 });
 
 Package.onTest(function (api) {
+  api.versionsFrom('METEOR@1.1.0.2');
   api.use('tinytest');
   api.use('underscore');
-  api.use('babel-compiler', 'server');
+  api.use('babel-compiler@5.4.7', 'server');
   api.use('babel-tests');
-  api.use('jsx');
+  api.use('jsx@0.1.0');
 
   // See comment on transpile-tests.jsx above.
   api.addFiles('transpile-tests-runner.jsx', 'server');

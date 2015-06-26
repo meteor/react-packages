@@ -1,6 +1,6 @@
 Package.describe({
   name: 'react',
-  version: '0.0.1',
+  version: '0.1.0',
   // Brief, one-line summary of the package.
   summary: 'Everything you need to use React with Meteor.',
   // URL to the Git repository containing the source code for this package.
@@ -14,9 +14,9 @@ Package.onUse(function(api) {
   api.addFiles('react.js');
 
   api.imply([
-    'jsx',
-    'react-runtime',
-    'react-meteor-data'
+    'jsx@0.1.0',
+    'react-runtime@0.13.3',
+    'react-meteor-data@0.1.0'
   ]);
 });
 
