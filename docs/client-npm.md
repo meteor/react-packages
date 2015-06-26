@@ -19,12 +19,12 @@ meteor add meteorhacks:npm cosmos:browserify
 
 ### 2. Add the npm modules you want to packages.json
 
-After you have added the packages, run your app once to let some initial setup happen. Then, you should have a file called `packages.json` in the root of your app. Put any NPM packages you would like to load here. We'll use `react-router` as an example, and you'll also want the `exposify` package for step 4:
+After you have added the packages, run your app once to let some initial setup happen. Then, you should have a file called `packages.json` in the root of your app. Put any NPM packages you would like to load here. We'll use `react-router` as an example, and you'll also want the `externalify` package for step 4:
 
 ```js
 {
   "react-router": "0.13.3",
-  "exposify": "0.4.3"
+  "externalify": "0.1.0"
 }
 ```
 
@@ -39,16 +39,15 @@ ReactRouter = require("react-router");
 
 ### 4. Configure Browserify and transforms in app.browserify.options.json
 
-Browserify supports numerous transforms, which let you change the way NPM packages are bundled. In particular, you will want to use the `exposify` transform so that React Router uses Meteor's React package instead of one from NPM. In the same directory as the file above, create a file called `lib/app.browserify.options.json` defining browserify options and transforms:
+Browserify supports numerous transforms, which let you change the way NPM packages are bundled. In particular, you will want to use the `externalify` transform so that React Router uses Meteor's React package instead of one from NPM. In the same directory as the file above, create a file called `lib/app.browserify.options.json` defining browserify options and transforms:
 
 ```js
 {
   "transforms": {
-    "exposify": {
+    "externalify": {
       "global": true,
-      "expose": {
-        "react": "React",
-        "react/addons": "React"
+      "external": {
+        "react": "React.require"
       }
     }
   }
