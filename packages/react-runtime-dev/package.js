@@ -1,6 +1,6 @@
 Package.describe({
   name: 'react-runtime-dev',
-  version: '0.13.3',
+  version: '0.13.3_1',
   // Brief, one-line summary of the package.
   summary: 'Development version of the React runtime library with addons.',
   // URL to the Git repository containing the source code for this package.
@@ -16,8 +16,6 @@ Npm.depends({
 });
 
 Package.onUse(function (api) {
-  api.versionsFrom('1.1.0.2');
-
   api.use('cosmos:browserify@0.4.0');
   api.addFiles('react.browserify.js');
   api.addFiles('react.browserify.options.json');
