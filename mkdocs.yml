@@ -6,4 +6,4 @@ pages:
 - Reactive Meteor data in React: meteor-data.md
 - JSX transpilation and ES6 features: jsx.md
 - Using NPM packages with Browserify: client-npm.md
-- React components inside Meteor templates: react-template-helper.md
+- Using React components in Meteor templates: react-template-helper.md
