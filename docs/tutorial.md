@@ -16,7 +16,17 @@ To run your app, type the `meteor` command in your app directory.
 
 ## Step 2: Adding your first component
 
-First, let's delete the `my-react-app.js` file that Meteor generated for us, and everything except the `<head>...</head>` tag in `my-react-app.html`. Instead of writing HTML templates, we'll be constructing our page from React components.
+First, let's delete the `my-react-app.js` file that Meteor generated for us. We'll change `my-react-app.html` so that it only renders the `<head>` tag and a container div that our app can mount to. Instead of writing HTML templates, we'll be constructing our page from React components.
+
+```html
+<head>
+  <title>Hello World</title>
+</head>
+
+<body>
+  <div id="root"></div>
+</body>
+```
 
 We'll write our code in a new file we'll call `my-react-app.jsx`. In that file, put the following code:
 
@@ -29,7 +39,7 @@ var App = React.createClass({
 
 if (Meteor.isClient) {
   Meteor.startup(function () {
-    React.render(<App />, document.body);
+    React.render(<App />, document.getElementById('root'));
   });
 }
 ```
@@ -71,7 +81,7 @@ var App = React.createClass({
 
 if (Meteor.isClient) {
   Meteor.startup(function () {
-    React.render(<App />, document.body);
+    React.render(<App />, document.getElementById('root'));
   });
 }
 ```
@@ -151,7 +161,7 @@ Meteor.methods({
 
 if (Meteor.isClient) {
   Meteor.startup(function () {
-    React.render(<App />, document.body);
+    React.render(<App />, document.getElementById('root'));
   });
 }
 ```
