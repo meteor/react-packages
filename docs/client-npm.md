@@ -59,10 +59,10 @@ Now, you can use React Router anywhere in your app! You can use the same method 
 ### See it in action in the React Todos example app
 
 - [Meteor packages](https://github.com/meteor/react-packages/blob/e0c3c38cd8117eb9500e7c90fcaa05ab0fb7f638/react-todos/.meteor/packages#L13-L14)
-- [NPM dependencies in packages.json](https://github.com/meteor/react-packages/blob/master/react-todos/packages.json)
-- [Loading React Router in app.browserify.js](https://github.com/meteor/react-packages/blob/master/react-todos/client/lib/app.browserify.js)
-- [Configuring a transform with app.browserify.options.json](https://github.com/meteor/react-packages/blob/master/react-todos/client/lib/app.browserify.options.json)
-- [Defining routes with React Router](https://github.com/meteor/react-packages/blob/master/react-todos/client/routes.jsx)
+- [NPM dependencies in packages.json](https://github.com/meteor/react-packages/blob/master/examples/react-todos/packages.json)
+- [Loading React Router in app.browserify.js](https://github.com/meteor/react-packages/blob/master/examples/react-todos/client/lib/app.browserify.js)
+- [Configuring a transform with app.browserify.options.json](https://github.com/meteor/react-packages/blob/master/examples/react-todos/client/lib/app.browserify.options.json)
+- [Defining routes with React Router](https://github.com/meteor/react-packages/blob/master/examples/react-todos/client/routes.jsx)
 
 ## Module load order
 
