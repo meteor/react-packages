@@ -75,9 +75,7 @@ var Foo = (function (_Bar) {
   function Foo() {
     babelHelpers.classCallCheck(this, Foo);
 
-    if (_Bar != null) {
-      _Bar.apply(this, arguments);
-    }
+    _Bar.apply(this, arguments);
   }
 
   babelHelpers.inherits(Foo, _Bar);
@@ -226,8 +224,8 @@ print(new Bar().x()); // 123`
 print(\`\${x} times \${y} is \${x*y}.\`);
 print(\`\${x} plus \${y} is \${x+y}.\`);`,
         expected: `
-print("" + x + " times " + y + " is " + x * y + ".");
-print("" + x + " plus " + y + " is " + (x + y) + ".");`
+print(x + " times " + y + " is " + x * y + ".");
+print(x + " plus " + y + " is " + (x + y) + ".");`
       },
       {
         name: 'basic multiline',
