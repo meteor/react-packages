@@ -141,7 +141,7 @@ ListShow = React.createClass({
           <input type="text" name="name"
             ref="nameInput"
             defaultValue={ list.name }
-            onKeyUp={ self.titleChanged }
+            onChange={ self.titleChanged }
             onBlur={ self.stopEditingTitle } />
           <div className="nav-group right">
             <a className="nav-item">
