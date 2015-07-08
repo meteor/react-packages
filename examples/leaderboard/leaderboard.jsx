@@ -15,8 +15,8 @@ if (Meteor.isClient) {
     selectedPlayerId() {
       return Session.get("selectedPlayer");
     },
-    Leaderboard() {
-      return Leaderboard;
+    PlayerList() {
+      return PlayerList;
     }
   });
 

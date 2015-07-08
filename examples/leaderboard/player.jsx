@@ -1,6 +1,6 @@
 // @jsx React.DOM
 
-Leaderboard = React.createClass({
+PlayerList = React.createClass({
   propTypes: {
     players: React.PropTypes.array.isRequired
   },
