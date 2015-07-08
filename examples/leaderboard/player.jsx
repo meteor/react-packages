@@ -2,28 +2,59 @@
 
 Leaderboard = React.createClass({
   propTypes: {
-    selectedPlayerId: React.PropTypes.string,
     players: React.PropTypes.array.isRequired
   },
-  selectPlayer(playerId) {
-    Session.set("selectedPlayer", playerId);
+
+  setSelectedPlayer(id) {
+    Session.set("selectedPlayer", id);
   },
+
+  getSelectedPlayer() {
+    return Session.get("selectedPlayer");
+  },
+
   render() {
-    var self = this;
-
-    return <ul className="leaderboard">{
-      this.props.players.map((player) => {
-        var className = "player";
-        if (this.props.selectedPlayerId === player._id) {
-          className += " selected";
-        }
-
-        return <li className={ className } key={ player._id }
-            onClick={ self.selectPlayer.bind(self, player._id) }>
-          <span className="name">{ player.name }</span>
-          <span className="score">{ player.score }</span>
-        </li>
-      })
-    }</ul>
+    return (
+     <ul className="leaderboard">
+       {
+         this.props.players.map((player) => {
+           return (
+             <PlayerItem
+               key={ player._id }
+               getSelectedPlayer={ this.getSelectedPlayer }
+               setSelectedPlayer={ this.setSelectedPlayer }
+               player={player} />
+           );
+         })
+       }
+     </ul>
+    );
   }
-})
+});
+
+
+PlayerItem = React.createClass({
+  handleClick() {
+    var playerId = this.props.player._id;
+    this.props.setSelectedPlayer(playerId);
+  },
+
+  getClassName() {
+    var selectedId = this.props.getSelectedPlayer();
+    var playerId = this.props.player._id;
+
+    return (selectedId === playerId) ? 'player selected' : 'player';
+  },
+
+  render() {
+    var player = this.props.player;
+
+    return (
+      <li className={ this.getClassName() } onClick={ this.handleClick }>
+        <span className="name">{ player.name }</span>
+        <span className="score">{ player.score }</span>
+      </li>
+    );
+  }
+});
+
