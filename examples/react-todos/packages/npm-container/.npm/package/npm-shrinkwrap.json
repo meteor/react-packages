@@ -150,7 +150,7 @@
           "version": "3.4.0",
           "dependencies": {
             "through": {
-              "version": "2.3.7"
+              "version": "2.3.8"
             },
             "jstransform": {
               "version": "10.1.0",

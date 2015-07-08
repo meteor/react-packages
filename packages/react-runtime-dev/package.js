@@ -1,6 +1,6 @@
 Package.describe({
   name: 'react-runtime-dev',
-  version: '0.13.3_1',
+  version: '0.13.3_2',
   // Brief, one-line summary of the package.
   summary: 'Development version of the React runtime library with addons.',
   // URL to the Git repository containing the source code for this package.
@@ -25,7 +25,7 @@ Package.onUse(function (api) {
   // load react-runtime-dev last so that the React DevTools work properly.
   // (The react-runtime package currently loads both because there's no way
   // to have a prod-only dependency or a prod-only file in a package.)
-  api.use('react-runtime-prod', {weak: true});
+  api.use('react-runtime-prod@0.0.0', {weak: true});
 
   api.export('ReactDev');
 });
