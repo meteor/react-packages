@@ -2,15 +2,12 @@
 
 PlayerList = React.createClass({
   propTypes: {
+    selectedPlayerId: React.PropTypes.string,
     players: React.PropTypes.array.isRequired
   },
 
   setSelectedPlayer(id) {
     Session.set("selectedPlayer", id);
-  },
-
-  getSelectedPlayer() {
-    return Session.get("selectedPlayer");
   },
 
   render() {
@@ -21,7 +18,7 @@ PlayerList = React.createClass({
            return (
              <PlayerItem
                key={ player._id }
-               getSelectedPlayer={ this.getSelectedPlayer }
+               selectedPlayerId={ this.props.selectedPlayerId }
                setSelectedPlayer={ this.setSelectedPlayer }
                player={player} />
            );
@@ -40,9 +37,8 @@ PlayerItem = React.createClass({
   },
 
   getClassName() {
-    var selectedId = this.props.getSelectedPlayer();
+    var selectedId = this.props.selectedPlayerId;
     var playerId = this.props.player._id;
-
     return (selectedId === playerId) ? 'player selected' : 'player';
   },
 
