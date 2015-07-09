@@ -15,9 +15,11 @@ meteor add react
 
 ### What's in the box?
 
-1. The `React` runtime library for defining and rendering components
-2. A compiler that automatically transforms `.jsx` files into JavaScript, and lets you use some ES6 features
-3. A React mixin called `ReactMeteorData` that lets you easily use data from Meteor collections and other reactive sources in your components
+The `react` meta-package comes with everything you need to build your Meteor app with React. You can also add any of the parts individually:
+
+1. `react-runtime`: The React library itself
+2. `jsx`: A compiler that automatically transforms `.jsx` files into JavaScript, and lets you use some ES6 features
+3. `react-meteor-data`: A React mixin called `ReactMeteorData` that lets you easily use data from Meteor collections and other reactive sources in your components
 
 ### Next steps
 
@@ -25,15 +27,6 @@ Now that you have created an app and added everything you need, do these next:
 
 1. Follow the [tutorial](tutorial.md)
 2. Check out the [example apps](https://github.com/meteor/react-packages/tree/master/examples)
-
-## Adding individual packages
-
-If you would rather pick and choose individual packages to include rather than using the `react` meta-package, you can include one or more of the following:
-
-1. `react-runtime` - the React library itself
-2. `jsx` - a compiler to compile files with the `.jsx` extension to JavaScript
-3. `react-meteor-data` - a mixin to integrate Meteor reactive data sources with React components
-4. `react-template-helper` - include a React component inside your Meteor template
 
 ## Contributing and filing bugs
 
