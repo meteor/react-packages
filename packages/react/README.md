@@ -9,7 +9,7 @@ This is a meta-package that gives you everything you need to use
 1. `react-runtime`, the actual React library that renders view components
 2. `jsx`, a build plugin that compiles `.jsx` files into plain JavaScript,
 including support for many ES6 features
-3. `react-data`, a mixin that makes it easy to use reactive Meteor data in
+3. `react-meteor-data`, a mixin that makes it easy to use reactive Meteor data in
 your React components
 
 Check out the React in Meteor guide to learn how to use Meteor and React
