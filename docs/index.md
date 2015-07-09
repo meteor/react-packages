@@ -21,6 +21,10 @@ The `react` meta-package comes with everything you need to build your Meteor app
 2. `jsx`: A compiler that automatically transforms `.jsx` files into JavaScript, and lets you use some ES6 features
 3. `react-meteor-data`: A React mixin called `ReactMeteorData` that lets you easily use data from Meteor collections and other reactive sources in your components
 
+### Additional available packages
+
+1. `react-template-helper`: Include React components anywhere in your Meteor Blaze templates; [read more](react-template-helper.md)
+
 ### Next steps
 
 Now that you have created an app and added everything you need, do these next:
