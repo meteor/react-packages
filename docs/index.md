@@ -23,7 +23,7 @@ The `react` meta-package comes with everything you need to build your Meteor app
 
 ### Additional available packages
 
-1. `react-template-helper`: Include React components anywhere in your Meteor Blaze templates; [read more](react-template-helper.md)
+1. `react-template-helper`: Include React components anywhere in your Meteor Blaze templates. [Read the guide here.](react-template-helper.md)
 
 ### Next steps
 
