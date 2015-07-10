@@ -128,9 +128,11 @@ babelHelpers = {
   // es6.destructuring
   objectWithoutProperties: function (obj, keys) {
     var target = {};
-    for (var i in obj) {
-      if (keys.indexOf(i) >= 0) continue;
+    outer: for (var i in obj) {
       if (! _hasOwnProperty.call(obj, i)) continue;
+      for (var j = 0; j < keys.length; j++) {
+        if (keys[j] === i) continue outer;
+      }
       target[i] = obj[i];
     }
     return target;
