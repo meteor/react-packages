@@ -61,7 +61,7 @@ Tinytest.add("babel - runtime - classes - basic", function (test) {
 
 Tinytest.add("babel - runtime - classes - use before declare", function (test) {
   var x = function asdf() {};
-  if (typeof 'asdf' === 'function') {
+  if (typeof asdf === 'function') {
     // We seem to be in IE 8, where function names leak into the enclosing
     // scope, contrary to the spec.  In this case, Babel does not (currently)
     // throw an error if you use a class before you declare it.  (Of course,
@@ -98,6 +98,21 @@ Tinytest.add("babel - runtime - classes - inheritance", function (test) {
     test.equal(Bar.static2(), 2);
   }
 
+  {
+    var buf = [];
+    class Foo {
+      constructor() {
+        buf.push('hi');
+      }
+    }
+
+    class Bar extends Foo {}
+
+    new Bar();
+    // derived class with no constructor gets a default constructor
+    // that calls the super constructor
+    test.equal(buf, ['hi']);
+  }
 });
 
 Tinytest.add("babel - runtime - classes - computed props", function (test) {
@@ -115,8 +130,8 @@ Tinytest.add("babel - runtime - classes - computed props", function (test) {
 if (Meteor.isServer) {
   // getters and setters don't work in all clients, but they should work
   // in classes on browsers that support them in the first place, and on
-  // the server.  (Technically they just need Object.defineProperty, in
-  // IE9+ and all modern environments.)
+  // the server.  (Technically they just need a working
+  // Object.defineProperty, found in IE9+ and all modern environments.)
   Tinytest.add("babel - runtime - classes - getters/setters", function (test) {
     // uses `babelHelpers.createClass`
     class Foo {
@@ -190,6 +205,7 @@ Tinytest.add("babel - runtime - classes - super", function (test) {
 
 Tinytest.add("babel - runtime - object rest/spread", function (test) {
   var middle = {b:2, c:3};
+  // uses `babelHelpers._extends`
   var full = {a:1, ...middle, d:4};
   test.equal(full, {a:1, b:2, c:3, d:4});
 });
@@ -234,7 +250,6 @@ Tinytest.add("babel - runtime - jsx - basic", function (test) {
     }
   };
   var props = {className: "foo"};
-  // uses `babelHelpers._extends`
   test.equal(<div {...props}>Hi</div>,
              ['div', {className: "foo"}, 'Hi']);
 });
