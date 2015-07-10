@@ -1,7 +1,7 @@
 Package.describe({
   name: 'babel-tests',
   summary: "Tests for the babel package",
-  version: '0.1.0',
+  version: '0.1.1',
   documentation: 'README.md'
 });
 
@@ -14,9 +14,9 @@ Package.onTest(function (api) {
   api.versionsFrom('METEOR@1.1.0.2');
   api.use('tinytest');
   api.use('underscore');
-  api.use('babel-compiler@5.4.7', 'server');
+  api.use('babel-compiler@5.6.15', 'server');
   api.use('babel-tests');
-  api.use('jsx@0.1.0');
+  api.use('jsx@0.1.1');
 
   // Tests that call the transpiler (which is only possible on the server)
   // and look at the result.
