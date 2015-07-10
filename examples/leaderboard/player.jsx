@@ -1,5 +1,3 @@
-// @jsx React.DOM
-
 PlayerList = React.createClass({
   propTypes: {
     selectedPlayerId: React.PropTypes.string,
@@ -53,4 +51,3 @@ PlayerItem = React.createClass({
     );
   }
 });
-
