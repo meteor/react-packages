@@ -4,14 +4,15 @@ Tinytest.add("babel - runtime - template literals", function (test) {
             _.toArray(arguments).slice(1)];
   };
   var foo = 'B';
+  // uses `babelHelpers.taggedTemplateLiteralLoose`
   test.equal(`\u0041${foo}C`, 'ABC');
   test.equal(dump`\u0041${foo}C`,
              [{0:'A', 1: 'C', raw: ['\\u0041', 'C']},
               ['B']]);
 });
 
-Tinytest.add("babel - runtime - classes", function (test) {
-  (function () {
+Tinytest.add("babel - runtime - classes - basic", function (test) {
+  {
     class Foo {
       constructor(x) {
         this.x = x;
@@ -23,9 +24,9 @@ Tinytest.add("babel - runtime - classes", function (test) {
     });
 
     test.equal((new Foo(3)).x, 3);
-  })();
+  }
 
-  (function () {
+  {
     class Bar {
       constructor(x) {
         this.x = x;
@@ -40,19 +41,9 @@ Tinytest.add("babel - runtime - classes", function (test) {
     test.equal((new Foo(3)).x, 3);
     test.isTrue((new Foo(3)) instanceof Foo);
     test.isTrue((new Foo(3)) instanceof Bar);
-  })();
-
-  var x = function asdf() {};
-  if (typeof 'asdf' === 'function') {
-    // IE 8 scope leak
-    test.expect_fail();
   }
-  test.throws(function () {
-    new Foo(); // use before definition
-    class Foo {}
-  });
 
-  (function () {
+  {
     class Foo {
       static staticMethod() {
         return 'classy';
@@ -65,9 +56,30 @@ Tinytest.add("babel - runtime - classes", function (test) {
 
     test.equal(Foo.staticMethod(), 'classy');
     test.equal((new Foo).prototypeMethod(), 'prototypical');
-  })();
+  }
+});
 
-  (function () {
+Tinytest.add("babel - runtime - classes - use before declare", function (test) {
+  var x = function asdf() {};
+  if (typeof 'asdf' === 'function') {
+    // We seem to be in IE 8, where function names leak into the enclosing
+    // scope, contrary to the spec.  In this case, Babel does not (currently)
+    // throw an error if you use a class before you declare it.  (Of course,
+    // any other browser can tell the developer they screwed up!)
+    test.expect_fail();
+  }
+
+  test.throws(function () {
+    new Foo(); // use before definition
+    class Foo {}
+  });
+});
+
+
+Tinytest.add("babel - runtime - classes - inheritance", function (test) {
+
+  // uses `babelHelpers.inherits`
+  {
     class Foo {
       static static1() {
         return 1;
@@ -84,9 +96,12 @@ Tinytest.add("babel - runtime - classes", function (test) {
     test.equal(Foo.static2(), 2);
     test.equal(Bar.static1(), 1);
     test.equal(Bar.static2(), 2);
-  })();
+  }
 
-  (function () {
+});
+
+Tinytest.add("babel - runtime - classes - computed props", function (test) {
+  {
     var frob = "inc";
 
     class Foo {
@@ -94,11 +109,28 @@ Tinytest.add("babel - runtime - classes", function (test) {
     }
 
     test.equal(Foo.inc(3), 4);
-  })();
+  }
 });
 
+if (Meteor.isServer) {
+  // getters and setters don't work in all clients, but they should work
+  // in classes on browsers that support them in the first place, and on
+  // the server.  (Technically they just need Object.defineProperty, in
+  // IE9+ and all modern environments.)
+  Tinytest.add("babel - runtime - classes - getters/setters", function (test) {
+    // uses `babelHelpers.createClass`
+    class Foo {
+      get two() { return 1+1; }
+      static get three() { return 1+1+1; }
+    }
+
+    test.equal((new Foo).two, 2);
+    test.equal(Foo.three, 3);
+  });
+}
+
 Tinytest.add("babel - runtime - block scope", function (test) {
-  (function () {
+  {
     var buf = [];
     var thunks = [];
     var print = function (x) {
@@ -122,11 +154,11 @@ Tinytest.add("babel - runtime - block scope", function (test) {
 
     _.each(thunks, f => f());
     test.equal(buf, [0, 1, 2]);
-  })();
+  }
 });
 
 Tinytest.add("babel - runtime - classes - super", function (test) {
-  (function () {
+  {
     class Class1 {
       foo() { return 123; }
       static bar() { return 1; }
@@ -139,9 +171,9 @@ Tinytest.add("babel - runtime - classes - super", function (test) {
     }
 
     test.equal((new Class3).foo(), 124);
-  })();
+  }
 
-  (function () {
+  {
     class Foo {
       constructor(value) { this.value = value; }
       x() { return this.value; }
@@ -153,7 +185,7 @@ Tinytest.add("babel - runtime - classes - super", function (test) {
     }
 
     test.equal((new Bar).x(), 123);
-  })();
+  }
 });
 
 Tinytest.add("babel - runtime - object rest/spread", function (test) {
@@ -162,7 +194,27 @@ Tinytest.add("babel - runtime - object rest/spread", function (test) {
   test.equal(full, {a:1, b:2, c:3, d:4});
 });
 
+Tinytest.add("babel - runtime - spread args to new", function (test) {
+
+  var Foo = function (one, two, three) {
+    test.isTrue(this instanceof Foo);
+    test.equal(one, 1);
+    test.equal(two, 2);
+    test.equal(three, 3);
+    this.created = true;
+  };
+
+  var oneTwo = [1, 2];
+
+  // uses `babelHelpers.bind`
+  var foo = new Foo(...oneTwo, 3);
+  test.isTrue(foo.created);
+});
+
 Tinytest.add("babel - runtime - destructuring", function (test) {
+  // uses `babelHelpers.objectWithoutProperties` and
+  // `babelHelpers.objectDestructuringEmpty`
+
   var obj = {a:1, b:2};
   var {a, ...rest} = obj;
   test.equal(a, 1);
@@ -182,6 +234,7 @@ Tinytest.add("babel - runtime - jsx - basic", function (test) {
     }
   };
   var props = {className: "foo"};
+  // uses `babelHelpers._extends`
   test.equal(<div {...props}>Hi</div>,
              ['div', {className: "foo"}, 'Hi']);
 });
