@@ -76,6 +76,14 @@ babelHelpers = {
   },
 
   createClass: (function () {
+    var hasDefineProperty = false;
+    try {
+      // IE 8 has a broken Object.defineProperty, so feature-test by
+      // trying to call it.
+      Object.defineProperty({}, 'x', {});
+      hasDefineProperty = true;
+    } catch (e) {}
+
     function defineProperties(target, props) {
       for (var i = 0; i < props.length; i++) {
         var descriptor = props[i];
@@ -87,12 +95,15 @@ babelHelpers = {
     }
 
     return function (Constructor, protoProps, staticProps) {
-      if (! Object.defineProperty) {
+      if (! hasDefineProperty) {
         // e.g. `class Foo { get bar() {} }`.  If you try to use getters and
         // setters in IE 8, you will get a big nasty error, with or without
-        // Babel.
+        // Babel.  I don't know of any other syntax features besides getters
+        // and setters that will trigger this error.
         throw new Error(
-          "Your browser does not support this type of class property");
+          "Your browser does not support this type of class property.  " +
+            "For example, Internet Explorer 8 does not support getters and " +
+            "setters.");
       }
 
       if (protoProps) defineProperties(Constructor.prototype, protoProps);
