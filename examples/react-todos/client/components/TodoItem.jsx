@@ -1,5 +1,3 @@
-// @jsx React.DOM
-
 TodoItem = React.createClass({
   getInitialState() {
     return {

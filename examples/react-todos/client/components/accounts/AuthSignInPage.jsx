@@ -1,5 +1,3 @@
-// @jsx React.DOM
-
 var {
   Navigation,
   Link
@@ -47,7 +45,7 @@ AuthSignInPage = React.createClass({
 
         return;
       }
-      
+
       self.transitionTo('root');
     });
   },
