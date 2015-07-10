@@ -1,6 +1,7 @@
 // The name `babelHelpers` is hard-coded in Babel.  Otherwise we would make it
 // something capitalized and more descriptive, like `BabelRuntime`.
 babelHelpers = {
+  // es6.templateLiterals
   // Constructs the object passed to the tag function in a tagged
   // template literal.
   taggedTemplateLiteralLoose: function (strings, raw) {
@@ -12,6 +13,7 @@ babelHelpers = {
     return strings;
   },
 
+  // es6.classes
   // Checks that a class constructor is being called with `new`, and throws
   // an error if it is not.
   classCallCheck: function (instance, Constructor) {
@@ -20,6 +22,7 @@ babelHelpers = {
     }
   },
 
+  // es6.classes
   inherits: function (subClass, superClass) {
     if (typeof superClass !== "function" && superClass !== null) {
       throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
@@ -71,7 +74,34 @@ babelHelpers = {
       }
     }
   },
-  // used by es7.objectRestSpread and JSX
+
+  createClass: (function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (! Object.defineProperty) {
+        // e.g. `class Foo { get bar() {} }`.  If you try to use getters and
+        // setters in IE 8, you will get a big nasty error, with or without
+        // Babel.
+        throw new Error(
+          "Your browser does not support this type of class property");
+      }
+
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  })(),
+
+  // es7.objectRestSpread and react (JSX)
   _extends: Object.assign || (function (target) {
     for (var i = 1; i < arguments.length; i++) {
       var source = arguments[i];
@@ -83,7 +113,8 @@ babelHelpers = {
     }
     return target;
   }),
-  // used by es6.destructuring
+
+  // es6.destructuring
   objectWithoutProperties: function (obj, keys) {
     var target = {};
     for (var i in obj) {
@@ -93,10 +124,74 @@ babelHelpers = {
     }
     return target;
   },
-  // used by es6.destructuring
+
+  // es6.destructuring
   objectDestructuringEmpty: function (obj) {
     if (obj == null) throw new TypeError("Cannot destructure undefined");
-  }
+  },
+
+  // es6.spread
+  bind: Function.prototype.bind || (function () {
+    var isCallable = function (value) { return typeof value === 'function'; };
+    var $Object = Object;
+    var to_string = Object.prototype.toString;
+    var array_slice = Array.prototype.slice;
+    var array_concat = Array.prototype.concat;
+    var array_push = Array.prototype.push;
+    var max = Math.max;
+    var Empty = function Empty() {};
+
+    // Copied from es5-shim.js (3ac7942).  See original for more comments.
+    return function bind(that) {
+      var target = this;
+      if (!isCallable(target)) {
+        throw new TypeError('Function.prototype.bind called on incompatible ' + target);
+      }
+
+      var args = array_slice.call(arguments, 1);
+
+      var bound;
+      var binder = function () {
+
+        if (this instanceof bound) {
+          var result = target.apply(
+            this,
+            array_concat.call(args, array_slice.call(arguments))
+          );
+          if ($Object(result) === result) {
+            return result;
+          }
+          return this;
+        } else {
+          return target.apply(
+            that,
+            array_concat.call(args, array_slice.call(arguments))
+          );
+        }
+      };
+
+      var boundLength = max(0, target.length - args.length);
+
+      var boundArgs = [];
+      for (var i = 0; i < boundLength; i++) {
+        array_push.call(boundArgs, '$' + i);
+      }
+
+      // Create a Function from source code so that it has the right `.length`.
+      // Probably not important for Babel.  This code violates CSPs that ban
+      // `eval`, but the browsers that need this polyfill don't have CSP!
+      bound = Function('binder', 'return function (' + boundArgs.join(',') + '){ return binder.apply(this, arguments); }')(binder);
+
+      if (target.prototype) {
+        Empty.prototype = target.prototype;
+        bound.prototype = new Empty();
+        Empty.prototype = null;
+      }
+
+      return bound;
+    };
+
+  })()
 };
 
 var _hasOwnProperty = Object.prototype.hasOwnProperty;
