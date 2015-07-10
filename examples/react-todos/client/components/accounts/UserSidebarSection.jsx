@@ -1,5 +1,3 @@
-// @jsx React.DOM
-
 var Link = ReactRouter.Link;
 
 UserSidebarSection = React.createClass({

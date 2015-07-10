@@ -1,5 +1,3 @@
-// @jsx React.DOM
-
 AppNotFound = React.createClass({
   render() {
     return <div className="page not-found">

@@ -1,5 +1,3 @@
-// @jsx React.DOM
-
 AuthFormInput = React.createClass({
   propTypes: {
     hasError: React.PropTypes.bool,

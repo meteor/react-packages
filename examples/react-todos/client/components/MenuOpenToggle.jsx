@@ -1,5 +1,3 @@
-// @jsx React.DOM
-
 MenuOpenToggle = React.createClass({
   contextTypes: {
     toggleMenuOpen: React.PropTypes.func.isRequired
