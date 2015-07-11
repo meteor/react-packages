@@ -206,15 +206,15 @@ ListShow = React.createClass({
     }
 
     var showTodoItemHTML = self.data.tasks.map(function (task) {
-            return (
-              <TodoItem
-                key={ task._id }
-                task={ task }
-                beingEdited={ task._id === self.state.taskBeingEditedId }
-                onInitiateEdit={ self.setTaskBeingEdited.bind(self, task._id) }
-                onStopEdit={ self.setTaskBeingEdited.bind(self, null) } />
-            );
-          });
+      return (
+        <TodoItem
+          key={ task._id }
+          task={ task }
+          beingEdited={ task._id === self.state.taskBeingEditedId }
+          onInitiateEdit={ self.setTaskBeingEdited.bind(self, task._id) }
+          onStopEdit={ self.setTaskBeingEdited.bind(self, null) } />
+      );
+      });
 
     return (
       <div className="page lists-show">
