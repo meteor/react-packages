@@ -30,6 +30,6 @@ ListTodos = React.createClass({
       <div>
         { showTodoList }  
       </div>
-      );
+    );
   }
 });
