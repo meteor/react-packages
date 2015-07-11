@@ -45,8 +45,7 @@ UserSidebarSection = React.createClass({
             <a className="btn-secondary" onClick={ self.logout } >Logout</a> : ""}
         </div>
       );
-    } 
-    else {
+    } else {
       showHTML = ( 
         <div className="btns-group">
           <Link to="signin" className="btn-secondary">Sign in</Link>
