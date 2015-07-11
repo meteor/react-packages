@@ -1,6 +1,4 @@
-var {
-  Link
-} = ReactRouter;
+var Link = ReactRouter.Link;
 
 
 ListTodos = React.createClass({

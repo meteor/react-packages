@@ -99,18 +99,11 @@ AppBody = React.createClass({
     return (
       <div id="container" className={ appBodyContainerClass }>
 
-        <section id="menu">
-          <UserSidebarSection user={ self.data.currentUser } />
-          <div className="list-todos">
-            <a className="link-list-new" onClick={ self.addList }>
-              <span className="icon-plus"></span>
-              New List
-            </a>
-          
-            <ListTodos lists={self.data.lists} getListId={self.getListId} />
-
-          </div>
-        </section>
+        <LeftPanel 
+          currentUser={self.data.currentUser} 
+          addList={self.addList}
+          lists={self.data.lists}
+          getListId={self.getListId} />
 
         { self.data.disconnected ? <ConnectionIssueDialog /> : "" }
 
