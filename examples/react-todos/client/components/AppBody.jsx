@@ -5,12 +5,14 @@ var {
   RouteHandler
 } = ReactRouter;
 
+
 // true if we should show an error dialog when there is a connection error.
 // Exists so that we don't show a connection error dialog when the app is just
 // starting and hasn't had a chance to connect yet.
 var ShowConnectionIssues = new ReactiveVar(false);
 
 var CONNECTION_ISSUE_TIMEOUT = 5000;
+
 
 // Only show the connection error box if it has been 5 seconds since
 // the app started
@@ -19,24 +21,31 @@ setTimeout(function () {
   ShowConnectionIssues.set(true);
 }, CONNECTION_ISSUE_TIMEOUT);
 
+
+//
+// React class.
 AppBody = React.createClass({
   mixins: [ReactMeteorData, Navigation, State],
   propTypes: {
     handles: React.PropTypes.array.isRequired,
   },
+
   getInitialState() {
     return {
       menuOpen: false
     };
   },
+
   childContextTypes: {
     toggleMenuOpen: React.PropTypes.func.isRequired
   },
+
   getChildContext() {
     return {
       toggleMenuOpen: this.toggleMenuOpen
     }
   },
+
   getMeteorData() {
     var subsReady = _.all(this.props.handles, function (handle) {
       return handle.ready();
@@ -49,12 +58,14 @@ AppBody = React.createClass({
       disconnected: ShowConnectionIssues.get() && (! Meteor.status().connected)
     };
   },
+
   toggleMenuOpen() {
     console.log("hello");
     this.setState({
       menuOpen: ! this.state.menuOpen
     });
   },
+
   addList() {
     var list = {
       name: Lists.defaultName(),
@@ -65,9 +76,11 @@ AppBody = React.createClass({
 
     this.transitionTo('todoList', { listId: listId });
   },
+
   getListId() {
     return this.getParams().listId;
   },
+
   render() {
     var self = this;
 
