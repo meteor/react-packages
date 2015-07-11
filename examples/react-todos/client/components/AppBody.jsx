@@ -23,9 +23,11 @@ setTimeout(function () {
 
 
 //
-// React class.
+// React classes.
+//
 AppBody = React.createClass({
   mixins: [ReactMeteorData, Navigation, State],
+
   propTypes: {
     handles: React.PropTypes.array.isRequired,
   },
@@ -94,29 +96,9 @@ AppBody = React.createClass({
       appBodyContainerClass += " menu-open";
     }
 
-    var listTodos = self.data.lists.map(function (list) {
-            var className = "list-todo";
-            if (self.getListId() === list._id) {
-              className += " active";
-            }
-
-            return (
-              <Link
-                className={ className }
-                key={ list._id }
-                to="todoList"
-                params={{ listId: list._id }}>
-                  { list.name }
-                  { list.incompleteCount ?
-                    <span className="count-list">
-                      { list.incompleteCount }
-                    </span> : "" }
-              </Link>
-            );
-          });
-
     return (
-        <div id="container" className={ appBodyContainerClass }>
+      <div id="container" className={ appBodyContainerClass }>
+
         <section id="menu">
           <UserSidebarSection user={ self.data.currentUser } />
           <div className="list-todos">
@@ -125,17 +107,21 @@ AppBody = React.createClass({
               New List
             </a>
           
-            { listTodos }
+            <ListTodos lists={self.data.lists} getListId={self.getListId} />
 
           </div>
         </section>
+
         { self.data.disconnected ? <ConnectionIssueDialog /> : "" }
+
         <div className="content-overlay" onClick={ self.toggleMenuOpen }></div>
+
         <div id="content-container">
           { self.data.subsReady ?
             <RouteHandler /> :
             <AppLoading /> }
         </div>
+
       </div>
     );
   }
