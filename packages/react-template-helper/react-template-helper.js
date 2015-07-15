@@ -12,7 +12,7 @@ Template.React.onRendered(function () {
     var comp = data && data.component;
     if (! comp) {
       throw new Error(
-        "In template " + parentTemplate + ", call to `{{> React ... }}` missing " +
+        "In template \"" + parentTemplate + "\", call to `{{> React ... }}` missing " +
           "`component` argument.");
     }
 
@@ -29,7 +29,7 @@ Template.React.onRendered(function () {
             : "a React component";
 
       throw new Error(
-        "Template " + parentTemplate + " must render " + compDescriptor +
+        "Template \"" + parentTemplate + "\" must render " + compDescriptor +
           " as the only child of its parent element. Learn more at " +
           "https://github.com/meteor/meteor/wiki/React-components-must-be-the-only-thing-in-their-wrapper-element");
     }
@@ -49,19 +49,27 @@ Template.React.onDestroyed(function () {
 // React ...}}` is being used. Used to print more explicit error messages
 function parentTemplateName () {
   var view = Blaze.getView();
-  if (view.name !== "Template.React")
+  if (!view || view.name !== "Template.React")
     throw new Error("Unexpected: called outside of Template.React");
 
+  // find the first parent view which is a template or body
   view = view.parentView;
-  while (! (view.template && (view.name.match(/^Template\./)) || view.name === "body")) {
+  while (view) {
+    var m;
+    // check `view.name.match(/^Template\./)` because iron-router (and
+    // maybe other packages) create a view named "yield" that has the
+    // `template` property set
+    if (view.template && view.name && (m = view.name.match(/^Template\.(.*)/))) {
+      return m[1];
+    } else if (view.name === "body") {
+      return "<body>";
+    }
+
     view = view.parentView;
   }
 
-  if (view.name === "body") {
-    return "<body>";
-  } else {
-    return view.name.match(/^Template\.(.*)$/)[1];
-  }
+  // not sure when this could happen
+  return "<unknown>";
 };
 
 // Gets the number of child nodes of `el` that aren't only whitespace
