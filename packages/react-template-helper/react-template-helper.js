@@ -53,14 +53,15 @@ function parentTemplateName () {
     throw new Error("Unexpected: called outside of Template.React");
 
   view = view.parentView;
-  while (! view.template)
+  while (! (view.template && (view.name.match(/^Template\./)) || view.name === "body")) {
     view = view.parentView;
+  }
 
-  var match = view.name.match(/Template\.(.*)/);
-  if (! match)
-    throw new Error("Unexpected: View doesn't correspond to a template? " + view.name);
-
-  return match[1];
+  if (view.name === "body") {
+    return "<body>";
+  } else {
+    return view.name.match(/^Template\.(.*)$/)[1];
+  }
 };
 
 // Gets the number of child nodes of `el` that aren't only whitespace
