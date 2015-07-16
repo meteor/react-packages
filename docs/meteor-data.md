@@ -9,6 +9,8 @@ Many data sources in Meteor are "reactive" &mdash; that is, they use Meteor's [T
 
 ## The ReactMeteorData mixin
 
+This mixin comes with the `react` meta-package; you can also include it directly with `meteor add react-meteor-data`.
+
 In order to make it easy to use these data sources together with React components, we have created a React mixin called `ReactMeteorData`. Once you have added this mixin to your component, you can define a method called `getMeteorData` on your component.
 
 Inside `getMeteorData`, you can access any Meteor reactive data source, as well as `this.props` and `this.state`. `getMeteorData` will reactively rerun when the accessed data changes. `getMeteorData` must return an object, and the properties of the object will be copied onto the component's `this.data`.  To use the data, you access `this.data` from the `render()` method.
