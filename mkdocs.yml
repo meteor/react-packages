@@ -2,8 +2,9 @@ site_name: React in Meteor Preview
 theme: readthedocs
 pages:
 - Getting started: index.md
-- Tutorial: tutorial.md
+- Tutorials: tutorial.md
 - Reactive Meteor data in React: meteor-data.md
 - JSX transpilation and ES6 features: jsx.md
-- Using NPM packages with Browserify: client-npm.md
-- Using React components in Meteor templates: react-template-helper.md
+- Client NPM packages with Browserify: client-npm.md
+- React components in Meteor templates: react-template-helper.md
+- Community Meteor + React tools: react-template-helper.md
