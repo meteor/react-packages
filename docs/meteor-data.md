@@ -86,6 +86,15 @@ However, after some research and discussion with React developers from different
 
 Mixins are also the best way of polyfilling [React's proposed standard pattern](https://github.com/facebook/react/issues/3398) for getting reactive data into components. When the `observe` API is shipped in React, or when decorators or mixins are added to JavaScript classes, we will consider switching to those if they provide a better integration.  We expect the community will also experiment with other integrations.
 
+### Why we use `this.data` instead of `this.state`
+
+Some previous Meteor and React integrations put the data retrieved from Meteor collections on the `state` field of the component. While this does have some advantages, for example being able to use `shouldComponentUpdate` to block updates, we have decided to go with a different pattern for the officially supported integration. We didn't take this decision lightly; it is based on extensive research into the wider React ecosystem, how React is used with other libraries, and future React API discussions. Here are some of our findings:
+
+1. It is easy to create an infinite loop if your data both depends on state and modifies state.
+2. The most serious discussions about an official data loading API for Meteor through Observables are centering around a `data` property. This property, and the ability to observe reactive data, might be built into React at some point. When it is, we want the migration path to be as short as possible.
+3. Facebook's official [Parse and React](https://github.com/ParsePlatform/ParseReact) integration uses the same pattern, and they probably thought about it a lot as well.
+4. It is useful to be able to separate which properties are a local implementation detail of the component, and which are canonical data from the server.
+
 ### How the mixin works
 
 The component's `this.data` is initially populated from a `componentDidMount` callback.
