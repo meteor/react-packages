@@ -4,7 +4,7 @@ These tools work with the packages explained in this guide, and give you extra f
 
 ## Coffeescript and JSX
 
-1. [jhartma:cjsx](https://atmospherejs.com/reduxfj/react-meteor-cjsx)
+1. [jhartma:cjsx](https://atmospherejs.com/jhartma/cjsx)
 
 ## JSX templating
 
