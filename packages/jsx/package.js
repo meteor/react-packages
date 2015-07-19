@@ -17,3 +17,12 @@ Package.onUse(function (api) {
   // We need the Babel helpers as a run-time dependency of the generated code.
   api.imply('babel-runtime@0.1.1');
 });
+
+Package.onTest(function (api) {
+  api.versionsFrom('METEOR@1.1.0.2');
+  api.use('tinytest');
+  api.use('underscore');
+  api.use('jsx');
+
+  api.addFiles('jsx-tests.jsx');
+});
