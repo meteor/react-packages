@@ -1,12 +1,8 @@
 const {
-  ListItem,
-  List,
-  Avatar,
   RaisedButton
 } = mui;
 
-injectTapEventPlugin();
-var ThemeManager = new mui.Styles.ThemeManager();
+const ThemeManager = new mui.Styles.ThemeManager();
 
 App = React.createClass({
   mixins: [ReactMeteorData],
@@ -38,7 +34,7 @@ App = React.createClass({
     Players.update(playerId, {$inc: {score: 5}});
   },
   render() {
-    var bottomBar;
+    let bottomBar;
     if (this.state.selectedPlayerId) {
       bottomBar = (
         <div className="details">
@@ -67,54 +63,4 @@ App = React.createClass({
       </div>
     )
   }
-});
-
-Leaderboard = React.createClass({
-  propTypes: {
-    selectedPlayerId: React.PropTypes.string,
-    players: React.PropTypes.array.isRequired,
-    onPlayerSelected: React.PropTypes.func
-  },
-  selectPlayer(playerId) {
-    this.props.onPlayerSelected(playerId);
-  },
-  render() {
-    var self = this;
-
-    return <List>{
-      this.props.players.map((player) => {
-        var style = {};
-        if (this.props.selectedPlayerId === player._id) {
-          style["backgroundColor"] = "#eee";
-        }
-
-        return <ListItem key={ player._id }
-            onClick={ self.selectPlayer.bind(self, player._id) }
-            secondaryText={ "Current score: " + player.score }
-            style={style}>
-          { player.name }
-        </ListItem>
-      })
-    }</List>
-  }
-});
-
-Meteor.startup(function () {
-  var WebFontConfig = {
-    google: { families: [ 'Roboto:400,300,500:latin' ] }
-  };
-  (function() {
-    var wf = document.createElement('script');
-    wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
-    '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
-    wf.type = 'text/javascript';
-    wf.async = 'true';
-    var s = document.getElementsByTagName('script')[0];
-    s.parentNode.insertBefore(wf, s);
-  })();
-
-  injectTapEventPlugin();
-
-  $(document.body).html("<div id='container'></div>");
-  React.render(<App />, document.getElementById("container"));
 });
