@@ -43,70 +43,9 @@ body {
   text-align: center;
 }
 
-.leaderboard {
-  border-top: 1px solid #f1f1f1;
-  counter-reset: ol-counter;
-  list-style-type: none;
-  margin: 0 0 1.5em;
-  padding: 0;
-}
-
-.player {
-  border-bottom: 1px solid #f1f1f1;
-  cursor: pointer;
-  padding: .5em 0;
-  position: relative;
-  overflow: hidden;
-  transition: background 300ms ease-out;
-  border-left: 4px solid white;
-}
-
-.player:before {
-  color: #999;
-  content: counter(ol-counter);
-  counter-increment: ol-counter;
-  display: inline-block;
-  font-weight: 300;
-  line-height: 3em;
-  text-align: center;
-  vertical-align: middle;
-  width: 3em;
-}
-
-.player .avatar {
-  display: inline-block;
-  margin-right: 1em;
-  vertical-align: middle;
-}
-
-.player .name {
-  display: inline-block;
-  font-size: 1.25em;
-  font-weight: 300;
-  vertical-align: middle;
-}
-
-.player .score {
-  color: #333;
-  display: block;
-  float: right;
-  font-size: 1.25em;
-  font-weight: 600;
-  line-height: 2.4em;
-  padding-right: 1.25em;
-}
-
-.player.selected {
-  background-color: #fefff4;
-  border-left: #eb5f3a 4px solid;
-}
-
-.player:hover {
-  background-color: #fefff4;
-}
-
 .details {
   overflow: hidden;
+  margin-top: 1em;
 }
 
 .details .name {
@@ -147,6 +86,7 @@ body {
   color: #aaa;
   line-height: 2.25rem;
   text-align: center;
+  margin-top: 1em;
 }
 
 @media (max-width: 500px) {
@@ -172,13 +112,5 @@ body {
 
   body {
     margin: 2em 0 4em 0;
-  }
-
-  .player:hover {
-    background-color: inherit;
-  }
-
-  .player.selected:hover {
-    background-color: #fefff4;
   }
 }

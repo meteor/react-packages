@@ -1,6 +1,8 @@
 const {
+  List,
   ListItem,
-  List
+  ListDivider,
+  Avatar
 } = mui;
 
 Leaderboard = React.createClass({
@@ -22,12 +24,15 @@ Leaderboard = React.createClass({
           style["backgroundColor"] = "#eee";
         }
 
-        return <ListItem key={ player._id }
+        return [
+          <ListItem key={ player._id }
+            primaryText={ player.name }
             onClick={ self.selectPlayer.bind(self, player._id) }
+            leftAvatar={ <Avatar src={ "/" + player.name + ".png" }/> }
             secondaryText={ "Current score: " + player.score }
-            style={style}>
-          { player.name }
-        </ListItem>
+            style={style}/>,
+          <ListDivider/>
+        ]
       })
     }</List>
   }
