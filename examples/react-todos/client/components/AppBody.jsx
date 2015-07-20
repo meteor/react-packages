@@ -62,7 +62,6 @@ AppBody = React.createClass({
   },
 
   toggleMenuOpen() {
-    console.log("hello");
     this.setState({
       menuOpen: ! this.state.menuOpen
     });
