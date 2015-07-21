@@ -13,11 +13,12 @@ Package.describe({
 
 Npm.depends({
   react: "0.13.3",
-  "browserify-replace": "0.9.0"
+  "browserify-replace-g": "0.9.1"
 });
 
 Package.onUse(function (api) {
   api.use('cosmos:browserify@0.4.0');
+  api.addFiles('detect-shims.js');
   api.addFiles('shams.js');
   api.addFiles('react.browserify.js');
   api.addFiles('react.browserify.options.json');

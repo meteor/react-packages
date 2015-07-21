@@ -175,14 +175,12 @@
     "react/lib/warning"
   ],
   "transforms": {
-    "envify": {
-      "NODE_ENV": "production"
-    },
-    "browserify-replace": {
+    "browserify-replace-g": {
       "global": true,
       "replace": [
         { "from": "Object\\.create", "to": "Object_create" },
-        { "from": "Object\\.freeze", "to": "Object_freeze" }
+        { "from": "Object\\.freeze", "to": "Object_freeze" },
+        { "from": "process\\.env\\.NODE_ENV", "to": "'production'" }
       ]
     }
   }

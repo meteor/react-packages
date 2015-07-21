@@ -175,11 +175,14 @@
     "react/lib/warning"
   ],
   "transforms": {
-    "browserify-replace": {
+    "browserify-replace-g": {
      "global": true,
      "replace": [
-        { "from": "Object\\.create", "to": "Object_create" },
-        { "from": "Object\\.freeze", "to": "Object_freeze" }
+       { "from": "Object\\.create", "to": "Object_create" },
+       { "from": "Object\\.freeze", "to": "Object_freeze" },
+       { "from": "ES5 shim/shams expected", "to": "ES5 shims expected" },
+       { "from": "https://fb.me/react-warning-polyfills", "to":
+         "Add the es5-shim package with `meteor add es5-shim`" }
       ]
     }
   }
