@@ -22,15 +22,11 @@ setTimeout(function () {
 }, CONNECTION_ISSUE_TIMEOUT);
 
 
-//
-// React classes.
-//
+// This component handles making the subscriptons to globally necessary data,
+// handling router transitions based on that data, and rendering the basid app
+// layout
 AppBody = React.createClass({
   mixins: [ReactMeteorData, Navigation, State],
-
-  propTypes: {
-    handles: React.PropTypes.array.isRequired,
-  },
 
   getInitialState() {
     return {
@@ -49,9 +45,22 @@ AppBody = React.createClass({
   },
 
   getMeteorData() {
-    var subsReady = _.all(this.props.handles, function (handle) {
+    var subHandles = [
+      Meteor.subscribe("publicLists"),
+      Meteor.subscribe("privateLists")
+    ];
+
+    var subsReady = _.all(subHandles, function (handle) {
       return handle.ready();
     });
+
+    // Get the current routes from React Router
+    var routes = this.getRoutes();
+    // If we are at the root route, and the subscrioptions are ready
+    if (routes.length > 1 && routes[1].isDefault && subsReady) {
+      // Redirect to the route for the first todo list
+      this.replaceWith("todoList", { listId: Lists.findOne()._id });
+    }
 
     return {
       subsReady: subsReady,
