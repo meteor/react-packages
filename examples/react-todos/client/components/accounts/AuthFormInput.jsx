@@ -7,7 +7,7 @@ AuthFormInput = React.createClass({
     name: React.PropTypes.string
   },
   render() {
-    var className = "input-symbol";
+    let className = "input-symbol";
     if (this.props.hasError) {
       className += " error";
     }

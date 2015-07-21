@@ -1,4 +1,4 @@
-var {
+const {
   Navigation,
   Link
 } = ReactRouter;
@@ -13,10 +13,10 @@ AuthSignInPage = React.createClass({
   onSubmit(event) {
     event.preventDefault();
 
-    var email = event.target.email.value;
-    var password = event.target.password.value;
+    const email = event.target.email.value;
+    const password = event.target.password.value;
 
-    var errors = {};
+    const errors = {};
 
     if (! email) {
       errors.email = 'Email required';

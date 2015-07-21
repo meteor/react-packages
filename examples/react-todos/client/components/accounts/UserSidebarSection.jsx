@@ -1,4 +1,4 @@
-var Link = ReactRouter.Link;
+const Link = ReactRouter.Link;
 
 UserSidebarSection = React.createClass({
   getInitialState() {
@@ -24,14 +24,14 @@ UserSidebarSection = React.createClass({
   },
 
   render() {
-    var contents;
+    let contents;
 
     if (this.props.user) {
-      var email = this.props.user.emails[0].address;
-      var emailUsername = email.substring(0, email.indexOf('@'));
+      const email = this.props.user.emails[0].address;
+      const emailUsername = email.substring(0, email.indexOf('@'));
 
-      var arrowDirection = this.state.menuOpen ? "up" : "down";
-      var arrowIconClass = "icon-arrow-" + arrowDirection;
+      const arrowDirection = this.state.menuOpen ? "up" : "down";
+      const arrowIconClass = "icon-arrow-" + arrowDirection;
 
       contents = ( 
         <div className="btns-group-vertical">

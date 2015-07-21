@@ -27,7 +27,7 @@ TodoItem = React.createClass({
   },
 
   onTextChange(event) {
-    var curText = event.target.value;
+    const curText = event.target.value;
     this.setState({curText: curText});
 
     // Throttle updates so we don't go to minimongo and then the server
@@ -41,7 +41,7 @@ TodoItem = React.createClass({
 
   onCheckboxChange() {
     // Set to the opposite of the current state
-    var checked = ! this.props.task.checked;
+    const checked = ! this.props.task.checked;
 
     Meteor.call("/todos/setChecked", this.props.task._id, checked);
   },
@@ -51,7 +51,7 @@ TodoItem = React.createClass({
   },
 
   render() {
-    var className = "list-item";
+    let className = "list-item";
 
     if (this.props.beingEdited) {
       className += " editing";

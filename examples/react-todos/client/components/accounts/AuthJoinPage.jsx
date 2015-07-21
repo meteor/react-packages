@@ -1,4 +1,4 @@
-var {
+const {
   Navigation,
   Link
 } = ReactRouter;
@@ -13,11 +13,11 @@ AuthJoinPage = React.createClass({
   onSubmit(event) {
     event.preventDefault();
 
-    var email = event.target.email.value;
-    var password = event.target.password.value;
-    var confirm = event.target.confirm.value;
+    const email = event.target.email.value;
+    const password = event.target.password.value;
+    const confirm = event.target.confirm.value;
 
-    var errors = {};
+    const errors = {};
 
     if (! email) {
       errors.email = 'Email required';

@@ -1,12 +1,12 @@
-var {
+const {
   Route,
   NotFoundRoute,
   DefaultRoute
 } = ReactRouter;
 
-var routes = (
+const routes = (
   <Route name="root" handler={AppBody} path="/">
-    <Route name="todoList" path="/lists/:listId" handler={ListShow} />
+    <Route name="todoList" path="/lists/:listId" handler={TodoListPage} />
     <Route name="join" path="/join" handler={AuthJoinPage} />
     <Route name="signin" path="/signin" handler={AuthSignInPage} />
     <DefaultRoute handler={AppLoading} />
@@ -14,7 +14,7 @@ var routes = (
   </Route>
 )
 
-var router = ReactRouter.create({
+const router = ReactRouter.create({
   routes: routes,
   location: ReactRouter.HistoryLocation
 });

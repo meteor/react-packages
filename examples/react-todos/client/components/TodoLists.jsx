@@ -1,4 +1,4 @@
-var Link = ReactRouter.Link;
+const Link = ReactRouter.Link;
 
 TodoLists = React.createClass({
   propTypes: {
@@ -7,8 +7,8 @@ TodoLists = React.createClass({
   },
 
   render() {
-    var allTodoLists = this.props.lists.map((list) => {
-      var className = "list-todo";
+    const allTodoLists = this.props.lists.map((list) => {
+      let className = "list-todo";
       if (this.props.activeListId === list._id) {
         className += " active";
       }

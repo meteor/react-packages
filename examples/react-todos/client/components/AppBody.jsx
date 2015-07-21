@@ -1,4 +1,4 @@
-var {
+const {
   Link,
   Navigation,
   State,
@@ -9,9 +9,9 @@ var {
 // true if we should show an error dialog when there is a connection error.
 // Exists so that we don't show a connection error dialog when the app is just
 // starting and hasn't had a chance to connect yet.
-var ShowConnectionIssues = new ReactiveVar(false);
+const ShowConnectionIssues = new ReactiveVar(false);
 
-var CONNECTION_ISSUE_TIMEOUT = 5000;
+const CONNECTION_ISSUE_TIMEOUT = 5000;
 
 
 // Only show the connection error box if it has been 5 seconds since
@@ -45,17 +45,17 @@ AppBody = React.createClass({
   },
 
   getMeteorData() {
-    var subHandles = [
+    const subHandles = [
       Meteor.subscribe("publicLists"),
       Meteor.subscribe("privateLists")
     ];
 
-    var subsReady = _.all(subHandles, function (handle) {
+    const subsReady = _.all(subHandles, function (handle) {
       return handle.ready();
     });
 
     // Get the current routes from React Router
-    var routes = this.getRoutes();
+    const routes = this.getRoutes();
     // If we are at the root route, and the subscrioptions are ready
     if (routes.length > 1 && routes[1].isDefault && subsReady) {
       // Redirect to the route for the first todo list
@@ -93,7 +93,7 @@ AppBody = React.createClass({
   },
 
   render() {
-    var appBodyContainerClass = "";
+    let appBodyContainerClass = "";
 
     if (Meteor.isCordova) {
       appBodyContainerClass += " cordova";
