@@ -1,6 +1,6 @@
 # Material UI Leaderboard
 
-![Screenshot](https://raw.githubusercontent.com/meteor/react-packages/master/examples/material-ui-leaderboard/screenshot.png)
+<img src="https://raw.githubusercontent.com/meteor/react-packages/master/examples/material-ui-leaderboard/screenshot.png" width="400">
 
 This is an example of building the leaderboard app using React and the [Material UI](http://material-ui.com/) components library.
 
