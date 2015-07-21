@@ -64,7 +64,7 @@ AppBody = React.createClass({
 
     return {
       subsReady: subsReady,
-      lists: Lists.find().fetch(),
+      lists: Lists.find({}, { sort: {createdAt: -1} }).fetch(),
       currentUser: Meteor.user(),
       disconnected: ShowConnectionIssues.get() && (! Meteor.status().connected)
     };
@@ -77,14 +77,15 @@ AppBody = React.createClass({
   },
 
   addList() {
-    var list = {
-      name: Lists.defaultName(),
-      incompleteCount: 0
-    };
+    Meteor.call("/lists/add", (err, res) => {
+      if (err) {
+        // Not going to be too fancy about error handling in this example app
+        alert("Error creating list.");
+      }
 
-    var listId = Lists.insert(list);
-
-    this.transitionTo('todoList', { listId: listId });
+      // Go to the page for the new list
+      this.transitionTo('todoList', { listId: res });
+    });
   },
 
   getListId() {

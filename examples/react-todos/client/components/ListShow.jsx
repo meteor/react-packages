@@ -59,48 +59,40 @@ ListShow = React.createClass({
       nameInputValue: undefined
     });
 
-    Lists.update(this.data.list._id, {
-      $set: { name: this.state.nameInputValue }
-    });
+    Meteor.call("/lists/updateName",
+      this.data.list._id, this.state.nameInputValue)
   },
 
   toggleListPrivacy() {
-    var list = this.data.list;
+    var errorMessages = {
+      "not-logged-in": "Please sign in or create an account to make private lists.",
+      "final-list-private": "Sorry, you cannot make the final public list private!",
+    };
 
-    if (! Meteor.user()) {
-      return alert("Please sign in or create an account to make private lists.");
-    }
-
-    if (list.userId) {
-      Lists.update(list._id, {$unset: {userId: true}});
-    } else {
-      // ensure the last public list cannot be made private
-      if (Lists.find({userId: {$exists: false}}).count() === 1) {
-        return alert("Sorry, you cannot make the final public list private!");
+    Meteor.call("/lists/togglePrivate", this.data.list._id, (err, res) => {
+      if (err) {
+        alert(errorMessages[err.error]);
       }
-
-      Lists.update(list._id, {$set: {userId: Meteor.userId()}});
-    }
+    });
   },
 
   deleteList() {
-    var list = this.data.list;
+    var errorMessages = {
+      "not-logged-in": "Please sign in or create an account to make private lists.",
+      "final-list-delete": "Sorry, you cannot delete the final public list!",
+    };
 
-    // ensure the last public list cannot be deleted.
-    if (! list.userId && Lists.find({userId: {$exists: false}}).count() === 1) {
-      return alert("Sorry, you cannot delete the final public list!");
-    }
-
-    var message = "Are you sure you want to delete the list " + list.name + "?";
-
+    var message = `Are you sure you want to delete the list ${this.data.list.name}?`;
     if (confirm(message)) {
-      // we must remove each item individually from the client
-      Todos.find({listId: list._id}).forEach(function(todo) {
-        Todos.remove(todo._id);
-      });
-      Lists.remove(list._id);
+      Meteor.call("/lists/delete", this.data.list._id, (err, res) => {
+        if (err) {
+          alert(errorMessages[err.error]);
+          return;
+        }
 
-      this.transitionTo("root");
+        // Now that this list doesn't exist, redirect to the first list
+        this.transitionTo("root");
+      })
     }
   },
 
@@ -109,21 +101,20 @@ ListShow = React.createClass({
 
     var listId = this.data.list._id;
 
-    var input = event.target.text;
-    if (! input.value) {
+    var taskText = event.target.text;
+    if (! taskText) {
+      // Don't do anything if the input is empty
       return;
     }
 
-    Todos.insert({
-      listId: listId,
-      text: input.value,
-      checked: false,
-      createdAt: new Date()
+    Meteor.call("/lists/addTask", this.data.list._id, taskText, (err, res) => {
+      if (err) {
+        alert("Failed to add new task.");
+        return;
+      }
+
+      input.value = "";
     });
-
-    Lists.update(listId, {$inc: {incompleteCount: 1}});
-
-    input.value = "";
   },
 
   render() {

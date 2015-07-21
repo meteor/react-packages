@@ -23,27 +23,19 @@ TodoItem = React.createClass({
     // Throttle updates so we don't go to minimongo and then the server
     // on every keystroke.
     this.updateText = this.updateText || _.throttle(newText => {
-      Todos.update(this.props.task._id,
-                   {$set: {text: newText}});
+      Meteor.call("/todos/setText", this.props.task._id, newText);
     }, 300);
 
     this.updateText(curText);
   },
   onCheckboxChange() {
+    // Set to the opposite of the current state
     var checked = ! this.props.task.checked;
 
-    Todos.update(this.props.task._id,
-      {$set: {checked: checked}});
-
-    Lists.update(this.props.task.listId,
-      {$inc: {incompleteCount: checked ? -1 : 1}});
+    Meteor.call("/todos/setChecked", this.props.task._id, checked);
   },
   removeThisItem() {
-    Todos.remove(this.props.task._id);
-
-    if (! this.props.task.checked) {
-      Lists.update(this.props.task.listId, {$inc: {incompleteCount: -1}});
-    }
+    Meteor.call("/todos/delete", this.props.task._id);
   },
   render() {
     var className = "list-item";
