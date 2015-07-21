@@ -7,4 +7,5 @@ pages:
 - JSX transpilation and ES6 features: jsx.md
 - Client NPM packages with Browserify: client-npm.md
 - React components in Meteor templates: react-template-helper.md
+- Setting up routing with React: routing.md
 - Community Meteor + React tools: community.md
