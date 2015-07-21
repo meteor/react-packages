@@ -93,15 +93,13 @@ AppBody = React.createClass({
   },
 
   render() {
-    var self = this;
-
     var appBodyContainerClass = "";
 
     if (Meteor.isCordova) {
       appBodyContainerClass += " cordova";
     }
 
-    if (self.state.menuOpen) {
+    if (this.state.menuOpen) {
       appBodyContainerClass += " menu-open";
     }
 
@@ -109,17 +107,17 @@ AppBody = React.createClass({
       <div id="container" className={ appBodyContainerClass }>
 
         <LeftPanel 
-          currentUser={self.data.currentUser} 
-          addList={self.addList}
-          lists={self.data.lists}
-          getListId={self.getListId} />
+          currentUser={this.data.currentUser} 
+          addList={this.addList}
+          lists={this.data.lists}
+          getListId={this.getListId} />
 
-        { self.data.disconnected ? <ConnectionIssueDialog /> : "" }
+        { this.data.disconnected ? <ConnectionIssueDialog /> : "" }
 
-        <div className="content-overlay" onClick={ self.toggleMenuOpen }></div>
+        <div className="content-overlay" onClick={ this.toggleMenuOpen }></div>
 
         <div id="content-container">
-          { self.data.subsReady ?
+          { this.data.subsReady ?
             <RouteHandler /> :
             <AppLoading /> }
         </div>

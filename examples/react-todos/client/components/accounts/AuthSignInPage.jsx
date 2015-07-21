@@ -13,8 +13,6 @@ AuthSignInPage = React.createClass({
   onSubmit(event) {
     event.preventDefault();
 
-    var self = this;
-
     var email = event.target.email.value;
     var password = event.target.password.value;
 
@@ -28,7 +26,7 @@ AuthSignInPage = React.createClass({
       errors.password = 'Password required';
     }
 
-    self.setState({
+    this.setState({
       errors: errors
     });
 
@@ -37,21 +35,19 @@ AuthSignInPage = React.createClass({
       return;
     }
 
-    Meteor.loginWithPassword(email, password, function(error) {
+    Meteor.loginWithPassword(email, password, (error) => {
       if (error) {
-        self.setState({
+        this.setState({
           errors: { 'none': error.reason }
         });
 
         return;
       }
 
-      self.transitionTo('root');
+      this.transitionTo('root');
     });
   },
   render() {
-    var self = this;
-
     return <div className="page auth">
       <nav>
         <MenuOpenToggle />
@@ -62,11 +58,11 @@ AuthSignInPage = React.createClass({
           <p className="subtitle-auth" >
             Signing in allows you to view private lists
           </p>
-          <form onSubmit={ self.onSubmit }>
-            <AuthErrors errors={self.state.errors} />
-            <AuthFormInput hasError={!! self.state.errors.email}
+          <form onSubmit={ this.onSubmit }>
+            <AuthErrors errors={this.state.errors} />
+            <AuthFormInput hasError={!! this.state.errors.email}
               type="email" name="email" label="Your Email" iconClass="icon-email" />
-            <AuthFormInput hasError={!! self.state.errors.password}
+            <AuthFormInput hasError={!! this.state.errors.password}
               type="password" name="password" label="Password" iconClass="icon-lock" />
             <button type="submit" className="btn-primary">Sign in</button>
           </form>

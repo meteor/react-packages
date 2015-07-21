@@ -24,25 +24,23 @@ UserSidebarSection = React.createClass({
   },
 
   render() {
-    var self = this;
-
     var showHTML;
 
-    if (self.props.user) {
-      var email = self.props.user.emails[0].address;
+    if (this.props.user) {
+      var email = this.props.user.emails[0].address;
       var emailUsername = email.substring(0, email.indexOf('@'));
 
-      var arrowDirection = self.state.menuOpen ? "up" : "down";
+      var arrowDirection = this.state.menuOpen ? "up" : "down";
       var arrowIconClass = "icon-arrow-" + arrowDirection;
 
       showHTML = ( 
         <div className="btns-group-vertical">
-          <a href="#" className="btn-secondary" onClick={ self.toggleMenuOpen }>
+          <a href="#" className="btn-secondary" onClick={ this.toggleMenuOpen }>
             <span className={ arrowIconClass } />
             { emailUsername }
           </a>
-          { self.state.menuOpen ?
-            <a className="btn-secondary" onClick={ self.logout } >Logout</a> : ""}
+          { this.state.menuOpen ?
+            <a className="btn-secondary" onClick={ this.logout } >Logout</a> : ""}
         </div>
       );
     } else {
