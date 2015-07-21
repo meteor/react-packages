@@ -76,11 +76,12 @@ function parentTemplateName () {
 function numChildNodes (el) {
   var numChildNodes = 0;
   for (var node = el.firstChild; node; node = node.nextSibling) {
-    if (!(node.nodeType === Node.TEXT_NODE && node.nodeValue.match(/^\s*$/))) {
+    if (!((node.nodeType === 3 /*Node.TEXT_NODE (which isn't in old IE)*/
+           || node.nodeType === 8) /*Node.COMMENT_NODE; Blaze uses in old IE*/
+          && node.nodeValue.match(/^\s*$/))) {
       numChildNodes++;
     }
   }
 
   return numChildNodes;
 };
-
