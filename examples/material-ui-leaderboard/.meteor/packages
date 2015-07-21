@@ -8,7 +8,6 @@ autopublish
 insecure
 meteor-platform
 react
-react-template-helper
 
 cosmos:browserify
 meteorhacks:npm
