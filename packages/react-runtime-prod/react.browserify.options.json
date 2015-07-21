@@ -177,6 +177,13 @@
   "transforms": {
     "envify": {
       "NODE_ENV": "production"
+    },
+    "browserify-replace": {
+      "global": true,
+      "replace": [
+        { "from": "Object\\.create", "to": "Object_create" },
+        { "from": "Object\\.freeze", "to": "Object_freeze" }
+      ]
     }
   }
 }

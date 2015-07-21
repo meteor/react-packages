@@ -173,5 +173,14 @@
     "react/lib/traverseAllChildren",
     "react/lib/update",
     "react/lib/warning"
-  ]
+  ],
+  "transforms": {
+    "browserify-replace": {
+     "global": true,
+     "replace": [
+        { "from": "Object\\.create", "to": "Object_create" },
+        { "from": "Object\\.freeze", "to": "Object_freeze" }
+      ]
+    }
+  }
 }
