@@ -15,8 +15,6 @@ Leaderboard = React.createClass({
     this.props.onPlayerSelected(playerId);
   },
   render() {
-    let self = this;
-
     return <List>{
       this.props.players.map((player) => {
         let style = {};
@@ -27,7 +25,7 @@ Leaderboard = React.createClass({
         return [
           <ListItem key={ player._id }
             primaryText={ player.name }
-            onClick={ self.selectPlayer.bind(self, player._id) }
+            onClick={ this.selectPlayer.bind(this, player._id) }
             leftAvatar={ <Avatar src={ "/" + player.name + ".png" }/> }
             secondaryText={ "Current score: " + player.score }
             style={style}/>,
