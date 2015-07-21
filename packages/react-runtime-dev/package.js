@@ -23,11 +23,5 @@ Package.onUse(function (api) {
   api.addFiles('react.browserify.options.json');
   api.addFiles('attach-require.js');
 
-  // Load Order: If both react-runtime-dev and react-runtime-prod are loaded,
-  // load react-runtime-dev last so that the React DevTools work properly.
-  // (The react-runtime package currently loads both because there's no way
-  // to have a prod-only dependency or a prod-only file in a package.)
-  api.use('react-runtime-prod@0.0.0', {weak: true});
-
   api.export('ReactDev');
 });
