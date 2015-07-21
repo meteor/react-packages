@@ -12,9 +12,17 @@ AuthFormInput = React.createClass({
       className += " error";
     }
 
-    return <div className={ className } >
-      <input type={ this.props.type } name={ this.props.name } placeholder={ this.props.label } />
-      <span className={ this.props.iconClass } title={ this.props.label }></span>
-    </div>
+    return (
+      <div className={ className } >
+        <input
+          type={ this.props.type }
+          name={ this.props.name }
+          placeholder={ this.props.label } />
+
+        <span
+          className={ this.props.iconClass }
+          title={ this.props.label } />
+      </div>
+    );
   }
 });

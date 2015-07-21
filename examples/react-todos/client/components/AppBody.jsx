@@ -108,9 +108,9 @@ AppBody = React.createClass({
 
         <LeftPanel 
           currentUser={this.data.currentUser} 
-          addList={this.addList}
+          onAddList={this.addList}
           lists={this.data.lists}
-          getListId={this.getListId} />
+          activeListId={this.getListId()} />
 
         { this.data.disconnected ? <ConnectionIssueDialog /> : "" }
 

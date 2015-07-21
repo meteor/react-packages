@@ -1,10 +1,15 @@
 var Link = ReactRouter.Link;
 
-ListTodos = React.createClass({
+TodoLists = React.createClass({
+  propTypes: {
+    lists: React.PropTypes.array.isRequired,
+    activeListId: React.PropTypes.string
+  },
+
   render() {
-    var showTodoList = this.props.lists.map((list) => {
+    var allTodoLists = this.props.lists.map((list) => {
       var className = "list-todo";
-      if (this.props.getListId() === list._id) {
+      if (this.props.activeListId === list._id) {
         className += " active";
       }
 
@@ -25,7 +30,7 @@ ListTodos = React.createClass({
 
     return (
       <div>
-        { showTodoList }  
+        { allTodoLists }  
       </div>
     );
   }

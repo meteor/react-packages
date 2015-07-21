@@ -56,24 +56,54 @@ AuthJoinPage = React.createClass({
     });
   },
   render() {
-    return <div className="page auth">
-      <nav>
-        <MenuOpenToggle />
-      </nav>
-      <div className="content-scrollable">
-        <div className="wrapper-auth">
-          <h1 className="title-auth">Join.</h1>
-          <p className="subtitle-auth" >Joining allows you to make private lists</p>
-          <form onSubmit={ this.onSubmit }>
-            <AuthErrors errors={this.state.errors} />
-            <AuthFormInput hasError={!! this.state.errors.email} type="email" name="email" label="Your Email" iconClass="icon-email" />
-            <AuthFormInput hasError={!! this.state.errors.password} type="password" name="password" label="Password" iconClass="icon-lock" />
-            <AuthFormInput hasError={!! this.state.errors.confirm} type="password" name="confirm" label="Confirm Password" iconClass="icon-lock" />
-            <button type="submit" className="btn-primary">Join Now</button>
-          </form>
+    return (
+      <div className="page auth">
+        <nav>
+          <MenuOpenToggle />
+        </nav>
+
+        <div className="content-scrollable">
+          <div className="wrapper-auth">
+            <h1 className="title-auth">Join.</h1>
+            <p className="subtitle-auth">
+              Joining allows you to make private lists
+            </p>
+
+            <form onSubmit={ this.onSubmit }>
+              <AuthErrors errors={this.state.errors} />
+
+              <AuthFormInput
+                hasError={!!this.state.errors.email}
+                type="email"
+                name="email"
+                label="Your Email"
+                iconClass="icon-email" />
+
+              <AuthFormInput
+                hasError={!!this.state.errors.password}
+                type="password"
+                name="password"
+                label="Password"
+                iconClass="icon-lock" />
+
+              <AuthFormInput
+                hasError={!!this.state.errors.confirm}
+                type="password"
+                name="confirm"
+                label="Confirm Password"
+                iconClass="icon-lock" />
+
+              <button type="submit" className="btn-primary">
+                Join Now
+              </button>
+            </form>
+          </div>
+
+          <Link to="signin" className="link-auth-alt">
+            Have an account? Sign in.
+          </Link>
         </div>
-        <Link to="signin" className="link-auth-alt">Have an account? Sign in.</Link>
       </div>
-    </div>
+    );
   }
 });
