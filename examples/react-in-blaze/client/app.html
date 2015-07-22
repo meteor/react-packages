@@ -1,0 +1,23 @@
+<body>
+  <h1>
+    Grid powered by
+    <a href="http://griddlegriddle.github.io/Griddle/index.html" target="_blank">Griddle</a>
+  </h1>
+  <form id="add-new-player-form" class="form-inline">
+    <div class="form-group">
+      {{#each formColumns}}
+        <input type="text" name="{{this}}" class="form-control" placeholder="{{this}}">
+      {{/each}}
+      <button type="submit" class="btn btn-primary">Add New Player</button>
+    </div>
+  </form>
+  <div id="grid">
+    {{> React component=Griddle
+      results=players
+      columns=columns
+      initialSort="id"
+      initialSortAscending=false
+      useGriddleStyles=false
+      tableClassName="table table-striped table-bordered" }}
+  </div>
+</body>

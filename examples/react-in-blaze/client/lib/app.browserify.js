@@ -1,0 +1,1 @@
+Griddle = require('griddle-react');
