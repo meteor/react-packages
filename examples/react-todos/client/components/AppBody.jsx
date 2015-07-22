@@ -81,6 +81,7 @@ AppBody = React.createClass({
       if (err) {
         // Not going to be too fancy about error handling in this example app
         alert("Error creating list.");
+        return;
       }
 
       // Go to the page for the new list
