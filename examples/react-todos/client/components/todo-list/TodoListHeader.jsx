@@ -74,8 +74,8 @@ TodoListHeader = React.createClass({
     event.preventDefault();
 
     const listId = this.props.list._id;
-    const input = event.target;
-    const taskText = input.text;
+    const input = React.findDOMNode(this.refs.newTaskInput);
+    const taskText = input.value;
     if (! taskText) {
       // Don't do anything if the input is empty
       return;
@@ -97,7 +97,7 @@ TodoListHeader = React.createClass({
     const newTaskForm = (
       <form className="todo-new input-symbol"
           onSubmit={ this.onSubmitNewTask }>
-        <input type="text" name="text" placeholder="Type to add new tasks" />
+        <input type="text" name="text" ref="newTaskInput" placeholder="Type to add new tasks" />
         <span className="icon-add" />
       </form>
     );
