@@ -55,6 +55,12 @@ class MeteorDataManager {
     if (! component.getMeteorData) {
       return null;
     }
+    
+    // When rendering on the server, we don't want to use the Tracker.
+    // We only do the first rendering on the server so we can get the data right away
+    if (Meteor.isServer) {
+      return component.getMeteorData();
+    }
 
     if (this.computation) {
       this.computation.stop();
