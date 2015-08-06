@@ -55,7 +55,7 @@ class MeteorDataManager {
     if (! component.getMeteorData) {
       return null;
     }
-    
+
     // When rendering on the server, we don't want to use the Tracker.
     // We only do the first rendering on the server so we can get the data right away
     if (Meteor.isServer) {
@@ -76,7 +76,21 @@ class MeteorDataManager {
     this.computation = Tracker.nonreactive(() => {
       return Tracker.autorun((c) => {
         if (c.firstRun) {
-          data = component.getMeteorData();
+          try {
+            var savedSetState = component.setState;
+            component.setState = () => {
+              throw new Error(
+`Can't call \`setState\` inside \`getMeteorData\` as this could cause an endless
+ loop. To respond to Meteor data changing, consider making this component
+ a "wrapper component" that only fetches data and passes it in as props to a
+ child component. Then you can use \`componentWillReceiveProps\` in that child
+ component.`);
+            };
+
+            data = component.getMeteorData();
+          } finally {
+            component.setState = savedSetState;
+          }
         } else {
           // Stop this computation instead of using the re-run.
           // We use a brand-new autorun for each call to getMeteorData

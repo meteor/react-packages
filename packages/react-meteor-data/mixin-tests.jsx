@@ -238,3 +238,22 @@ testAsyncMulti('react-meteor-data - resubscribe', [
     Meteor.defer(expect());
   }
 ]);
+
+Tinytest.add(
+  "react-meteor-data - can't call setState in getMeteorData",
+  function (test) {
+    var Foo = React.createClass({
+      mixins: [ReactMeteorData],
+      getMeteorData() {
+        this.setState({bar: 1});
+        return {};
+      },
+      render() {
+        return <span></span>;
+      }
+    });
+
+    test.throws(function () {
+      React.render(<Foo/>, document.createElement('div'));
+    }, /Can't call `setState`/);
+  });
