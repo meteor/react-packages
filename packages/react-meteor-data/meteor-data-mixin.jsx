@@ -76,8 +76,9 @@ class MeteorDataManager {
     this.computation = Tracker.nonreactive(() => {
       return Tracker.autorun((c) => {
         if (c.firstRun) {
+          let savedSetState;
           try {
-            var savedSetState = component.setState;
+            savedSetState = component.setState;
             component.setState = () => {
               throw new Error(
 `Can't call \`setState\` inside \`getMeteorData\` as this could cause an endless
