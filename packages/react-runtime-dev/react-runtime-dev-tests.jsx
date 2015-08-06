@@ -20,16 +20,18 @@ Tinytest.add('react-runtime-dev - is actually the development version', function
   let warning;
 
   var oldWarn = console.warn;
-  console.warn = function specialWarn(message) {
-    warning = message;
-  };
+  try {
+    console.warn = function specialWarn(message) {
+      warning = message;
+    };
 
-  var div = document.createElement("DIV");
-  React.render(<ComponentWithRequiredProp />, div);
+    var div = document.createElement("DIV");
+    React.render(<ComponentWithRequiredProp />, div);
 
-  test.isNotUndefined(warning);
-
-  console.warn = oldWarn;
+    test.isNotUndefined(warning);
+  } finally {
+    console.warn = oldWarn;
+  }
 
   // It should throw when style is not an object
   var div = document.createElement("DIV");
