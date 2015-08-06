@@ -26,3 +26,12 @@ Package.onUse(function (api) {
 
   api.export('ReactDev');
 });
+
+Package.onTest(function (api) {
+  api.versionsFrom('METEOR@1.1.0.2');
+  api.use('tinytest');
+  api.use('jsx@0.1.0');
+  api.use('react-runtime-dev');
+
+  api.addFiles('react-runtime-dev-tests.jsx', 'client');
+});
