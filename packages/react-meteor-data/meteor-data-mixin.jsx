@@ -76,16 +76,15 @@ class MeteorDataManager {
     this.computation = Tracker.nonreactive(() => {
       return Tracker.autorun((c) => {
         if (c.firstRun) {
-          let savedSetState;
+          const savedSetState = component.setState;
           try {
-            savedSetState = component.setState;
             component.setState = () => {
               throw new Error(
-`Can't call \`setState\` inside \`getMeteorData\` as this could cause an endless
- loop. To respond to Meteor data changing, consider making this component
- a "wrapper component" that only fetches data and passes it in as props to a
- child component. Then you can use \`componentWillReceiveProps\` in that child
- component.`);
+"Can't call `setState` inside `getMeteorData` as this could cause an endless" +
+" loop. To respond to Meteor data changing, consider making this component" +
+" a \"wrapper component\" that only fetches data and passes it in as props to" +
+" a child component. Then you can use `componentWillReceiveProps` in that" +
+" child component.");
             };
 
             data = component.getMeteorData();
