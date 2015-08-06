@@ -30,4 +30,13 @@ Tinytest.add('react-runtime-dev - is actually the development version', function
   test.isNotUndefined(warning);
 
   console.warn = oldWarn;
+
+  // It should throw when style is not an object
+  var div = document.createElement("DIV");
+  try {
+    React.render(<div style="mystyle" />, div);
+  } catch (e) {
+    // The development build has the right error message
+    test.matches(e.message, /^Invariant Violation/);
+  }
 });

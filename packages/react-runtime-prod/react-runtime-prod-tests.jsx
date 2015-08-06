@@ -32,4 +32,13 @@ Tinytest.add('react-runtime-prod - is actually the production version', function
   test.isUndefined(warning);
 
   console.warn = oldWarn;
+
+  // It should throw when style is not an object
+  var div = document.createElement("DIV");
+  try {
+    React.render(<div style="mystyle" />, div);
+  } catch (e) {
+    // The production build doesn't have the error message
+    test.isTrue(e.message.startsWith("Minified exception"));
+  }
 });
