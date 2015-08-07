@@ -1,6 +1,6 @@
 Package.describe({
   name: 'react',
-  version: '0.1.7',
+  version: '0.1.8',
   // Brief, one-line summary of the package.
   summary: 'Everything you need to use React with Meteor.',
   // URL to the Git repository containing the source code for this package.

@@ -7,6 +7,7 @@ Package.describe({
 });
 
 Package.onUse(function (api) {
+  api.versionsFrom('METEOR@1.1.0.2');
   api.use('tracker');
   api.use('jsx@0.1.0');
 
