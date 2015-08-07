@@ -1,4 +1,7 @@
 // React contains this code, but it doesn't run it soon enough to be helpful.
+// Also, this way we get to print a meteor-specific error message, though
+// in addition we modify React's error message with a search-and-replace in
+// the Browserify options.
 
 var expectedFeatures = [
   Array.isArray,

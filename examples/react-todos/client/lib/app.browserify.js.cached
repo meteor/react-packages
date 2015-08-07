@@ -1,98 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-// shim for using process in browser
-
-var process = module.exports = {};
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = setTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            currentQueue[queueIndex].run();
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    clearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        setTimeout(drainQueue, 0);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-// TODO(shtylman)
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-},{}],2:[function(require,module,exports){
 ReactRouter = require("react-router");
-},{"react-router":27}],3:[function(require,module,exports){
+},{"react-router":26}],2:[function(require,module,exports){
 /**
  * Represents a cancellation caused by navigating away
  * before the previous transition has fully resolved.
@@ -102,7 +10,7 @@ ReactRouter = require("react-router");
 function Cancellation() {}
 
 module.exports = Cancellation;
-},{}],4:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -136,7 +44,7 @@ var History = {
 module.exports = History;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 'use strict';
 
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
@@ -212,7 +120,7 @@ var Match = (function () {
 })();
 
 module.exports = Match;
-},{"./PathUtils":7}],6:[function(require,module,exports){
+},{"./PathUtils":6}],5:[function(require,module,exports){
 'use strict';
 
 var PropTypes = require('./PropTypes');
@@ -283,7 +191,7 @@ var Navigation = {
 };
 
 module.exports = Navigation;
-},{"./PropTypes":8}],7:[function(require,module,exports){
+},{"./PropTypes":7}],6:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -440,7 +348,7 @@ var PathUtils = {
 module.exports = PathUtils;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"object-assign":36,"qs":37}],8:[function(require,module,exports){
+},{"object-assign":35,"qs":36}],7:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -475,7 +383,7 @@ var PropTypes = assign({}, ReactPropTypes, {
 module.exports = PropTypes;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./Route":10}],9:[function(require,module,exports){
+},{"./Route":9}],8:[function(require,module,exports){
 /**
  * Encapsulates a redirect to the given route.
  */
@@ -488,7 +396,7 @@ function Redirect(to, params, query) {
 }
 
 module.exports = Redirect;
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -692,7 +600,7 @@ var Route = (function () {
 module.exports = Route;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./PathUtils":7}],11:[function(require,module,exports){
+},{"./PathUtils":6}],10:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -771,7 +679,7 @@ var ScrollHistory = {
 module.exports = ScrollHistory;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./getWindowScrollPosition":26}],12:[function(require,module,exports){
+},{"./getWindowScrollPosition":25}],11:[function(require,module,exports){
 'use strict';
 
 var PropTypes = require('./PropTypes');
@@ -846,7 +754,7 @@ var State = {
 };
 
 module.exports = State;
-},{"./PropTypes":8}],13:[function(require,module,exports){
+},{"./PropTypes":7}],12:[function(require,module,exports){
 /* jshint -W058 */
 
 'use strict';
@@ -922,7 +830,7 @@ Transition.to = function (transition, routes, params, query, callback) {
 };
 
 module.exports = Transition;
-},{"./Cancellation":3,"./Redirect":9}],14:[function(require,module,exports){
+},{"./Cancellation":2,"./Redirect":8}],13:[function(require,module,exports){
 /**
  * Actions that modify the URL.
  */
@@ -948,7 +856,7 @@ var LocationActions = {
 };
 
 module.exports = LocationActions;
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 'use strict';
 
 var LocationActions = require('../actions/LocationActions');
@@ -978,7 +886,7 @@ var ImitateBrowserBehavior = {
 };
 
 module.exports = ImitateBrowserBehavior;
-},{"../actions/LocationActions":14}],16:[function(require,module,exports){
+},{"../actions/LocationActions":13}],15:[function(require,module,exports){
 /**
  * A scroll behavior that always scrolls to the top of the page
  * after a transition.
@@ -994,7 +902,7 @@ var ScrollToTopBehavior = {
 };
 
 module.exports = ScrollToTopBehavior;
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -1036,7 +944,7 @@ var ContextWrapper = (function (_React$Component) {
 module.exports = ContextWrapper;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict';
 
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
@@ -1084,7 +992,7 @@ DefaultRoute.defaultProps = {
 };
 
 module.exports = DefaultRoute;
-},{"../PropTypes":8,"./Route":22,"./RouteHandler":23}],19:[function(require,module,exports){
+},{"../PropTypes":7,"./Route":21,"./RouteHandler":22}],18:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -1223,7 +1131,7 @@ Link.defaultProps = {
 module.exports = Link;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../PropTypes":8}],20:[function(require,module,exports){
+},{"../PropTypes":7}],19:[function(require,module,exports){
 'use strict';
 
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
@@ -1272,7 +1180,7 @@ NotFoundRoute.defaultProps = {
 };
 
 module.exports = NotFoundRoute;
-},{"../PropTypes":8,"./Route":22,"./RouteHandler":23}],21:[function(require,module,exports){
+},{"../PropTypes":7,"./Route":21,"./RouteHandler":22}],20:[function(require,module,exports){
 'use strict';
 
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
@@ -1316,7 +1224,7 @@ Redirect.propTypes = {
 Redirect.defaultProps = {};
 
 module.exports = Redirect;
-},{"../PropTypes":8,"./Route":22}],22:[function(require,module,exports){
+},{"../PropTypes":7,"./Route":21}],21:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -1411,7 +1319,7 @@ Route.defaultProps = {
 module.exports = Route;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../PropTypes":8,"./RouteHandler":23}],23:[function(require,module,exports){
+},{"../PropTypes":7,"./RouteHandler":22}],22:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -1523,7 +1431,7 @@ RouteHandler.childContextTypes = {
 module.exports = RouteHandler;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../PropTypes":8,"./ContextWrapper":17}],24:[function(require,module,exports){
+},{"../PropTypes":7,"./ContextWrapper":16}],23:[function(require,module,exports){
 (function (process,global){
 /* jshint -W058 */
 'use strict';
@@ -2041,7 +1949,7 @@ function createRouter(options) {
 module.exports = createRouter;
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./Cancellation":3,"./History":4,"./Match":5,"./PathUtils":7,"./PropTypes":8,"./Redirect":9,"./Route":10,"./ScrollHistory":11,"./Transition":13,"./actions/LocationActions":14,"./behaviors/ImitateBrowserBehavior":15,"./createRoutesFromReactChildren":25,"./isReactChildren":28,"./locations/HashLocation":29,"./locations/HistoryLocation":30,"./locations/RefreshLocation":31,"./locations/StaticLocation":32,"./supportsHistory":35,"_process":1}],25:[function(require,module,exports){
+},{"./Cancellation":2,"./History":3,"./Match":4,"./PathUtils":6,"./PropTypes":7,"./Redirect":8,"./Route":9,"./ScrollHistory":10,"./Transition":12,"./actions/LocationActions":13,"./behaviors/ImitateBrowserBehavior":14,"./createRoutesFromReactChildren":24,"./isReactChildren":27,"./locations/HashLocation":28,"./locations/HistoryLocation":29,"./locations/RefreshLocation":30,"./locations/StaticLocation":31,"./supportsHistory":34,"_process":41}],24:[function(require,module,exports){
 (function (global){
 /* jshint -W084 */
 'use strict';
@@ -2126,7 +2034,7 @@ function createRoutesFromReactChildren(children) {
 module.exports = createRoutesFromReactChildren;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./Route":10,"./components/DefaultRoute":18,"./components/NotFoundRoute":20,"./components/Redirect":21}],26:[function(require,module,exports){
+},{"./Route":9,"./components/DefaultRoute":17,"./components/NotFoundRoute":19,"./components/Redirect":20}],25:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2148,7 +2056,7 @@ function getWindowScrollPosition() {
 module.exports = getWindowScrollPosition;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],27:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 exports.DefaultRoute = require('./components/DefaultRoute');
@@ -2180,7 +2088,7 @@ exports.createRoutesFromReactChildren = require('./createRoutesFromReactChildren
 
 exports.create = require('./createRouter');
 exports.run = require('./runRouter');
-},{"./History":4,"./Navigation":6,"./Route":10,"./State":12,"./behaviors/ImitateBrowserBehavior":15,"./behaviors/ScrollToTopBehavior":16,"./components/DefaultRoute":18,"./components/Link":19,"./components/NotFoundRoute":20,"./components/Redirect":21,"./components/Route":22,"./components/RouteHandler":23,"./createRouter":24,"./createRoutesFromReactChildren":25,"./locations/HashLocation":29,"./locations/HistoryLocation":30,"./locations/RefreshLocation":31,"./locations/StaticLocation":32,"./locations/TestLocation":33,"./runRouter":34}],28:[function(require,module,exports){
+},{"./History":3,"./Navigation":5,"./Route":9,"./State":11,"./behaviors/ImitateBrowserBehavior":14,"./behaviors/ScrollToTopBehavior":15,"./components/DefaultRoute":17,"./components/Link":18,"./components/NotFoundRoute":19,"./components/Redirect":20,"./components/Route":21,"./components/RouteHandler":22,"./createRouter":23,"./createRoutesFromReactChildren":24,"./locations/HashLocation":28,"./locations/HistoryLocation":29,"./locations/RefreshLocation":30,"./locations/StaticLocation":31,"./locations/TestLocation":32,"./runRouter":33}],27:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2197,7 +2105,7 @@ function isReactChildren(object) {
 module.exports = isReactChildren;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],29:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 'use strict';
 
 var LocationActions = require('../actions/LocationActions');
@@ -2309,7 +2217,7 @@ var HashLocation = {
 };
 
 module.exports = HashLocation;
-},{"../History":4,"../actions/LocationActions":14}],30:[function(require,module,exports){
+},{"../History":3,"../actions/LocationActions":13}],29:[function(require,module,exports){
 'use strict';
 
 var LocationActions = require('../actions/LocationActions');
@@ -2396,7 +2304,7 @@ var HistoryLocation = {
 };
 
 module.exports = HistoryLocation;
-},{"../History":4,"../actions/LocationActions":14}],31:[function(require,module,exports){
+},{"../History":3,"../actions/LocationActions":13}],30:[function(require,module,exports){
 'use strict';
 
 var HistoryLocation = require('./HistoryLocation');
@@ -2428,7 +2336,7 @@ var RefreshLocation = {
 };
 
 module.exports = RefreshLocation;
-},{"../History":4,"./HistoryLocation":30}],32:[function(require,module,exports){
+},{"../History":3,"./HistoryLocation":29}],31:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2481,7 +2389,7 @@ StaticLocation.prototype.pop = throwCannotModify;
 module.exports = StaticLocation;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],33:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2579,7 +2487,7 @@ var TestLocation = (function () {
 module.exports = TestLocation;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../History":4,"../actions/LocationActions":14}],34:[function(require,module,exports){
+},{"../History":3,"../actions/LocationActions":13}],33:[function(require,module,exports){
 'use strict';
 
 var createRouter = require('./createRouter');
@@ -2630,7 +2538,7 @@ function runRouter(routes, location, callback) {
 }
 
 module.exports = runRouter;
-},{"./createRouter":24}],35:[function(require,module,exports){
+},{"./createRouter":23}],34:[function(require,module,exports){
 'use strict';
 
 function supportsHistory() {
@@ -2647,7 +2555,7 @@ function supportsHistory() {
 }
 
 module.exports = supportsHistory;
-},{}],36:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 'use strict';
 
 function ToObject(val) {
@@ -2675,10 +2583,10 @@ module.exports = Object.assign || function (target, source) {
 	return to;
 };
 
-},{}],37:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 module.exports = require('./lib/');
 
-},{"./lib/":38}],38:[function(require,module,exports){
+},{"./lib/":37}],37:[function(require,module,exports){
 // Load modules
 
 var Stringify = require('./stringify');
@@ -2695,7 +2603,7 @@ module.exports = {
     parse: Parse
 };
 
-},{"./parse":39,"./stringify":40}],39:[function(require,module,exports){
+},{"./parse":38,"./stringify":39}],38:[function(require,module,exports){
 // Load modules
 
 var Utils = require('./utils');
@@ -2858,7 +2766,7 @@ module.exports = function (str, options) {
     return Utils.compact(obj);
 };
 
-},{"./utils":41}],40:[function(require,module,exports){
+},{"./utils":40}],39:[function(require,module,exports){
 // Load modules
 
 var Utils = require('./utils');
@@ -2957,7 +2865,7 @@ module.exports = function (obj, options) {
     return keys.join(delimiter);
 };
 
-},{"./utils":41}],41:[function(require,module,exports){
+},{"./utils":40}],40:[function(require,module,exports){
 // Load modules
 
 
@@ -3091,5 +2999,97 @@ exports.isBuffer = function (obj) {
         obj.constructor.isBuffer(obj));
 };
 
-},{}]},{},[2])
+},{}],41:[function(require,module,exports){
+// shim for using process in browser
+
+var process = module.exports = {};
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = setTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            currentQueue[queueIndex].run();
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    clearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        setTimeout(drainQueue, 0);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+// TODO(shtylman)
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+},{}]},{},[1])
 //# sourceMappingURL=app.browserify.js
