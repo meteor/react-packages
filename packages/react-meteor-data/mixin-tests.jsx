@@ -257,3 +257,38 @@ Tinytest.add(
       React.render(<Foo/>, document.createElement('div'));
     }, /Can't call `setState`/);
   });
+
+Tinytest.add(
+  "react-meteor-data - print warning if return cursor from getMeteorData",
+  function (test) {
+    var coll = new Mongo.Collection(null);
+    var ComponentWithCursor = React.createClass({
+      mixins: [ReactMeteorData],
+      getMeteorData() {
+        return {
+          theCursor: coll.find()
+        };
+      },
+      render() {
+        return <span></span>;
+      }
+    });
+
+    // Check if we print a warning to console about props
+    // You can be sure this test is correct because we have an identical one in
+    // react-runtime-dev
+    let warning;
+    try {
+      var oldWarn = console.warn;
+      console.warn = function specialWarn(message) {
+        warning = message;
+      };
+
+      var div = document.createElement("DIV");
+      React.render(<ComponentWithCursor />, div);
+
+      test.matches(warning, /cursor from getMeteorData/);
+    } finally {
+      console.warn = oldWarn;
+    }
+  });

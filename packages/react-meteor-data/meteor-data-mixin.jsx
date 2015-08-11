@@ -107,6 +107,17 @@ class MeteorDataManager {
         }
       });
     });
+
+    Object.keys(data).forEach(function (key) {
+      if (Package.mongo && Package.mongo.Mongo &&
+          data[key] instanceof Package.mongo.Mongo.Cursor) {
+        console.warn(
+"Warning: you are returning a Mongo cursor from getMeteorData. This value " +
+"will not be reactive. You probably want to call `.fetch()` on the cursor " +
+"before returning it.");
+      }
+    });
+
     return data;
   }
 
