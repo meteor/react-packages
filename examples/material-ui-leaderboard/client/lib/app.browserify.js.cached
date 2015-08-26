@@ -98,7 +98,7 @@ injectTapEventPlugin = require('react-tap-event-plugin');
 (function (process,global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('./mixins/style-propable');
 var Typography = require('./styles/typography');
 var IconButton = require('./icon-button');
@@ -322,7 +322,7 @@ module.exports = AppBar;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('./mixins/style-propable');
 
 var AppCanvas = React.createClass({
@@ -381,7 +381,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react/addons");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react/addons");
 var StylePropable = require('./mixins/style-propable');
 var Colors = require('./styles/colors');
 
@@ -474,7 +474,7 @@ module.exports = Avatar;
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('./mixins/style-propable');
 var AutoPrefix = require('./styles/auto-prefix');
 
@@ -577,7 +577,7 @@ module.exports = BeforeAfterWrapper;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 
 var CardActions = React.createClass({
   displayName: 'CardActions',
@@ -616,7 +616,7 @@ module.exports = CardActions;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var Styles = require('../styles');
 var Avatar = require('../avatar');
 var StylePropable = require('../mixins/style-propable');
@@ -715,7 +715,7 @@ module.exports = CardHeader;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var Styles = require('../styles');
 var StylePropable = require('../mixins/style-propable');
 
@@ -828,7 +828,7 @@ module.exports = CardMedia;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var Styles = require('../styles');
 var StylePropable = require('../mixins/style-propable');
 
@@ -879,7 +879,7 @@ module.exports = CardText;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var Styles = require('../styles');
 var StylePropable = require('../mixins/style-propable');
 
@@ -957,7 +957,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var Paper = require('../paper');
 var StylePropable = require('../mixins/style-propable');
 
@@ -1009,7 +1009,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var EnhancedSwitch = require('./enhanced-switch');
 var StylePropable = require('./mixins/style-propable');
 var Transitions = require('./styles/transitions');
@@ -1170,7 +1170,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('./mixins/style-propable');
 var AutoPrefix = require('./styles/auto-prefix');
 var Transitions = require('./styles/transitions');
@@ -1356,7 +1356,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var BeforeAfterWrapper = require('./before-after-wrapper');
 
 var ClearFix = React.createClass({
@@ -1396,7 +1396,7 @@ module.exports = ClearFix;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var DateTime = require('../utils/date-time');
 var DayButton = require('./day-button');
 var ClearFix = require('../clearfix');
@@ -1492,7 +1492,7 @@ module.exports = CalendarMonth;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var DateTime = require('../utils/date-time');
 var IconButton = require('../icon-button');
 var Toolbar = require('../toolbar/toolbar');
@@ -1674,7 +1674,7 @@ module.exports = CalendarToolbar;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 var Colors = require('../styles/colors');
 var DateTime = require('../utils/date-time');
@@ -1775,7 +1775,7 @@ module.exports = CalendarYear;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 var WindowListenable = require('../mixins/window-listenable');
 var DateTime = require('../utils/date-time');
@@ -2145,7 +2145,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 var DateTime = require('../utils/date-time');
 var Transitions = require('../styles/transitions');
@@ -2415,7 +2415,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 var WindowListenable = require('../mixins/window-listenable');
 var CssEvent = require('../utils/css-event');
@@ -2609,7 +2609,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 var WindowListenable = require('../mixins/window-listenable');
 var DateTime = require('../utils/date-time');
@@ -2764,7 +2764,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 var Transition = require('../styles/transitions');
 var DateTime = require('../utils/date-time');
@@ -2906,7 +2906,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 var EnhancedButton = require('../enhanced-button');
 
@@ -3038,7 +3038,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var WindowListenable = require('./mixins/window-listenable');
 var CssEvent = require('./utils/css-event');
 var KeyCode = require('./utils/key-code');
@@ -3422,7 +3422,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('./mixins/style-propable');
 var Transitions = require('./styles/transitions');
 var ClickAwayable = require('./mixins/click-awayable');
@@ -3556,7 +3556,7 @@ module.exports = DropDownIcon;
 (function (process,global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('./mixins/style-propable');
 var Transitions = require('./styles/transitions');
 var ClickAwayable = require('./mixins/click-awayable');
@@ -3880,7 +3880,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var KeyCode = require('./utils/key-code');
 var Colors = require('./styles/colors');
 var StylePropable = require('./mixins/style-propable');
@@ -4138,7 +4138,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var KeyCode = require('./utils/key-code');
 var StylePropable = require('./mixins/style-propable');
 var Transitions = require('./styles/transitions');
@@ -4552,7 +4552,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('./mixins/style-propable');
 var AutoPrefix = require('./styles/auto-prefix');
 
@@ -4715,7 +4715,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('./mixins/style-propable');
 var Transitions = require('./styles/transitions');
 var ColorManipulator = require('./utils/color-manipulator');
@@ -4878,7 +4878,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('./mixins/style-propable');
 var Transitions = require('./styles/transitions');
 var ColorManipulator = require('./utils/color-manipulator');
@@ -5127,7 +5127,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('./mixins/style-propable');
 var Transitions = require('./styles/transitions');
 
@@ -5209,7 +5209,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('./mixins/style-propable');
 var Transitions = require('./styles/transitions');
 var EnhancedButton = require('./enhanced-button');
@@ -5474,7 +5474,7 @@ module.exports = {
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var Transitions = require('./styles/transitions');
 var StylePropable = require('./mixins/style-propable');
 
@@ -5523,7 +5523,7 @@ module.exports = InkBar;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var KeyCode = require('./utils/key-code');
 var StylePropable = require('./mixins/style-propable');
 var AutoPrefix = require('./styles/auto-prefix');
@@ -5850,7 +5850,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('./mixins/style-propable');
 var Transitions = require('./styles/transitions');
 
@@ -6005,7 +6005,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react/addons");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react/addons");
 var StylePropable = require('../mixins/style-propable');
 
 var ListDivider = React.createClass({
@@ -6052,7 +6052,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react/addons");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react/addons");
 var ColorManipulator = require('../utils/color-manipulator');
 var StylePropable = require('../mixins/style-propable');
 var Colors = require('../styles/colors');
@@ -6475,7 +6475,7 @@ module.exports = ListItem;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var List = require('./list');
 
 var ListNested = React.createClass({
@@ -6528,7 +6528,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react/addons");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react/addons");
 var StylePropable = require('../mixins/style-propable');
 var Typography = require('../styles/typography');
 var Paper = require('../paper');
@@ -6610,7 +6610,7 @@ module.exports = List;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 
 var LinkMenuItem = React.createClass({
@@ -6725,7 +6725,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 var FontIcon = require('../font-icon');
 var Toggle = require('../toggle');
@@ -6932,7 +6932,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var CssEvent = require('../utils/css-event');
 var KeyLine = require('../utils/key-line');
 var KeyCode = require('../utils/key-code');
@@ -7541,7 +7541,7 @@ module.exports = Menu;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 var Typography = require('../styles/typography');
 
@@ -7621,7 +7621,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react/addons");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react/addons");
 var ReactTransitionGroup = React.addons.TransitionGroup;
 var ClickAwayable = require('../mixins/click-awayable');
 var StylePropable = require('../mixins/style-propable');
@@ -7817,7 +7817,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react/addons");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react/addons");
 var update = React.addons.update;
 var Controllable = require('../mixins/controllable');
 var StylePropable = require('../mixins/style-propable');
@@ -8241,7 +8241,7 @@ module.exports = Menu;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var classNames = require('classnames');
 
 module.exports = {
@@ -8295,7 +8295,7 @@ module.exports = {
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var Events = require('../utils/events');
 var Dom = require('../utils/dom');
 
@@ -8340,7 +8340,7 @@ module.exports = {
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react/addons");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react/addons");
 
 module.exports = {
 
@@ -8383,7 +8383,7 @@ module.exports = {
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react/addons");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react/addons");
 var AutoPrefix = require('../styles/auto-prefix');
 var Extend = require('../utils/extend');
 
@@ -8504,7 +8504,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('./mixins/style-propable');
 var Transitions = require('./styles/transitions');
 var Colors = require('./styles/colors');
@@ -8617,7 +8617,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('./mixins/style-propable');
 var Transitions = require('./styles/transitions');
 
@@ -8699,7 +8699,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var RadioButton = require('./radio-button');
 
 var RadioButtonGroup = React.createClass({
@@ -8817,7 +8817,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('./mixins/style-propable');
 var Transitions = require('./styles/transitions');
 var EnhancedSwitch = require('./enhanced-switch');
@@ -8959,7 +8959,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('./mixins/style-propable');
 var Transitions = require('./styles/transitions');
 var ColorManipulator = require('./utils/color-manipulator');
@@ -9206,7 +9206,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 var Transitions = require('../styles/transitions');
 var Colors = require('../styles/colors');
@@ -9263,7 +9263,7 @@ module.exports = CircleRipple;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 var Transitions = require('../styles/transitions');
 var Colors = require('../styles/colors');
@@ -9367,7 +9367,7 @@ module.exports = {
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 var Dom = require('../utils/dom');
 var RippleCircle = require('./circle-ripple');
@@ -9574,7 +9574,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('./mixins/style-propable');
 var TextField = require('./text-field');
 var DropDownMenu = require('./drop-down-menu');
@@ -9720,7 +9720,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('./mixins/style-propable');
 var Draggable = require('react-draggable2');
 var Transitions = require('./styles/transitions');
@@ -10180,7 +10180,7 @@ module.exports = Slider;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var CssEvent = require('./utils/css-event');
 var StylePropable = require('./mixins/style-propable');
 var Transitions = require('./styles/transitions');
@@ -11097,7 +11097,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react/addons");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react/addons");
 var StylePropable = require('./mixins/style-propable');
 var Transitions = require('./styles/transitions');
 
@@ -11186,7 +11186,7 @@ module.exports = SvgIcon;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var SvgIcon = require('../svg-icon');
 
 var NavigationChevronLeftDouble = React.createClass({
@@ -11210,7 +11210,7 @@ module.exports = NavigationChevronLeftDouble;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var SvgIcon = require('../svg-icon');
 
 var NavigationChevronRightDouble = React.createClass({
@@ -11234,7 +11234,7 @@ module.exports = NavigationChevronRightDouble;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var SvgIcon = require('../../svg-icon');
 
 var NavigationArrowDropDown = React.createClass({
@@ -11257,7 +11257,7 @@ module.exports = NavigationArrowDropDown;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var SvgIcon = require('../../svg-icon');
 
 var NavigationArrowDropUp = React.createClass({
@@ -11280,7 +11280,7 @@ module.exports = NavigationArrowDropUp;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var SvgIcon = require('../../svg-icon');
 
 var NavigationChevronLeft = React.createClass({
@@ -11303,7 +11303,7 @@ module.exports = NavigationChevronLeft;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var SvgIcon = require('../../svg-icon');
 
 var NavigationChevronRight = React.createClass({
@@ -11326,7 +11326,7 @@ module.exports = NavigationChevronRight;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var SvgIcon = require('../../svg-icon');
 
 var NavigationMenu = React.createClass({
@@ -11349,7 +11349,7 @@ module.exports = NavigationMenu;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var SvgIcon = require('../../svg-icon');
 
 var ToggleCheckBoxOutlineBlank = React.createClass({
@@ -11372,7 +11372,7 @@ module.exports = ToggleCheckBoxOutlineBlank;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var SvgIcon = require('../../svg-icon');
 
 var ToggleCheckBox = React.createClass({
@@ -11395,7 +11395,7 @@ module.exports = ToggleCheckBox;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var SvgIcon = require('../../svg-icon');
 
 var ToggleRadioButtonChecked = React.createClass({
@@ -11418,7 +11418,7 @@ module.exports = ToggleRadioButtonChecked;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var SvgIcon = require('../../svg-icon');
 
 var ToggleRadioButtonUnchecked = React.createClass({
@@ -11445,7 +11445,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 
 var TableFooter = React.createClass({
@@ -11537,7 +11537,7 @@ module.exports = TableFooter;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 var Tooltip = require('../tooltip');
 
@@ -11644,7 +11644,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var Checkbox = require('../checkbox');
 var StylePropable = require('../mixins/style-propable');
 var TableHeaderColumn = require('./table-header-column');
@@ -11790,7 +11790,7 @@ module.exports = TableHeader;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 
 var TableRowColumn = React.createClass({
@@ -11893,7 +11893,7 @@ module.exports = TableRowColumn;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var Checkbox = require('../checkbox');
 var StylePropable = require('../mixins/style-propable');
 var TableRowColumn = require('./table-row-column');
@@ -12083,7 +12083,7 @@ module.exports = TableRow;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 var ClickAwayable = require('../mixins/click-awayable');
 var TableHeader = require('./table-header');
@@ -12487,7 +12487,7 @@ module.exports = Table;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 var Colors = require('../styles/colors.js');
 
@@ -12545,7 +12545,7 @@ module.exports = Tab;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 
 var TabTemplate = React.createClass({
   displayName: 'TabTemplate',
@@ -12579,7 +12579,7 @@ module.exports = TabTemplate;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react/addons");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react/addons");
 var TabTemplate = require('./tabTemplate');
 var InkBar = require('../ink-bar');
 var StylePropable = require('../mixins/style-propable');
@@ -12742,7 +12742,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var ColorManipulator = require('./utils/color-manipulator');
 var StylePropable = require('./mixins/style-propable');
 var Transitions = require('./styles/transitions');
@@ -13126,7 +13126,7 @@ module.exports = TextField;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var ThemeManager = require('./styles/theme-manager');
 
 var Theme = React.createClass({
@@ -13199,7 +13199,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 var EnhancedButton = require('../enhanced-button');
 var Transitions = require('../styles/transitions');
@@ -13306,7 +13306,7 @@ module.exports = ClockButton;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 var ClockNumber = require('./clock-number');
 var ClockPointer = require('./clock-pointer');
@@ -13504,7 +13504,7 @@ module.exports = ClockHours;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 var ClockNumber = require('./clock-number');
 var ClockPointer = require('./clock-pointer');
@@ -13678,7 +13678,7 @@ module.exports = ClockMinutes;
 
 var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 
 var ClockNumber = React.createClass({
@@ -13778,7 +13778,7 @@ module.exports = ClockNumber;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 
 var ClockPointer = React.createClass({
@@ -13894,7 +13894,7 @@ module.exports = ClockPointer;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 var TimeDisplay = require('./time-display');
 var ClockButton = require('./clock-button');
@@ -14079,7 +14079,7 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 
 var TimeDisplay = React.createClass({
@@ -14232,7 +14232,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 var WindowListenable = require('../mixins/window-listenable');
 var KeyCode = require('../utils/key-code');
@@ -14367,7 +14367,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 var WindowListenable = require('../mixins/window-listenable');
 var TimePickerDialog = require('./time-picker-dialog');
@@ -14509,7 +14509,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('./mixins/style-propable');
 var Transitions = require('./styles/transitions');
 var Paper = require('./paper');
@@ -14675,7 +14675,7 @@ module.exports = Toggle;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var Colors = require('../styles/colors');
 var StylePropable = require('../mixins/style-propable');
 
@@ -14837,7 +14837,7 @@ module.exports = ToolbarGroup;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 
 var ToolbarSeparator = React.createClass({
@@ -14884,7 +14884,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 
 var ToolbarTitle = React.createClass({
@@ -14935,7 +14935,7 @@ module.exports = ToolbarTitle;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('../mixins/style-propable');
 
 var Toolbar = React.createClass({
@@ -14988,7 +14988,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 var StylePropable = require('./mixins/style-propable');
 var Transitions = require('./styles/transitions');
 var Colors = require('./styles/colors');
@@ -15139,7 +15139,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react/addons");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react/addons");
 var StylePropable = require('../mixins/style-propable');
 var AutoPrefix = require('../styles/auto-prefix');
 var Transitions = require('../styles/transitions');
@@ -15220,7 +15220,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react/addons");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react/addons");
 var ReactTransitionGroup = React.addons.TransitionGroup;
 var StylePropable = require('../mixins/style-propable');
 var SlideInChild = require('./slide-in-child');
@@ -15289,7 +15289,7 @@ module.exports = SlideIn;
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
 
 module.exports = {
 
@@ -16258,7 +16258,7 @@ if (typeof define !== 'undefined' && define.amd) {
 (function (global){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react/addons");
+var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react/addons");
 var emptyFunction = function () {};
 
 // for accessing browser globals
@@ -16943,13 +16943,13 @@ module.exports = React.createClass({
 
 "use strict";
 
-var EventConstants = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react/lib/EventConstants");
-var EventPluginUtils = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react/lib/EventPluginUtils");
-var EventPropagators = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react/lib/EventPropagators");
-var SyntheticEvent = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react/lib/SyntheticEvent");
+var EventConstants = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react/lib/EventConstants");
+var EventPluginUtils = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react/lib/EventPluginUtils");
+var EventPropagators = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react/lib/EventPropagators");
+var SyntheticEvent = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react/lib/SyntheticEvent");
 
-var accumulateInto = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react/lib/accumulateInto");
-var keyOf = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react/lib/keyOf");
+var accumulateInto = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react/lib/accumulateInto");
+var keyOf = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react/lib/keyOf");
 
 var isStartish = EventPluginUtils.isStartish;
 var isMoveish = EventPluginUtils.isMoveish;
@@ -17265,14 +17265,14 @@ module.exports = ResponderEventPlugin;
 
 "use strict";
 
-var EventConstants = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react/lib/EventConstants");
-var EventPluginUtils = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react/lib/EventPluginUtils");
-var EventPropagators = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react/lib/EventPropagators");
-var SyntheticUIEvent = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react/lib/SyntheticUIEvent");
+var EventConstants = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react/lib/EventConstants");
+var EventPluginUtils = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react/lib/EventPluginUtils");
+var EventPropagators = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react/lib/EventPropagators");
+var SyntheticUIEvent = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react/lib/SyntheticUIEvent");
 var TouchEventUtils = require('./TouchEventUtils');
-var ViewportMetrics = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react/lib/ViewportMetrics");
+var ViewportMetrics = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react/lib/ViewportMetrics");
 
-var keyOf = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react/lib/keyOf");
+var keyOf = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react/lib/keyOf");
 var topLevelTypes = EventConstants.topLevelTypes;
 
 var isStartish = EventPluginUtils.isStartish;
@@ -17460,10 +17460,10 @@ module.exports = TouchEventUtils;
 },{}],135:[function(require,module,exports){
 (function (global){
 module.exports = function injectTapEventPlugin () {
-  var React = (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react");
+  var React = (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react");
   React.initializeTouchEvents(true);
 
-  (typeof window !== "undefined" ? window.React.require : typeof global !== "undefined" ? global.React.require : null)("react/lib/EventPluginHub").injection.injectEventPluginsByName({
+  (typeof window !== "undefined" ? window.Package['react-runtime'].React.require : typeof global !== "undefined" ? global.Package['react-runtime'].React.require : null)("react/lib/EventPluginHub").injection.injectEventPluginsByName({
     "ResponderEventPlugin": require('./ResponderEventPlugin.js'),
     "TapEventPlugin":       require('./TapEventPlugin.js')
   });

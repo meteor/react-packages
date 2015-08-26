@@ -6,11 +6,14 @@
 
 autopublish
 insecure
-meteor-platform
 react
 
 cosmos:browserify
 meteorhacks:npm
 
-
 npm-container
+standard-minifiers
+meteor-base
+mobile-experience
+mongo
+static-html
