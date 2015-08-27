@@ -8,3 +8,4 @@ Meteor packages for a great React developer experience
 
 1. Install `mkdocs` with `pip`
 2. Run `mkdocs serve` from the root of the repository
+waaat
