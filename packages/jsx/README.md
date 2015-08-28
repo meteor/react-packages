@@ -3,7 +3,7 @@
 A build plugin that compiles files with the `.jsx` extension from JSX to plain
 JavaScript. Also transpiles some of the most useful ES6 features.
 
-XXX list of ES6 features here
+XXX list of ES6 features here.
 
 ### JSX before compilation
 
