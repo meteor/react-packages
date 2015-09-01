@@ -1,7 +1,7 @@
 Package.describe({
   name: "jsx",
   summary: "Build plugin that transpiles .jsx files using Babel",
-  version: '0.1.2',
+  version: '0.1.6',
   documentation: 'README.md',
   git: 'https://github.com/meteor/react-packages'
 });
