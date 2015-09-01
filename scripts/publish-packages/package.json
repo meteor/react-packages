@@ -1,0 +1,16 @@
+{
+  "name": "publish-packages",
+  "version": "1.0.0",
+  "description": "Publish all modified packages and update dependencies",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "meteor-babel": "^0.5.7",
+    "sync": "^0.2.5",
+    "underscore": "^1.8.3"
+  }
+}
