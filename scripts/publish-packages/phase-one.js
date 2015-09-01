@@ -85,7 +85,7 @@ the --finish option?
         } else {
           // There's a wrapper version, bump wrapper number
           const split = pkgVersion.split("_");
-          split[2] = (parseInt(split[1], 10) + 1) + "";
+          split[1] = (parseInt(split[1], 10) + 1) + "";
           defaultNewVersion = split.join("_");
         }
       }
