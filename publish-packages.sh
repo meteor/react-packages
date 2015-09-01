@@ -9,4 +9,4 @@ cd "$(dirname "$0")"
 # Run our Node app
 cd scripts/publish-packages
 npm install
-node index.js
+node index.js $@

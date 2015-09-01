@@ -71,7 +71,7 @@ the --finish option?
     packagesToRepublish.forEach((pkg) => {
       const packageJsFile = `packages/${pkg}/package.js`;
       const versionRegexp = /version:(\s*['"])(.*)(['"])/;
-      const packageJsContents = fs.readFileSync(packageJsFile, {encoding: "utf8"});
+      const packageJsContents = fs.readFileSync(packageJsFile, "utf8");
       const pkgVersion = packageJsContents.match(versionRegexp)[2];
 
       let defaultNewVersion;
@@ -120,7 +120,7 @@ What should the new version be? ${defaultVersionDisplay}`) || defaultNewVersion;
       fs.readdirSync("packages/").forEach(otherPkg => {
         const otherPackageJsFile = `packages/${otherPkg}/package.js`;
         const otherPackageJsContents =
-                fs.readFileSync(otherPackageJsFile, {encoding: "utf8"});
+                fs.readFileSync(otherPackageJsFile, "utf8");
         fs.writeFileSync(otherPackageJsFile, otherPackageJsContents.replace(
           new RegExp(`(['"]${pkg}@=?).*(['"])`, "g"),
           `$1${newPkgVersion}$2`));
