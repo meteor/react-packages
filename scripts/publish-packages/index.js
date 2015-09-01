@@ -4,4 +4,8 @@ require("meteor-babel/register")({
   babelOptions: require("meteor-babel").getDefaultOptions()
 });
 
-require("./main");
+if (process.argv[2] === "--finish") {
+  require("./phase-two");
+} else {
+  require("./phase-one");
+}

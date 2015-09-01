@@ -1,22 +1,22 @@
-var Sync = require("sync");
-var fs = require("fs");
-var _ = require("underscore");
+const Sync = require("sync");
+const fs = require("fs");
+const _ = require("underscore");
 
-var promptSync = require("./prompt-sync");
-var execSync = require("./exec-sync");
+const promptSync = require("./prompt-sync");
+const execSync = require("./exec-sync");
+const { goToRootAndCheckBranch } = require("./utils");
 
 // Run in a fiber, so that we can use synchronous APIs
 Sync(function () {
   try {
-    // Go to root of repository
-    const repoRootDir = execSync("git rev-parse --show-toplevel").stdout.trim();
-    process.chdir(repoRootDir);
+    goToRootAndCheckBranch();
 
-    // Check if we are on devel, because if we are on master we should have
-    // already published, and if we are not on devel we are about to
-    // accidentally publish some branch.
-    if (execSync("git status").stdout.indexOf("On branch devel") === -1) {
-      throw new Error("Need to be on 'devel' branch to publish packages.");
+    if (fs.existsSync(".packages-to-republish.json")) {
+      console.log(
+`.packages-to-republish.json file found. Did you mean to run this script with
+the --finish option?
+`);
+      process.exit(1);
     }
 
     // Check if there are any uncommitted changes, because we are going to be
@@ -27,8 +27,8 @@ Sync(function () {
 
     if (uncommittedFiles.length !== 0) {
       throw new Error(
-`You have uncommitted changes in your repository. \
-Please commit or stash before publishing.`);
+  `You have uncommitted changes in your repository. \
+  Please commit or stash before publishing.`);
     }
 
     // See which files have changed from master; these are the
