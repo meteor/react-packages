@@ -74,9 +74,33 @@ the --finish option?
       const packageJsContents = fs.readFileSync(packageJsFile, {encoding: "utf8"});
       const pkgVersion = packageJsContents.match(versionRegexp)[2];
 
+      let defaultNewVersion;
+      if (pkgVersion.indexOf("-") === -1) {
+        // No pre-release version
+        if (pkgVersion.indexOf("_") === -1) {
+          // No wrapper version, bump minor
+          const split = pkgVersion.split(".");
+          split[2] = (parseInt(split[2], 10) + 1) + "";
+          defaultNewVersion = split.join(".");
+        } else {
+          // There's a wrapper version, bump wrapper number
+          const split = pkgVersion.split("_");
+          split[2] = (parseInt(split[1], 10) + 1) + "";
+          defaultNewVersion = split.join("_");
+        }
+      }
+
+      const defaultVersionDisplay = defaultNewVersion ?
+        `[${defaultNewVersion}]` : "";
+
       const newPkgVersion = promptSync(
 `Package '${pkg}' was at version '${pkgVersion}'. \
-What should the new version be? `);
+What should the new version be? ${defaultVersionDisplay}`) || defaultNewVersion;
+
+      if (! newPkgVersion) {
+        throw new Error(`Didn't select a new version.`);
+      }
+
       console.log(`You selected '${newPkgVersion}'.`);
       console.log();
 
