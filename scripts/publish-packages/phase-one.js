@@ -37,6 +37,8 @@ the --finish option?
       "git diff --name-only master | grep \"^packages/\"").stdout
         .trim().split("\n");
 
+    console.log("changed packages", changedPackageFiles);
+
     // Convert the list of changed files into a list of changed
     // package names, each corresponding to a directory
     const changedPackages = _.chain(changedPackageFiles).map(
