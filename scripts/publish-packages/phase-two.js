@@ -74,7 +74,7 @@ ${listOfVersions}`;
     execSync("git checkout master");
 
     // Merge
-    execSync("git merge --no-ff -m 'Merge devel after publishing'");
+    execSync("git merge devel --no-ff -m 'Merge devel after publishing'");
 
     // Push, with extra options to make sure it works
     execSync("git push -u origin master");
