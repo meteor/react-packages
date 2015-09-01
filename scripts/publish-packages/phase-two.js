@@ -26,10 +26,8 @@ without the --finish option?
     Object.keys(packageVersions).forEach((name) => {
       process.chdir(`packages/${name}`);
       execSync("meteor publish");
+      goToRoot();
     });
-
-    // Return to root of repository
-    goToRoot();
 
     // Then, commit. We need to commit after publishing so that we get the
     // changes to .versions in the same commit
