@@ -64,6 +64,9 @@ ${listOfVersions}`;
     // Push, with extra options to make sure it works
     execSync("git push -u origin master");
 
+    // Delete the flag file
+    fs.unlinkSync(".packages-to-republish.json");
+
   } catch (err) {
     console.log(err.stack);
     process.exit(1);
