@@ -2,8 +2,8 @@ var Sync = require("sync");
 var fs = require("fs");
 var _ = require("underscore");
 
-var promptSync = require("./prompt_sync");
-var execSync = require("./exec_sync");
+var promptSync = require("./prompt-sync");
+var execSync = require("./exec-sync");
 
 // Run in a fiber, so that we can use synchronous APIs
 Sync(function () {
