@@ -12,7 +12,8 @@ To learn how to use it, go to the [React website](https://facebook.github.io/rea
 
 ```js
 // Code sample of using React without JSX
-var HelloMessage = React.createClass({displayName: "HelloMessage",
+var HelloMessage = React.createClass({
+  displayName: "HelloMessage",
   render: function() {
     return React.createElement("div", null, "Hello ", this.props.name);
   }
