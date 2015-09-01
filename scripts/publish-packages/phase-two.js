@@ -22,8 +22,25 @@ without the --finish option?
     const packageVersions =
       JSON.parse(fs.readFileSync(".packages-to-republish.json", "utf8"));
 
+    // XXX hardcoded order because I don't want to solve dependencies at the
+    // moment
+    const publishOrder = [
+      "jsx",
+      "react-runtime-dev",
+      "react-runtime-prod",
+      "react-runtime",
+      "react-meteor-data",
+      "react-template-helper",
+      "react"
+    ];
+
     // First, publish the packages
-    Object.keys(packageVersions).forEach((name) => {
+    publishOrder.forEach((name) => {
+      if (! _.has(packageVersions, name)) {
+        // Only publish the package if it is in packageVersions
+        return;
+      }
+
       process.chdir(`packages/${name}`);
       execSync("meteor publish");
       goToRoot();
