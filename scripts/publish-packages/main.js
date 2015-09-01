@@ -12,9 +12,9 @@ Sync(function () {
     const repoRootDir = execSync("git rev-parse --show-toplevel").stdout.trim();
     process.chdir(repoRootDir);
 
-    // Check if we are on devel, because if we are on master we should
-    // have already published, and if we are not on devel we are about
-    // to accidentally publish some branch.
+    // Check if we are on devel, because if we are on master we should have
+    // already published, and if we are not on devel we are about to
+    // accidentally publish some branch.
     if (execSync("git status").stdout.indexOf("On branch devel") === -1) {
       throw new Error("Need to be on 'devel' branch to publish packages.");
     }
@@ -35,30 +35,30 @@ Please commit or stash before publishing.`);
     // packages that have changes to the source code.
     const changedPackageFiles = execSync(
       "git diff --name-only master | grep \"^packages/\"").stdout
-          .trim().split("\n");
+        .trim().split("\n");
 
     // Convert the list of changed files into a list of changed
     // package names, each corresponding to a directory
     const changedPackages = _.chain(changedPackageFiles).map(
       file => file.split("/")[1]).uniq().compact().value();
 
-    // Find out which packages depend (directly or indirectly) on the
-    // changed packages; we need to republish them too, in order for
-    // people to get the newest versions of everything when adding the
-    // package.
+    // Find out which packages depend (directly or indirectly) on the changed
+    // packages; we need to republish them too, in order for people to get the
+    // newest versions of everything when adding the package.
     //
-    // To find indirect dependencies as well as direct ones we look at
-    // .version files, which contain version information about all
-    // dependencies at the time the package was published.
+    // To find indirect dependencies as well as direct ones we look at .version
+    // files, which contain version information about all dependencies at the
+    // time the package was last published.
     const packagesThatDependOnChanged = _.union.apply(null, changedPackages.map(pkg => {
-        // lines looks like: packages/react/.versions:react-runtime@0.13.3_5
-        const grepOutput = execSync(
-          `git grep "${pkg}@" packages | grep .versions`).stdout;
+      // lines look like: packages/react/.versions:react-runtime@0.13.3_5
+      const grepOutput = execSync(
+        `git grep "${pkg}@" packages | grep .versions`).stdout;
 
-        return _.compact(grepOutput.split("\n")).map(line => line.split("/")[1]);
-      }));
+      return _.compact(grepOutput.split("\n")).map(line => line.split("/")[1]);
+    }));
 
-    const packagesToRepublish = _.union(packagesThatDependOnChanged, changedPackages);
+    const packagesToRepublish = _.union(packagesThatDependOnChanged,
+      changedPackages);
 
     console.log("Packages that need to be republished:");
     packagesToRepublish.forEach(pkg => { console.log(`* ${pkg}`); });
@@ -81,12 +81,12 @@ What should the new version be? `);
       fs.writeFileSync(packageJsFile, packageJsContents.replace(
         versionRegexp, `version:$1${newPkgVersion}$3`));
 
-      // Replace references to this package in other packages, so that
-      // they depend on the new version of this package. Make sure to
-      // keep the distinction between "foo@1.2.3" and "foo@=1.2.3".
+      // Replace references to this package in other packages, so that they
+      // depend on the new version of this package. Make sure to keep the
+      // distinction between "foo@1.2.3" and "foo@=1.2.3".
       //
-      // Note: We don't yet have the logic to deal with the ||
-      // operator in this script yet.
+      // Note: We don't yet have the logic to deal with the || operator in this
+      // script yet.
       fs.readdirSync("packages/").forEach(otherPkg => {
         const otherPackageJsFile = `packages/${otherPkg}/package.js`;
         const otherPackageJsContents =
@@ -98,6 +98,21 @@ What should the new version be? `);
       });
     });
 
+    // Now we are going to defer back to the user. It's up to them to run the
+    // second script in the chain to actually publish the packages after
+    // inspecting the diff.
+    fs.writeFileSync(".packages-to-republish.json",
+      JSON.stringify(packagesToRepublish));
+
+    console.log(
+`The script has written a record of the packages that need to be republished to
+.packages-to-republish.json in the root of the repo, and updated the package.js
+files to reflect the new versions you selected. Now you should:
+
+1. Check 'git diff' to make sure you like the changes
+2. Run 'publish-packages.sh --finish' again to actually publish, merge to
+   master, and push a tag
+` );
   } catch (err) {
     console.log(err.stack);
     process.exit(1);
