@@ -64,6 +64,9 @@ the --finish option?
     packagesToRepublish.forEach(pkg => { console.log(`* ${pkg}`); });
     console.log();
 
+    // Remember which versions we are changing to
+    const packageVersions = {};
+
     // Now, we want to ask people what versions they want to bump to
     packagesToRepublish.forEach((pkg) => {
       const packageJsFile = `packages/${pkg}/package.js`;
@@ -80,6 +83,9 @@ What should the new version be? `);
       // Replace version declaration at the top of package.js
       fs.writeFileSync(packageJsFile, packageJsContents.replace(
         versionRegexp, `version:$1${newPkgVersion}$3`));
+
+      // Remember this so that we can tag the commit later
+      packageVersions[pkg] = newPkgVersion;
 
       // Replace references to this package in other packages, so that they
       // depend on the new version of this package. Make sure to keep the
@@ -102,7 +108,7 @@ What should the new version be? `);
     // second script in the chain to actually publish the packages after
     // inspecting the diff.
     fs.writeFileSync(".packages-to-republish.json",
-      JSON.stringify(packagesToRepublish));
+      JSON.stringify(packageVersions));
 
     console.log(
 `The script has written a record of the packages that need to be republished to
