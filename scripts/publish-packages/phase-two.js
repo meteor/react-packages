@@ -70,6 +70,9 @@ ${listOfVersions}`;
       execSync(`git tag ${name}@${version}`);
     });
 
+    // Push the tags
+    execSync("git push --tags");
+
     // Check out master
     execSync("git checkout master");
 
