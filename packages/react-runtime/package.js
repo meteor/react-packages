@@ -11,8 +11,8 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-  api.use('react-runtime-dev@=0.13.3_5');
-  api.use('react-runtime-prod@=0.13.3_4');
+  api.use('react-runtime-dev@=0.13.3_6');
+  api.use('react-runtime-prod@=0.13.3_5');
   api.addFiles('react-runtime.js');
 
   api.export('React');
