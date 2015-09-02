@@ -8,7 +8,7 @@ Package.describe({
 
 Package.registerBuildPlugin({
   name: 'compile-jsx',
-  use: ['babel-compiler@5.8.22-rc.0'],
+  use: ['babel-compiler@5.8.22-rc.1'],
   sources: [
     'jsx-plugin.js'
   ]
