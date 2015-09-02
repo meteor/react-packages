@@ -1,6 +1,6 @@
 Package.describe({
   name: 'react-template-helper',
-  version: '0.1.4',
+  version: '0.1.5',
   // Brief, one-line summary of the package.
   summary: 'Use React components in native Meteor templates',
   // URL to the Git repository containing the source code for this package.
@@ -30,7 +30,7 @@ Package.onTest(function(api) {
     'reactive-var',
     'react-template-helper',
     'test-helpers',
-    'jsx@0.2.0',
+    'jsx@0.2.1',
     'react-runtime@0.13.3_6',
     'tracker',
     'underscore',

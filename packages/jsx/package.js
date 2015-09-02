@@ -1,14 +1,14 @@
 Package.describe({
   name: "jsx",
   summary: "Build plugin that transpiles .jsx files using Babel",
-  version: '0.2.0',
+  version: '0.2.1',
   documentation: 'README.md',
   git: 'https://github.com/meteor/react-packages'
 });
 
 Package.registerBuildPlugin({
   name: 'compile-jsx',
-  use: ['babel-compiler@5.8.22-rc.0'],
+  use: ['babel-compiler@5.8.22-rc.1'],
   sources: [
     'jsx-plugin.js'
   ]
