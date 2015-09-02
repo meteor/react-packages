@@ -73,6 +73,9 @@ ${listOfVersions}`;
     // Push the tags
     execSync("git push --tags");
 
+    // Push devel
+    execSync("git push");
+
     // Check out master
     execSync("git checkout master");
 
