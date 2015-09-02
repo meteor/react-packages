@@ -42,7 +42,7 @@ without the --finish option?
       }
 
       process.chdir(`packages/${name}`);
-      execSync("meteor publish");
+      execSync("meteor --release 1.2-rc.10 publish");
       goToRoot();
     });
 
