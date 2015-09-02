@@ -1,6 +1,6 @@
 Package.describe({
   name: 'react-runtime-prod',
-  version: '0.13.3_4',
+  version: '0.13.3_5',
   // Brief, one-line summary of the package.
   summary: 'Production version of the React runtime library with addons.',
   // URL to the Git repository containing the source code for this package.
@@ -29,7 +29,7 @@ Package.onUse(function (api) {
 Package.onTest(function (api) {
   api.versionsFrom('METEOR@1.1.0.2');
   api.use('tinytest');
-  api.use('jsx@0.1.6');
+  api.use('jsx@0.2.0');
   api.use('react-runtime-prod');
 
   api.addFiles('react-runtime-prod-tests.jsx', 'client');

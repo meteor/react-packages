@@ -1,6 +1,6 @@
 Package.describe({
   name: 'react-template-helper',
-  version: '0.1.3',
+  version: '0.1.4',
   // Brief, one-line summary of the package.
   summary: 'Use React components in native Meteor templates',
   // URL to the Git repository containing the source code for this package.
@@ -12,19 +12,31 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.versionsFrom('METEOR@1.1.0.2');
-  api.use('templating');
-  api.use('react-runtime@0.13.3_6');
+
+  api.use([
+    'templating',
+    'react-runtime@0.13.3_6',
+    'underscore'
+  ]);
+
   api.addFiles(['react-template-helper.js'], 'client');
 });
 
 Package.onTest(function(api) {
   api.versionsFrom('METEOR@1.1.0.2');
-  api.use('templating');
-  api.use('tinytest');
-  api.use('reactive-var');
-  api.use('react-template-helper');
-  api.use('test-helpers');
-  api.use('jsx@0.1.6');
+  api.use([
+    'templating',
+    'tinytest',
+    'reactive-var',
+    'react-template-helper',
+    'test-helpers',
+    'jsx@0.2.0',
+    'react-runtime@0.13.3_6',
+    'tracker',
+    'underscore',
+    'jquery'
+  ]);
+
   api.addFiles([
     // remove once Meteor 1.1.1 is released:
     'event_simulation.js', // copied from METEOR/packages/test-helpers/
