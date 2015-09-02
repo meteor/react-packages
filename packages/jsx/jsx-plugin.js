@@ -1,35 +1,71 @@
-var handler = function (compileStep) {
-  var source = compileStep.read().toString('utf8');
-  var outputFile = compileStep.inputPath + ".js";
+function BabelCompiler() {}
 
-  try {
-    var result = Babel.transformMeteor(source, {
-      sourceMap: true,
-      filename: compileStep.pathForSourceMap,
-      sourceMapName: compileStep.pathForSourceMap,
-      extraWhitelist: ["react"]
-    });
-  } catch (e) {
-    if (e.loc) {
-      // Babel error
-      compileStep.error({
-        message: e.message,
-        sourcePath: compileStep.inputPath,
-        line: e.loc.line,
-        column: e.loc.column
+var BCp = BabelCompiler.prototype;
+
+BCp.processFilesForTarget = function (inputFiles) {
+  inputFiles.forEach(function (inputFile) {
+    var source = inputFile.getContentsAsString();
+    var inputFilePath = inputFile.getPathInPackage();
+    var outputFilePath = inputFile.getPathInPackage();
+    var fileOptions = inputFile.getFileOptions();
+    var toBeAdded = {
+      sourcePath: inputFilePath,
+      path: outputFilePath,
+      data: source,
+      hash: inputFile.getSourceHash(),
+      sourceMap: null,
+      bare: !! fileOptions.bare
+    };
+
+    if (fileOptions.transpile !== false) {
+      var targetCouldBeInternetExplorer8 =
+        inputFile.getArch() === "web.browser";
+
+      var babelOptions = Babel.getDefaultOptions({
+        // Perform some additional transformations to improve
+        // compatibility in older browsers (e.g. wrapping named function
+        // expressions, per http://kiro.me/blog/nfe_dilemma.html).
+        jscript: targetCouldBeInternetExplorer8,
+        react: true
       });
-      return;
-    } else {
-      throw e;
-    }
-  }
 
-  compileStep.addJavaScript({
-    path: outputFile,
-    sourcePath: compileStep.inputPath,
-    data: result.code,
-    sourceMap: JSON.stringify(result.map)
+      babelOptions.sourceMap = true;
+      babelOptions.filename = inputFilePath;
+      babelOptions.sourceFileName = "/" + inputFilePath;
+      babelOptions.sourceMapName = "/" + outputFilePath + ".map";
+
+      try {
+        var result = Babel.compile(source, babelOptions);
+      } catch (e) {
+        if (e.loc) {
+          inputFile.error({
+            message: e.message,
+            sourcePath: inputFilePath,
+            line: e.loc.line,
+            column: e.loc.column,
+          });
+
+          return;
+        }
+
+        throw e;
+      }
+
+      toBeAdded.data = result.code;
+      toBeAdded.hash = result.hash;
+      toBeAdded.sourceMap = result.map;
+    }
+
+    inputFile.addJavaScript(toBeAdded);
   });
 };
 
-Plugin.registerSourceHandler('jsx', handler);
+BCp.setDiskCacheDirectory = function (cacheDir) {
+  Babel.setCacheDir(cacheDir);
+};
+
+Plugin.registerCompiler({
+  extensions: ['jsx'],
+}, function () {
+  return new BabelCompiler();
+});

@@ -19,10 +19,3 @@ Package.onUse(function(api) {
     'react-meteor-data@0.1.6'
   ]);
 });
-
-Package.onTest(function(api) {
-  api.versionsFrom('1.1.0.2');
-  api.use('tinytest');
-  api.use('react');
-  api.addFiles('react-tests.js');
-});
