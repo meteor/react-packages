@@ -1,4 +1,6 @@
 TodoListHeader = React.createClass({
+  mixins: [ReactRouter.Navigation],
+
   propTypes: {
     list: React.PropTypes.object.isRequired,
     tasksLoading: React.PropTypes.bool

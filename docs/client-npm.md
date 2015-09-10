@@ -47,7 +47,7 @@ Browserify supports numerous transforms, which let you change the way NPM packag
     "externalify": {
       "global": true,
       "external": {
-        "react": "Package['react-runtime'].React.require"
+        "react": "React.require"
       }
     }
   }
