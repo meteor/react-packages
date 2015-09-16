@@ -68,6 +68,28 @@ Now, you can use React Router anywhere in your app! You can use the same method 
 
 The NPM modules you require are loaded based on where your `app.browserify.js` file is located. This is why we recommend putting it in `lib/`, a special directory for files that need to be loaded before the rest of your app code. Read more about file load order in the [Meteor docs](http://docs.meteor.com/#/full/fileloadorder).
 
+## Using Browserify in a package
+
+Using Browserify in a package is similar to using it in your app.
+
+1. Make your package depend on `cosmos:browserify`
+2. Add NPM dependencies via `Npm.depends` as usual
+2. Add `package.browserify.js` and `package.browserify.options.json` files to your package with the same format as above
+3. If you want to use the Meteor React package with a library from NPM, you need to pass a slightly different option, since React isn't going to be globally available anymore:
+
+  ```js
+  {
+    "transforms": {
+      "externalify": {
+        "global": true,
+        "external": {
+          "react": "Package.react-runtime.React.require"
+        }
+      }
+    }
+  }
+  ```
+
 ## Future improvements
 
 This method of loading client-side NPM code works, but is not ideal in the long term. Some caveats:
