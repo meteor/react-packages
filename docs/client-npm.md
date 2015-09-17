@@ -75,20 +75,20 @@ Using Browserify in a package is similar to using it in your app.
 1. Make your package depend on `cosmos:browserify`
 2. Add NPM dependencies via `Npm.depends` as usual
 2. Add `package.browserify.js` and `package.browserify.options.json` files to your package with the same format as above
-3. If you want to use the Meteor React package with a library from NPM, you need to pass a slightly different option, since React isn't going to be globally available anymore:
+3. If you want to use the Meteor React package with a library from NPM, you need to pass a slightly different option, since React isn't going to be globally available anymore.
 
-  ```js
-  {
-    "transforms": {
-      "externalify": {
-        "global": true,
-        "external": {
-          "react": "Package.react-runtime.React.require"
-        }
+```js
+{
+  "transforms": {
+    "externalify": {
+      "global": true,
+      "external": {
+        "react": "Package.react-runtime.React.require"
       }
     }
   }
-  ```
+}
+```
 
 ## Future improvements
 
