@@ -1,4 +1,4 @@
-site_name: React in Meteor Preview
+site_name: React in Meteor
 theme: readthedocs
 pages:
 - Getting started: index.md
