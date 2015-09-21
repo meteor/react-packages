@@ -12,10 +12,10 @@ jsx@0.2.1
 meteor@1.1.7-rc.1
 promise@0.4.8-rc.0
 random@1.0.4-rc.0
-react@0.1.12
-react-meteor-data@0.1.8
-react-runtime@0.13.3_6
-react-runtime-dev@0.13.3_5
-react-runtime-prod@0.13.3_4
+react@0.1.13
+react-meteor-data@0.1.9
+react-runtime@0.13.3_7
+react-runtime-dev@0.13.3_7
+react-runtime-prod@0.13.3_6
 tracker@1.0.8-rc.0
 underscore@1.0.4-rc.0

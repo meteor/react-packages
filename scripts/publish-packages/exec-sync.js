@@ -8,6 +8,8 @@ var child_process = require("child_process");
 // `child_process.execSync`, but some people at MDG like to only use
 // the version of Node that comes with Meteor, which is 0.10.x
 function execSync(command, options) {
+  console.log("running command: ", command);
+
   // A form of `child_process.exec` where the callback takes (err,
   // res); res is {stdout: ..., stderr: ...}.  Note: `options` isn't
   // optional here
