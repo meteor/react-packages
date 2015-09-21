@@ -26,7 +26,7 @@ htmljs@1.0.5-rc.1
 id-map@1.0.4-rc.0
 jquery@1.11.4-rc.0
 jsx@0.2.1
-local-test:react-template-helper@0.1.5
+local-test:react-template-helper@0.1.6
 logging@1.0.8-rc.1
 meteor@1.1.7-rc.1
 minifiers@1.1.6-rc.1
@@ -38,10 +38,10 @@ observe-sequence@1.0.7-rc.0
 ordered-dict@1.0.4-rc.0
 promise@0.4.8-rc.0
 random@1.0.4-rc.0
-react-runtime@0.13.3_6
-react-runtime-dev@0.13.3_5
-react-runtime-prod@0.13.3_4
-react-template-helper@0.1.5
+react-runtime@0.13.3_7
+react-runtime-dev@0.13.3_7
+react-runtime-prod@0.13.3_6
+react-template-helper@0.1.6
 reactive-var@1.0.6-rc.0
 retry@1.0.4-rc.0
 routepolicy@1.0.6-rc.0
