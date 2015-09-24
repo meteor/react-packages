@@ -50,7 +50,6 @@ class MeteorDataManager {
 
   calculateData() {
     const component = this.component;
-    const {props, state} = component;
 
     if (! component.getMeteorData) {
       return null;
