@@ -143,7 +143,7 @@ TodoListHeader = React.createClass({
               <span className="icon-cog"></span>
             </div>
             <div className="options-web">
-              <a className="nav-item" onClick={ this.props.onToggleListPrivacy }>
+              <a className="nav-item" onClick={ this.onToggleListPrivacy }>
                 { list.userId ?
                     <span className="icon-lock" title="Make list public" /> :
                     <span className="icon-unlock" title="Make list private" /> }
