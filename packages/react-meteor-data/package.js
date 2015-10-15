@@ -21,7 +21,7 @@ Package.onTest(function (api) {
   api.use('tinytest');
   api.use('test-helpers');
   api.use('react-meteor-data');
-  api.use('react-runtime@0.13.3_7');
+  api.use('react-runtime@0.14.0');
   api.use('jsx@0.2.1');
   api.use('reactive-var');
   api.use('underscore');
