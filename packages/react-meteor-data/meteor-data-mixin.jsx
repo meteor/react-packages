@@ -69,7 +69,7 @@ class MeteorDataManager {
 
     let data;
     // Use Tracker.nonreactive in case we are inside a Tracker Computation.
-    // This can happen if someone calls `React.render` inside a Computation.
+    // This can happen if someone calls `ReactDOM.render` inside a Computation.
     // In that case, we want to opt out of the normal behavior of nested
     // Computations, where if the outer one is invalidated or stopped,
     // it stops the inner one.
@@ -107,7 +107,7 @@ class MeteorDataManager {
         }
       });
     });
-    
+
     if (Package.mongo && Package.mongo.Mongo) {
       Object.keys(data).forEach(function (key) {
         if (data[key] instanceof Package.mongo.Mongo.Cursor) {
