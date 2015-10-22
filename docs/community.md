@@ -6,4 +6,4 @@ These tools work with the packages explained in this guide, and give you extra f
 2. Templates that compile to React: [timbrandin:jsx-templating](https://atmospherejs.com/timbrandin/jsx-templating)
 3. [Arunoda's blog post about server-side rendering](https://kadira.io/blog/meteor-ssr-support-using-flow-router-and-react/)
 4. Material UI: [izzilab:material-ui](https://atmospherejs.com/izzilab/material-ui)
-5. Use Blaze Template as/in React Components: [4commerce:blaze-as-react](https://atmospherejs.com/4commerce/blaze-as-react)
+5. Use Blaze Templates as / in React Components: [4commerce:blaze-as-react](https://atmospherejs.com/4commerce/blaze-as-react)
