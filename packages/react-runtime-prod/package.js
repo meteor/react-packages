@@ -1,6 +1,6 @@
 Package.describe({
   name: 'react-runtime-prod',
-  version: '0.13.3_6',
+  version: '0.14.0',
   // Brief, one-line summary of the package.
   summary: 'Production version of the React runtime library with addons.',
   // URL to the Git repository containing the source code for this package.
@@ -12,12 +12,12 @@ Package.describe({
 });
 
 Npm.depends({
-  react: "0.13.3",
+  react: "0.14.0",
   "browserify-replace-g": "0.9.1"
 });
 
 Package.onUse(function (api) {
-  api.use('cosmos:browserify@0.4.0');
+  api.use('cosmos:browserify@0.8.1');
   api.addFiles('shams.js');
   api.addFiles('react.browserify.js');
   api.addFiles('react.browserify.options.json');

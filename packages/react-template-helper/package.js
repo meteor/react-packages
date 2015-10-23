@@ -15,7 +15,7 @@ Package.onUse(function(api) {
 
   api.use([
     'templating',
-    'react-runtime@0.13.3_7',
+    'react-runtime@0.14.0',
     'underscore'
   ]);
 
@@ -31,7 +31,7 @@ Package.onTest(function(api) {
     'react-template-helper',
     'test-helpers',
     'jsx@0.2.1',
-    'react-runtime@0.13.3_7',
+    'react-runtime@0.14.0',
     'tracker',
     'underscore',
     'jquery'

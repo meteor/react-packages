@@ -12,16 +12,12 @@ var ComponentWithRequiredProp = React.createClass({
 });
 
 Tinytest.add('react-runtime-dev - is actually the development version', function (test) {
-  // Make sure we don't have debug-only addons
-  test.isNotUndefined(React.addons.TestUtils);
-  test.isNotUndefined(React.addons.Perf);
-
   // Check if we print a warning to console about props
   let warning;
 
-  var oldWarn = console.warn;
+  var oldError = console.error;
   try {
-    console.warn = function specialWarn(message) {
+    console.error = function specialWarn(message) {
       warning = message;
     };
 
@@ -30,7 +26,7 @@ Tinytest.add('react-runtime-dev - is actually the development version', function
 
     test.isNotUndefined(warning);
   } finally {
-    console.warn = oldWarn;
+    console.error = oldError;
   }
 
   // It should throw when style is not an object
