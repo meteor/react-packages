@@ -30,7 +30,7 @@ id-map@1.0.3
 insecure@1.0.3
 jquery@1.11.3_2
 json@1.0.3
-jsx@0.1.2
+jsx@0.2.2
 launch-screen@1.0.3
 livedata@1.0.13
 logging@1.0.8
@@ -45,12 +45,12 @@ npm-mongo@1.4.32_1
 observe-sequence@1.0.6
 ordered-dict@1.0.3
 random@1.0.3
-react@0.1.2
-react-meteor-data@0.1.0
-react-runtime@0.13.3_2
-react-runtime-dev@0.13.3_2
-react-runtime-prod@0.13.3_1
-react-template-helper@0.1.2
+react@0.2.0
+react-meteor-data@0.2.0
+react-runtime@0.14.0
+react-runtime-dev@0.14.0
+react-runtime-prod@0.14.0
+react-template-helper@0.2.0
 reactive-dict@1.1.0
 reactive-var@1.0.5
 reload@1.1.3

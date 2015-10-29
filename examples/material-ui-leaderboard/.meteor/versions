@@ -31,7 +31,7 @@ http@1.1.1
 id-map@1.0.4
 insecure@1.0.4
 jquery@1.11.4
-jsx@0.2.1
+jsx@0.2.2
 launch-screen@1.0.4
 livedata@1.0.15
 logging@1.0.8
@@ -51,11 +51,11 @@ observe-sequence@1.0.7
 ordered-dict@1.0.4
 promise@0.5.0
 random@1.0.4
-react@0.1.13
-react-meteor-data@0.1.9
-react-runtime@0.13.3_7
-react-runtime-dev@0.13.3_7
-react-runtime-prod@0.13.3_6
+react@0.2.0
+react-meteor-data@0.2.0
+react-runtime@0.14.0
+react-runtime-dev@0.14.0
+react-runtime-prod@0.14.0
 reactive-var@1.0.6
 reload@1.1.4
 retry@1.0.4

@@ -21,6 +21,6 @@ const router = ReactRouter.create({
 
 Meteor.startup(function () {
   router.run(function (Handler, state) {
-    React.render(<Handler/>, document.getElementById("app-container"));
+    ReactDOM.render(<Handler/>, document.getElementById("app-container"));
   });
 });

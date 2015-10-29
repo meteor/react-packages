@@ -17,7 +17,7 @@ TodoListHeader = React.createClass({
       editingTitle: true,
       nameInputValue: this.props.list.name
     }, () => {
-      React.findDOMNode(this.refs.nameInput).focus();
+      ReactDOM.findDOMNode(this.refs.nameInput).focus();
     });
   },
 
@@ -76,7 +76,7 @@ TodoListHeader = React.createClass({
     event.preventDefault();
 
     const listId = this.props.list._id;
-    const input = React.findDOMNode(this.refs.newTaskInput);
+    const input = ReactDOM.findDOMNode(this.refs.newTaskInput);
     const taskText = input.value;
     if (! taskText) {
       // Don't do anything if the input is empty

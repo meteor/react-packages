@@ -37,12 +37,12 @@ Template.React.onRendered(function () {
     // End block of code to remove with Meteor 1.1.1
 
     var props = _.omit(data, 'component');
-    React.render(React.createElement(comp, props), container);
+    ReactDOM.render(React.createElement(comp, props), container);
   });
 });
 
 Template.React.onDestroyed(function () {
-  React.unmountComponentAtNode(this.container);
+  ReactDOM.unmountComponentAtNode(this.container);
 });
 
 // Gets the name of the template inside of which this instance of `{{>

@@ -11,7 +11,7 @@ ejson@1.0.7-rc.0
 meteor@1.1.7-rc.1
 promise@0.4.8-rc.0
 random@1.0.4-rc.0
-react-runtime@0.13.3_7
-react-runtime-dev@0.13.3_7
-react-runtime-prod@0.13.3_6
+react-runtime@0.14.0
+react-runtime-dev@0.14.0
+react-runtime-prod@0.14.0
 underscore@1.0.4-rc.0

@@ -31,13 +31,13 @@
       }
     },
     "react": {
-      "version": "0.13.3",
+      "version": "0.14.0",
       "dependencies": {
         "envify": {
           "version": "3.4.0",
           "dependencies": {
             "through": {
-              "version": "2.3.7"
+              "version": "2.3.8"
             },
             "jstransform": {
               "version": "10.1.0",
@@ -52,15 +52,64 @@
                   "version": "0.1.31",
                   "dependencies": {
                     "amdefine": {
-                      "version": "0.1.1"
+                      "version": "1.0.0"
                     }
                   }
                 }
               }
             }
           }
+        },
+        "fbjs": {
+          "version": "0.3.1",
+          "dependencies": {
+            "core-js": {
+              "version": "1.2.1"
+            },
+            "promise": {
+              "version": "7.0.4",
+              "dependencies": {
+                "asap": {
+                  "version": "2.0.3"
+                }
+              }
+            },
+            "ua-parser-js": {
+              "version": "0.7.9"
+            },
+            "whatwg-fetch": {
+              "version": "0.9.0"
+            }
+          }
         }
       }
+    },
+    "react-addons-create-fragment": {
+      "version": "0.14.0"
+    },
+    "react-addons-css-transition-group": {
+      "version": "0.14.0"
+    },
+    "react-addons-linked-state-mixin": {
+      "version": "0.14.0"
+    },
+    "react-addons-perf": {
+      "version": "0.14.0"
+    },
+    "react-addons-pure-render-mixin": {
+      "version": "0.14.0"
+    },
+    "react-addons-test-utils": {
+      "version": "0.14.0"
+    },
+    "react-addons-transition-group": {
+      "version": "0.14.0"
+    },
+    "react-addons-update": {
+      "version": "0.14.0"
+    },
+    "react-dom": {
+      "version": "0.14.0"
     }
   }
 }
