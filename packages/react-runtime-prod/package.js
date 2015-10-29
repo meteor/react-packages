@@ -1,6 +1,6 @@
 Package.describe({
   name: 'react-runtime-prod',
-  version: '0.14.0',
+  version: '0.14.1',
   // Brief, one-line summary of the package.
   summary: 'Production version of the React runtime library with addons.',
   // URL to the Git repository containing the source code for this package.
@@ -12,16 +12,16 @@ Package.describe({
 });
 
 Npm.depends({
-  react                              : "0.14.0",
-  "react-dom"                        : "0.14.0",
+  react                              : "0.14.1",
+  "react-dom"                        : "0.14.1",
   "browserify-replace-g"             : "0.9.1",
-  "react-addons-transition-group"    : "0.14.0",
-  "react-addons-css-transition-group": "0.14.0",
-  "react-addons-linked-state-mixin"  : "0.14.0",
-  "react-addons-create-fragment"     : "0.14.0",
-  "react-addons-update"              : "0.14.0",
-  "react-addons-pure-render-mixin"   : "0.14.0",
-  "react-addons-test-utils"          : "0.14.0"
+  "react-addons-transition-group"    : "0.14.1",
+  "react-addons-css-transition-group": "0.14.1",
+  "react-addons-linked-state-mixin"  : "0.14.1",
+  "react-addons-create-fragment"     : "0.14.1",
+  "react-addons-update"              : "0.14.1",
+  "react-addons-pure-render-mixin"   : "0.14.1",
+  "react-addons-test-utils"          : "0.14.1"
 });
 
 Package.onUse(function (api) {

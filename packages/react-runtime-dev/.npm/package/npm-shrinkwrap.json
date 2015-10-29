@@ -31,7 +31,7 @@
       }
     },
     "react": {
-      "version": "0.14.0",
+      "version": "0.14.1",
       "dependencies": {
         "envify": {
           "version": "3.4.0",
@@ -61,10 +61,18 @@
           }
         },
         "fbjs": {
-          "version": "0.3.1",
+          "version": "0.3.2",
           "dependencies": {
             "core-js": {
-              "version": "1.2.1"
+              "version": "1.2.3"
+            },
+            "loose-envify": {
+              "version": "1.1.0",
+              "dependencies": {
+                "js-tokens": {
+                  "version": "1.0.2"
+                }
+              }
             },
             "promise": {
               "version": "7.0.4",
@@ -85,31 +93,31 @@
       }
     },
     "react-addons-create-fragment": {
-      "version": "0.14.0"
+      "version": "0.14.1"
     },
     "react-addons-css-transition-group": {
-      "version": "0.14.0"
+      "version": "0.14.1"
     },
     "react-addons-linked-state-mixin": {
-      "version": "0.14.0"
+      "version": "0.14.1"
     },
     "react-addons-perf": {
-      "version": "0.14.0"
+      "version": "0.14.1"
     },
     "react-addons-pure-render-mixin": {
-      "version": "0.14.0"
+      "version": "0.14.1"
     },
     "react-addons-test-utils": {
-      "version": "0.14.0"
+      "version": "0.14.1"
     },
     "react-addons-transition-group": {
-      "version": "0.14.0"
+      "version": "0.14.1"
     },
     "react-addons-update": {
-      "version": "0.14.0"
+      "version": "0.14.1"
     },
     "react-dom": {
-      "version": "0.14.0"
+      "version": "0.14.1"
     }
   }
 }

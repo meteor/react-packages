@@ -1,7 +1,7 @@
 Package.describe({
   name: "react-meteor-data",
   summary: "React mixin for reactively tracking Meteor data",
-  version: '0.2.1',
+  version: '0.2.2',
   documentation: 'README.md',
   git: 'https://github.com/meteor/react-packages'
 });
@@ -21,7 +21,7 @@ Package.onTest(function (api) {
   api.use('tinytest');
   api.use('test-helpers');
   api.use('react-meteor-data');
-  api.use('react-runtime@0.14.0');
+  api.use('react-runtime@0.14.1');
   api.use('jsx@0.2.3');
   api.use('reactive-var');
   api.use('underscore');
