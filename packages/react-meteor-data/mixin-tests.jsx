@@ -20,7 +20,7 @@ Tinytest.add('react-meteor-data - basic track', function (test) {
     }
   });
 
-  React.render(<Foo/>, div);
+  ReactDOM.render(<Foo/>, div);
   test.equal(getInnerHtml(div), '<span>aaa</span>');
 
   x.set('bbb');
@@ -29,12 +29,12 @@ Tinytest.add('react-meteor-data - basic track', function (test) {
 
   test.equal(x._numListeners(), 1);
 
-  React.unmountComponentAtNode(div);
+  ReactDOM.unmountComponentAtNode(div);
 
   test.equal(x._numListeners(), 0);
 });
 
-// Make sure that calling React.render() from an autorun doesn't
+// Make sure that calling ReactDOM.render() from an autorun doesn't
 // associate that autorun with the mixin's autorun.  When autoruns are
 // nested, invalidating the outer one stops the inner one, unless
 // Tracker.nonreactive is used.  This test tests for the use of
@@ -57,7 +57,7 @@ Tinytest.add('react-meteor-data - render in autorun', function (test) {
   });
 
   Tracker.autorun(function (c) {
-    React.render(<Foo/>, div);
+    ReactDOM.render(<Foo/>, div);
     // Stopping this autorun should not affect the mixin's autorun.
     c.stop();
   });
@@ -67,7 +67,7 @@ Tinytest.add('react-meteor-data - render in autorun', function (test) {
   Tracker.flush({_throwFirstError: true});
   test.equal(getInnerHtml(div), '<span>bbb</span>');
 
-  React.unmountComponentAtNode(div);
+  ReactDOM.unmountComponentAtNode(div);
 });
 
 Tinytest.add('react-meteor-data - track based on props and state', function (test) {
@@ -92,7 +92,7 @@ Tinytest.add('react-meteor-data - track based on props and state', function (tes
     }
   });
 
-  var comp = React.render(<Foo n={0}/>, div);
+  var comp = ReactDOM.render(<Foo n={0}/>, div);
 
   test.equal(getInnerHtml(div), '<span>aaa</span>');
   xs[0].set('AAA');
@@ -101,7 +101,7 @@ Tinytest.add('react-meteor-data - track based on props and state', function (tes
   test.equal(getInnerHtml(div), '<span>AAA</span>');
 
   {
-    let comp2 = React.render(<Foo n={1}/>, div);
+    let comp2 = ReactDOM.render(<Foo n={1}/>, div);
     test.isTrue(comp === comp2);
   }
 
@@ -116,11 +116,11 @@ Tinytest.add('react-meteor-data - track based on props and state', function (tes
   Tracker.flush({_throwFirstError: true});
   test.equal(getInnerHtml(div), '<span>CCC</span>');
 
-  React.render(<Foo n={0}/>, div);
+  ReactDOM.render(<Foo n={0}/>, div);
   comp.setState({m: 0});
   test.equal(getInnerHtml(div), '<span>AAA</span>');
 
-  React.unmountComponentAtNode(div);
+  ReactDOM.unmountComponentAtNode(div);
 });
 
 function waitFor(func, callback) {
@@ -158,7 +158,7 @@ testAsyncMulti('react-meteor-data - resubscribe', [
       }
     });
 
-    self.component = React.render(<self.Foo/>, self.div);
+    self.component = ReactDOM.render(<self.Foo/>, self.div);
     test.equal(getInnerHtml(self.div), '<div></div>');
 
     var handle = self.component.handle;
@@ -232,7 +232,7 @@ testAsyncMulti('react-meteor-data - resubscribe', [
     test.isTrue(self.component.handle.ready());
   },
   function (test, expect) {
-    React.unmountComponentAtNode(this.div);
+    ReactDOM.unmountComponentAtNode(this.div);
     // break out of flush time, so we don't call the test's
     // onComplete from within Tracker.flush
     Meteor.defer(expect());
@@ -254,7 +254,7 @@ Tinytest.add(
     });
 
     test.throws(function () {
-      React.render(<Foo/>, document.createElement('div'));
+      ReactDOM.render(<Foo/>, document.createElement('div'));
     }, /Can't call `setState`/);
   });
 
@@ -285,7 +285,7 @@ Tinytest.add(
       };
 
       var div = document.createElement("DIV");
-      React.render(<ComponentWithCursor />, div);
+      ReactDOM.render(<ComponentWithCursor />, div);
 
       test.matches(warning, /cursor from getMeteorData/);
     } finally {

@@ -23,7 +23,7 @@ After you have added the packages, run your app once to let some initial setup h
 
 ```js
 {
-  "react-router": "0.13.3",
+  "react-router": "1.0.0-rc3",
   "externalify": "0.1.0"
 }
 ```

@@ -1,4 +1,5 @@
 var React = ReactProd;
+var ReactDOM = ReactDOMProd;
 
 var ComponentWithRequiredProp = React.createClass({
   propTypes: {
@@ -16,28 +17,28 @@ Tinytest.add('react-runtime-prod - is actually the production version', function
   test.isUndefined(React.addons.TestUtils);
   test.isUndefined(React.addons.Perf);
 
-  // Check if we print a warning to console about props
+  // Check if we print an error to console about props
   // You can be sure this test is correct because we have an identical one in
   // react-runtime-dev
-  let warning;
+  let error;
   try {
-    var oldWarn = console.warn;
-    console.warn = function specialWarn(message) {
-      warning = message;
+    var oldError = console.error;
+    console.error = function specialError(message) {
+      error = message;
     };
 
     var div = document.createElement("DIV");
-    React.render(<ComponentWithRequiredProp />, div);
+    ReactDOM.render(<ComponentWithRequiredProp />, div);
 
-    test.isUndefined(warning);
+    test.isUndefined(error);
   } finally {
-    console.warn = oldWarn;
+    console.error = oldError;
   }
 
   // It should throw when style is not an object
   var div = document.createElement("DIV");
   try {
-    React.render(<div style="mystyle" />, div);
+    ReactDOM.render(<div style="mystyle" />, div);
   } catch (e) {
     // The production build doesn't have the error message
     test.matches(e.message, /^Minified exception/);

@@ -50,7 +50,7 @@ the --finish option?
     // files, which contain version information about all dependencies at the
     // time the package was last published.
     const packagesThatDependOnChanged = _.union.apply(null, changedPackages.map(pkg => {
-      // lines look like: packages/react/.versions:react-runtime@0.13.3_5
+      // lines look like: packages/react/.versions:react-runtime@0.14.0
       const grepOutput = execSync(
         `git grep "${pkg}@" packages | grep .versions`).stdout;
 

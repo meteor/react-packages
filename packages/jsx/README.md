@@ -14,7 +14,7 @@ var HelloMessage = React.createClass({
   }
 });
 
-React.render(<HelloMessage name="John" />, mountNode);
+ReactDOM.render(<HelloMessage name="John" />, mountNode);
 ```
 
 ### JavaScript after compilation
@@ -26,5 +26,5 @@ var HelloMessage = React.createClass({displayName: "HelloMessage",
   }
 });
 
-React.render(React.createElement(HelloMessage, {name: "John"}), mountNode);
+ReactDOM.render(React.createElement(HelloMessage, {name: "John"}), mountNode);
 ```

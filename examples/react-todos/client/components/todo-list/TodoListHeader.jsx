@@ -17,7 +17,7 @@ TodoListHeader = React.createClass({
       editingTitle: true,
       nameInputValue: this.props.list.name
     }, () => {
-      React.findDOMNode(this.refs.nameInput).focus();
+      ReactDOM.findDOMNode(this.refs.nameInput).focus();
     });
   },
 
@@ -76,7 +76,7 @@ TodoListHeader = React.createClass({
     event.preventDefault();
 
     const listId = this.props.list._id;
-    const input = React.findDOMNode(this.refs.newTaskInput);
+    const input = ReactDOM.findDOMNode(this.refs.newTaskInput);
     const taskText = input.value;
     if (! taskText) {
       // Don't do anything if the input is empty
@@ -143,7 +143,7 @@ TodoListHeader = React.createClass({
               <span className="icon-cog"></span>
             </div>
             <div className="options-web">
-              <a className="nav-item" onClick={ this.props.onToggleListPrivacy }>
+              <a className="nav-item" onClick={ this.onToggleListPrivacy }>
                 { list.userId ?
                     <span className="icon-lock" title="Make list public" /> :
                     <span className="icon-unlock" title="Make list private" /> }

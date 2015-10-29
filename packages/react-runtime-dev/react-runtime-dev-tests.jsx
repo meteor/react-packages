@@ -1,4 +1,5 @@
 var React = Package["react-runtime-dev"].ReactDev;
+var ReactDOM = Package["react-runtime-dev"].ReactDOMDev;
 
 var ComponentWithRequiredProp = React.createClass({
   propTypes: {
@@ -16,27 +17,27 @@ Tinytest.add('react-runtime-dev - is actually the development version', function
   test.isNotUndefined(React.addons.TestUtils);
   test.isNotUndefined(React.addons.Perf);
 
-  // Check if we print a warning to console about props
-  let warning;
+  // Check if we print an error to console about props
+  let error;
 
-  var oldWarn = console.warn;
+  var oldError = console.error;
   try {
-    console.warn = function specialWarn(message) {
-      warning = message;
+    console.error = function specialError(message) {
+      error = message;
     };
 
     var div = document.createElement("DIV");
-    React.render(<ComponentWithRequiredProp />, div);
+    ReactDOM.render(<ComponentWithRequiredProp />, div);
 
-    test.isNotUndefined(warning);
+    test.isNotUndefined(error);
   } finally {
-    console.warn = oldWarn;
+    console.error = oldError;
   }
 
   // It should throw when style is not an object
   var div = document.createElement("DIV");
   try {
-    React.render(<div style="mystyle" />, div);
+    ReactDOM.render(<div style="mystyle" />, div);
   } catch (e) {
     // The development build has the right error message
     test.matches(e.message, /^Invariant Violation/);

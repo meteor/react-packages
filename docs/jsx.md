@@ -15,7 +15,7 @@ var HelloMessage = React.createClass({
   }
 });
 
-React.render(<HelloMessage name="John" />, mountNode);
+ReactDOM.render(<HelloMessage name="John" />, mountNode);
 ```
 
 JavaScript after compilation:
@@ -27,7 +27,7 @@ var HelloMessage = React.createClass({displayName: "HelloMessage",
   }
 });
 
-React.render(React.createElement(HelloMessage, {name: "John"}), mountNode);
+ReactDOM.render(React.createElement(HelloMessage, {name: "John"}), mountNode);
 ```
 
 As you can see, JSX lets you write code that looks more like HTML but is actually JavaScript, reducing the need for a completely separate templating language.
