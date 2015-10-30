@@ -3,14 +3,14 @@ if (Package["react-runtime-dev"]) {
   ReactDOM = Package["react-runtime-dev"].ReactDOMDev;
 
   if (Meteor.isServer) {
-    ReactDOMServer = Package["react-runtime-dev"].ReactDOMServer;
+    ReactDOMServer = Package["react-runtime-dev"].ReactDOMServerDev;
   }
 } else if (Package["react-runtime-prod"]) {
   React = Package["react-runtime-prod"].ReactProd;
   ReactDOM = Package["react-runtime-prod"].ReactDOMProd;
 
   if (Meteor.isServer) {
-    ReactDOMServer = Package["react-runtime-prod"].ReactDOMServer;
+    ReactDOMServer = Package["react-runtime-prod"].ReactDOMServerProd;
   }
 } else {
   // not sure how this can happen
