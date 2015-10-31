@@ -26,7 +26,7 @@ Npm.depends({
 });
 
 Package.onUse(function (api) {
-  api.use('cosmos:browserify@0.8.1');
+  api.use('cosmos:browserify@0.8.3');
   api.addFiles('detect-shims.js');
   api.addFiles('shams.js');
   api.addFiles('react.browserify.js');
