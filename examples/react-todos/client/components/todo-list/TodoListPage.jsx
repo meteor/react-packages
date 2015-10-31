@@ -1,14 +1,9 @@
-const {
-  Navigation,
-  State
-} = ReactRouter;
-
 TodoListPage = React.createClass({
-  mixins: [ReactMeteorData, Navigation, State],
+  mixins: [ReactMeteorData],
 
   getMeteorData() {
     // Get list ID from ReactRouter
-    const listId = this.getParams().listId;
+    const listId = this.props.params.listId;
 
     // Subscribe to the tasks we need to render this component
     const tasksSubHandle = Meteor.subscribe("todos", listId);

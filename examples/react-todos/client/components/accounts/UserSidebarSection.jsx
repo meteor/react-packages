@@ -33,7 +33,7 @@ UserSidebarSection = React.createClass({
       const arrowDirection = this.state.menuOpen ? "up" : "down";
       const arrowIconClass = "icon-arrow-" + arrowDirection;
 
-      contents = ( 
+      contents = (
         <div className="btns-group-vertical">
           <a href="#" className="btn-secondary" onClick={ this.toggleMenuOpen }>
             <span className={ arrowIconClass } />
@@ -44,10 +44,10 @@ UserSidebarSection = React.createClass({
         </div>
       );
     } else {
-      contents = ( 
+      contents = (
         <div className="btns-group">
-          <Link to="signin" className="btn-secondary">Sign in</Link>
-          <Link to="join" className="btn-secondary">Join</Link>
+          <Link to="/signin" className="btn-secondary">Sign in</Link>
+          <Link to="/join" className="btn-secondary">Join</Link>
         </div>
       );
     }
