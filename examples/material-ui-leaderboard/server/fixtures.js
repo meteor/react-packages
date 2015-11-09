@@ -1,5 +1,5 @@
 if (Players.find().count() === 0) {
-  var names = [
+  const names = [
     'Ada Lovelace',
     'Grace Hopper',
     'Marie Curie',
@@ -8,7 +8,7 @@ if (Players.find().count() === 0) {
     'Claude Shannon'
   ];
 
-  for (var i = 0; i < names.length; i++) {
+  for (let i = 0; i < names.length; i++) {
     Players.insert({name: names[i], score: Math.floor(Math.random() * 10) * 5});
   }
 }

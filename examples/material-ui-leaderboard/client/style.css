@@ -1,3 +1,5 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,300,700);
+
 * {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -28,7 +30,7 @@ body {
 
 .title {
   font-size: 1.5em;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: .3em;
   margin: 0 0 .25em;
   text-align: center;
