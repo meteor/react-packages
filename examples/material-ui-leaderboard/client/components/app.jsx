@@ -1,8 +1,8 @@
 const {
-  RaisedButton
+  RaisedButton,
+  Styles
 } = mui;
-
-const ThemeManager = new mui.Styles.ThemeManager();
+const ThemeManager = Styles.ThemeManager;
 
 App = React.createClass({
   mixins: [ReactMeteorData],
@@ -16,7 +16,7 @@ App = React.createClass({
   },
   getChildContext: function() {
     return {
-      muiTheme: ThemeManager.getCurrentTheme()
+      muiTheme: ThemeManager.getMuiTheme(Styles.LightRawTheme)
     };
   },
   getMeteorData() {
@@ -33,10 +33,9 @@ App = React.createClass({
   addPointsToPlayer(playerId) {
     Players.update(playerId, {$inc: {score: 5}});
   },
-  render() {
-    let bottomBar;
-    if (this.state.selectedPlayerId) {
-      bottomBar = (
+  getBottomBar() {
+    return this.state.selectedPlayerId
+      ? (
         <div className="details">
           <div className="name">{this.data.selectedPlayer.name}</div>
           <RaisedButton
@@ -46,11 +45,10 @@ App = React.createClass({
             label="Add 5 points"
             primary={true}/>
         </div>
-      )
-    } else {
-      bottomBar = <div className="message">Click a player to select</div>;
-    }
-
+        )
+      : <div className="message">Click a player to select</div>;
+  },
+  render() {
     return (
       <div className="outer">
         <div className="logo"></div>
@@ -59,7 +57,7 @@ App = React.createClass({
         <Leaderboard players={this.data.players}
           selectedPlayerId={this.state.selectedPlayerId}
           onPlayerSelected={this.selectPlayer} />
-        { bottomBar }
+        {this.getBottomBar()}
       </div>
     )
   }
