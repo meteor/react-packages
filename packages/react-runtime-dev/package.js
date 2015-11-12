@@ -12,7 +12,7 @@ Package.describe({
 });
 
 Npm.depends({
-  react                              : "0.14.1",
+  "react"                            : "0.14.1",
   "react-dom"                        : "0.14.1",
   "browserify-replace-g"             : "0.9.1",
   "react-addons-transition-group"    : "0.14.1",
