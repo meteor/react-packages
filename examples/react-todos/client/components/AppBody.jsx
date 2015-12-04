@@ -18,7 +18,7 @@ setTimeout(function () {
 
 
 // This component handles making the subscriptons to globally necessary data,
-// handling router transitions based on that data, and rendering the basid app
+// handling router transitions based on that data, and rendering the basic app
 // layout
 AppBody = React.createClass({
   mixins: [ReactMeteorData],
