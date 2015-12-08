@@ -31,7 +31,7 @@
       }
     },
     "react": {
-      "version": "0.14.1",
+      "version": "0.14.3",
       "dependencies": {
         "envify": {
           "version": "3.4.0",
@@ -93,28 +93,28 @@
       }
     },
     "react-addons-create-fragment": {
-      "version": "0.14.1"
+      "version": "0.14.3"
     },
     "react-addons-css-transition-group": {
-      "version": "0.14.1"
+      "version": "0.14.3"
     },
     "react-addons-linked-state-mixin": {
-      "version": "0.14.1"
+      "version": "0.14.3"
     },
     "react-addons-pure-render-mixin": {
-      "version": "0.14.1"
+      "version": "0.14.3"
     },
     "react-addons-test-utils": {
-      "version": "0.14.1"
+      "version": "0.14.3"
     },
     "react-addons-transition-group": {
-      "version": "0.14.1"
+      "version": "0.14.3"
     },
     "react-addons-update": {
-      "version": "0.14.1"
+      "version": "0.14.3"
     },
     "react-dom": {
-      "version": "0.14.1"
+      "version": "0.14.3"
     }
   }
 }

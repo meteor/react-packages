@@ -1,6 +1,6 @@
 Package.describe({
   name: 'react-runtime',
-  version: '0.14.1_1',
+  version: '0.14.3',
   // Brief, one-line summary of the package.
   summary: "Facebook's React library",
   // URL to the Git repository containing the source code for this package.
@@ -11,8 +11,8 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-  api.use('react-runtime-dev@=0.14.1');
-  api.use('react-runtime-prod@=0.14.1');
+  api.use('react-runtime-dev@=0.14.3');
+  api.use('react-runtime-prod@=0.14.3');
   api.addFiles('react-runtime.js');
 
   api.export('React');
