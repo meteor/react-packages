@@ -1,9 +1,4 @@
-const {
-  Link,
-  Navigation,
-  State,
-  RouteHandler
-} = ReactRouter;
+const Link = ReactRouter.Link;
 
 
 // true if we should show an error dialog when there is a connection error.
@@ -23,10 +18,10 @@ setTimeout(function () {
 
 
 // This component handles making the subscriptons to globally necessary data,
-// handling router transitions based on that data, and rendering the basid app
+// handling router transitions based on that data, and rendering the basic app
 // layout
 AppBody = React.createClass({
-  mixins: [ReactMeteorData, Navigation, State],
+  mixins: [ReactMeteorData],
 
   getInitialState() {
     return {
@@ -55,11 +50,12 @@ AppBody = React.createClass({
     });
 
     // Get the current routes from React Router
-    const routes = this.getRoutes();
+    const routes = this.props.routes;
+
     // If we are at the root route, and the subscrioptions are ready
-    if (routes.length > 1 && routes[1].isDefault && subsReady) {
+    if (routes.length > 1 && !routes[1].path && subsReady) {
       // Redirect to the route for the first todo list
-      this.replaceWith("todoList", { listId: Lists.findOne()._id });
+      this.props.history.replaceState(null, `/lists/${Lists.findOne()._id}`);
     }
 
     return {
@@ -85,12 +81,12 @@ AppBody = React.createClass({
       }
 
       // Go to the page for the new list
-      this.transitionTo('todoList', { listId: res });
+      this.props.history.pushState(null, `/lists/${res}`);
     });
   },
 
   getListId() {
-    return this.getParams().listId;
+    return this.props.params.listId;
   },
 
   render() {
@@ -107,8 +103,8 @@ AppBody = React.createClass({
     return (
       <div id="container" className={ appBodyContainerClass }>
 
-        <LeftPanel 
-          currentUser={this.data.currentUser} 
+        <LeftPanel
+          currentUser={this.data.currentUser}
           onAddList={this.addList}
           lists={this.data.lists}
           activeListId={this.getListId()} />
@@ -119,7 +115,7 @@ AppBody = React.createClass({
 
         <div id="content-container">
           { this.data.subsReady ?
-            <RouteHandler /> :
+            this.props.children :
             <AppLoading /> }
         </div>
 

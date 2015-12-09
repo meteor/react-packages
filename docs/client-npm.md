@@ -47,7 +47,10 @@ Browserify supports numerous transforms, which let you change the way NPM packag
     "externalify": {
       "global": true,
       "external": {
-        "react": "React.require"
+        "react": "React.require",
+        // not necessary for react-router, but may be
+        // needed for other libraries that requires react-dom
+        "react-dom": "React.require"
       }
     }
   }

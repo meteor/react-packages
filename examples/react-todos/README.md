@@ -1,6 +1,6 @@
 # React Todos
 
-This example app is a port of the standard Meteor Todos example app to use React for all of the view code. It demostrates a variety of Meteor+React techniques, listed below:
+This example app is a port of the standard Meteor Todos example app to use React for all of the view code. It demonstrates a variety of Meteor+React techniques, listed below:
 
 ### Routing with React Router
 

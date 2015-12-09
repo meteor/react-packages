@@ -1,10 +1,6 @@
-const {
-  Navigation,
-  Link
-} = ReactRouter;
+const Link = ReactRouter.Link;
 
 AuthSignInPage = React.createClass({
-  mixins: [Navigation],
   getInitialState() {
     return {
       errors: {}
@@ -44,7 +40,7 @@ AuthSignInPage = React.createClass({
         return;
       }
 
-      this.transitionTo('root');
+      this.props.history.pushState(null, '/');
     });
   },
   render() {
@@ -81,7 +77,7 @@ AuthSignInPage = React.createClass({
             </button>
           </form>
         </div>
-        <Link to="join" className="link-auth-alt">
+        <Link to="/join" className="link-auth-alt">
           Need an account? Join Now.
         </Link>
       </div>
