@@ -16,6 +16,6 @@ Package.onUse(function(api) {
   api.imply([
     'jsx@0.2.3',
     'react-runtime@0.14.3',
-    'react-meteor-data@0.2.3'
+    'react-meteor-data@0.2.4'
   ]);
 });
