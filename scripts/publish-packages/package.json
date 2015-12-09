@@ -9,7 +9,9 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "fibers": "^1.0.8",
     "meteor-babel": "^0.5.7",
+    "meteor-promise": "^0.5.1",
     "sync": "^0.2.5",
     "underscore": "^1.8.3"
   },
