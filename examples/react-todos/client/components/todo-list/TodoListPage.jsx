@@ -17,7 +17,6 @@ TodoListPage = React.createClass({
 
   render() {
     const list = this.data.list;
-    const tasks = this.data.tasks;
 
     if (! list) {
       return <AppNotFound />;
