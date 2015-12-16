@@ -156,7 +156,6 @@
     "react/lib/traverseAllChildren",
     "react/lib/update",
     "react/lib/validateDOMNesting",
-    "react/lib/webcomponents",
     "react-dom",
     "react-dom/server"
   ],
