@@ -9,7 +9,7 @@ Package.describe({
 Package.onUse(function (api) {
   api.versionsFrom('METEOR@1.1.0.2');
   api.use('tracker');
-  api.use('jsx@0.2.3');
+  api.use('jsx@0.2.4');
 
   api.export(['ReactMeteorData']);
 
@@ -22,7 +22,7 @@ Package.onTest(function (api) {
   api.use('test-helpers');
   api.use('react-meteor-data');
   api.use('react-runtime@0.14.3');
-  api.use('jsx@0.2.3');
+  api.use('jsx@0.2.4');
   api.use('reactive-var');
   api.use('underscore');
   api.use('tracker');

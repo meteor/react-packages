@@ -15,4 +15,4 @@ React.addons = {
   PureRenderMixin   : require('react-addons-pure-render-mixin'),
   TestUtils         : require('react-addons-test-utils'),
   Perf              : require('react-addons-perf')
-}
+};
