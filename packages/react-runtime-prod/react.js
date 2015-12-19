@@ -13,4 +13,4 @@ React.addons = {
   createFragment    : require('react-addons-create-fragment'),
   update            : require('react-addons-update'),
   PureRenderMixin   : require('react-addons-pure-render-mixin')
-}
+};

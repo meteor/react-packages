@@ -30,7 +30,7 @@ Package.onTest(function(api) {
     'reactive-var',
     'react-template-helper',
     'test-helpers',
-    'jsx@0.2.3',
+    'jsx@0.2.4',
     'react-runtime@0.14.3',
     'tracker',
     'underscore',

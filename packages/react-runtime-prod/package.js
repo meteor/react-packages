@@ -25,10 +25,12 @@ Npm.depends({
 });
 
 Package.onUse(function (api) {
-  api.use('cosmos:browserify@0.9.2');
-  api.addFiles('shams.js');
-  api.addFiles('react.browserify.js');
-  api.addFiles('react.browserify.options.json');
+  api.use('ecmascript');
+
+  api.addFiles('client-process.js', 'client');
+  api.export('process', 'client');
+
+  api.addFiles('react.js');
   api.addFiles('attach-require.js');
 
   api.export('ReactProd');
@@ -39,7 +41,7 @@ Package.onUse(function (api) {
 Package.onTest(function (api) {
   api.versionsFrom('METEOR@1.1.0.2');
   api.use('tinytest');
-  api.use('jsx@0.2.3');
+  api.use('jsx@0.2.4');
   api.use('react-runtime-prod');
 
   api.addFiles('react-runtime-prod-tests.jsx', 'client');
