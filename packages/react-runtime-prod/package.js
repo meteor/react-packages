@@ -39,7 +39,7 @@ Package.onUse(function (api) {
 Package.onTest(function (api) {
   api.versionsFrom('METEOR@1.1.0.2');
   api.use('tinytest');
-  api.use('jsx@0.2.3');
+  api.use('jsx@0.2.4');
   api.use('react-runtime-prod');
 
   api.addFiles('react-runtime-prod-tests.jsx', 'client');
