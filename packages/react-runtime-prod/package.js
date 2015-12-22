@@ -1,6 +1,6 @@
 Package.describe({
   name: 'react-runtime-prod',
-  version: '0.14.3',
+  version: '0.14.4',
   // Brief, one-line summary of the package.
   summary: 'Production version of the React runtime library with addons.',
   // URL to the Git repository containing the source code for this package.
