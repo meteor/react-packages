@@ -39,8 +39,12 @@ the --finish option?
 
     // Convert the list of changed files into a list of changed
     // package names, each corresponding to a directory
-    const changedPackages = _.chain(changedPackageFiles).map(
-      file => file.split("/")[1]).uniq().compact().value();
+    const changedPackages = _.chain(changedPackageFiles)
+      .map(file => file.split("/")[1])
+      .without("babel-tests")
+      .uniq()
+      .compact()
+      .value();
 
     // Find out which packages depend (directly or indirectly) on the changed
     // packages; we need to republish them too, in order for people to get the
