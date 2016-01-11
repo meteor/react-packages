@@ -42,7 +42,8 @@ Template.React.onRendered(function () {
 });
 
 Template.React.onDestroyed(function () {
-  ReactDOM.unmountComponentAtNode(this.container);
+  if (this.container)
+    ReactDOM.unmountComponentAtNode(this.container);
 });
 
 // Gets the name of the template inside of which this instance of `{{>
