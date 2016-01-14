@@ -8,8 +8,11 @@ Template.React.onRendered(function () {
 
   this.autorun(function (c) {
     var data = Blaze.getData();
-
+    var compName = data && data.componentName;
     var comp = data && data.component;
+    if(compName){
+        comp = window[compName];
+    }
     if (! comp) {
       throw new Error(
         "In template \"" + parentTemplate + "\", call to `{{> React ... }}` missing " +
