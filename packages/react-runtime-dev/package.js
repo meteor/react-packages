@@ -1,5 +1,5 @@
 Package.describe({
-  name: 'react-runtime-dev',
+  name: 'react-runtime-dev-old',
   version: '0.14.4',
   // Brief, one-line summary of the package.
   summary: 'Development version of the React runtime library with addons.',
