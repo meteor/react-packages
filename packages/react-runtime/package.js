@@ -11,9 +11,10 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-  api.use('react-runtime-dev@=0.14.4');
-  api.use('react-runtime-prod@=0.14.4');
-  api.addFiles('react-runtime.js');
+  api.versionsFrom('1.3-beta.12');
+  api.use(['ecmascript', 'tmeasday:check-npm-versions']);
+
+  api.mainModule('react-runtime.js');
 
   api.export('React');
   api.export('ReactDOM');

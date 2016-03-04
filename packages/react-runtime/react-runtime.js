@@ -1,18 +1,17 @@
-if (Package["react-runtime-dev"]) {
-  React = Package["react-runtime-dev"].ReactDev;
-  ReactDOM = Package["react-runtime-dev"].ReactDOMDev;
+import { Meteor } from 'meteor/meteor';
 
-  if (Meteor.isServer) {
-    ReactDOMServer = Package["react-runtime-dev"].ReactDOMServerDev;
-  }
-} else if (Package["react-runtime-prod"]) {
-  React = Package["react-runtime-prod"].ReactProd;
-  ReactDOM = Package["react-runtime-prod"].ReactDOMProd;
+import { checkNpmVersions } from 'meteor/tmeasday:check-npm-versions';
+checkNpmVersions({
+  'react': '0.14.x',
+  'react-dom': '0.14.x'
+});
 
-  if (Meteor.isServer) {
-    ReactDOMServer = Package["react-runtime-prod"].ReactDOMServerProd;
-  }
-} else {
-  // not sure how this can happen
-  throw new Error("Couldn't find react-runtime-dev or react-runtime-prod packages");
+const React = require('react');
+const ReactDOM = require('react-dom');
+
+let ReactDOMServer;
+if (Meteor.isServer) {
+  ReactDOMServer = require('react-dom/server');
 }
+
+export { React, ReactDOM, ReactDOMServer };

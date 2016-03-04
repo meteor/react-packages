@@ -1,3 +1,7 @@
+// Note that we can't run these tests right now due to https://github.com/meteor/meteor/issues/6401
+// But it's useful to have them here for reference (you can run them in a browser console in
+//   and app that includes this package, running in `--production`)
+
 var React = ReactProd;
 var ReactDOM = ReactDOMProd;
 
