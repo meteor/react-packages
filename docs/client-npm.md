@@ -55,7 +55,7 @@ Browserify supports numerous transforms, which let you change the way NPM packag
 }
 ```
 
-Now, you can use React Router anywhere in your app! You can use the same method to load any React component modules you find on [react-components.com](http://react-components.com/).
+Note that the `react-dom` transform is not necessary for `react-router`, but may be needed for other libraries that require `react-dom`. Now, you can use React Router anywhere in your app! You can use the same method to load any React component modules you find on [react-components.com](http://react-components.com/).
 
 ### See it in action in the React Todos example app
 
