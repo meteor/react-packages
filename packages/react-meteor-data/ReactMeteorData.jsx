@@ -1,4 +1,4 @@
-ReactMeteorData = {
+const ReactMeteorData = {
   componentWillMount() {
     this.data = {};
     this._meteorDataManager = new MeteorDataManager(this);
@@ -29,7 +29,7 @@ ReactMeteorData = {
   },
   componentWillUnmount() {
     this._meteorDataManager.dispose();
-  }
+  },
 };
 
 // A class to keep the state and utility methods needed to manage
@@ -147,3 +147,5 @@ class MeteorDataManager {
     this.oldData = newData;
   }
 }
+
+export default ReactMeteorData;

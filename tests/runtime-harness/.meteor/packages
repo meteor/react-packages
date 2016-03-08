@@ -17,6 +17,6 @@ standard-minifier-js    # JS minifier run for production mode
 es5-shim                # ECMAScript 5 compatibility for older browsers.
 ecmascript              # Enable ECMAScript2015+ syntax in app code
 
-avital:mocha   # An excellent default test driver package.
+avital:mocha@2.1.0_9   # An excellent default test driver package.
 practicalmeteor:mocha-console-reporter
 react-runtime
