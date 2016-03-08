@@ -1,6 +1,6 @@
 allow-deny@1.0.1-beta.12
 autoupdate@1.2.5-beta.12
-avital:mocha@2.1.0_8
+avital:mocha@2.1.0_9
 babel-compiler@6.5.0-beta.12
 babel-runtime@0.1.5-beta.12
 base64@1.0.5-beta.12
@@ -72,6 +72,7 @@ standard-minifier-js@1.0.3-beta.12
 templating@1.1.6-beta.12
 templating-tools@1.0.1-beta.12
 tmeasday:check-npm-versions@0.1.1
+tmeasday:test-reporter-helpers@0.2.0
 tracker@1.0.10-beta.12
 ui@1.0.8
 underscore@1.0.5-beta.12
