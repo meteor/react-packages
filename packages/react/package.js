@@ -14,7 +14,7 @@ Package.onUse(function(api) {
   api.addFiles('react.js');
 
   api.imply([
-    'jsx@0.2.4',
+    'ecmascript',
     'react-runtime@0.14.4',
     'react-meteor-data@0.2.5'
   ]);
