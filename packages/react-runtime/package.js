@@ -1,6 +1,6 @@
 Package.describe({
   name: 'react-runtime',
-  version: '0.14.4',
+  version: '0.14.5-beta.16',
   // Brief, one-line summary of the package.
   summary: "Facebook's React library",
   // URL to the Git repository containing the source code for this package.
@@ -12,7 +12,7 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.versionsFrom('1.3-beta.16');
-  api.use(['ecmascript', 'tmeasday:check-npm-versions', 'underscore']);
+  api.use(['ecmascript', 'tmeasday:check-npm-versions@0.1.1', 'underscore']);
 
   api.mainModule('react-runtime.js');
 
