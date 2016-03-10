@@ -1,8 +1,6 @@
 {
-  "name": "runtime",
+  "name": "react-runtime-harness",
   "private": true,
-  "version": "0.0.1",
-  "main": "runtime.js",
   "scripts": {
     "test": "PACKAGE_DIRS=../../packages meteor test --driver-package avital:mocha"
   },
