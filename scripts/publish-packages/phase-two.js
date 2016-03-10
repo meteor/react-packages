@@ -5,6 +5,7 @@ var _ = require("underscore");
 var promptSync = require("./prompt-sync");
 var execSync = require("./exec-sync");
 const { goToRootAndCheckBranch, goToRoot } = require("./utils");
+const publishOrder = require('./packages-in-order.js');
 
 // Run in a fiber, so that we can use synchronous APIs
 Sync(function () {
@@ -21,18 +22,6 @@ without the --finish option?
 
     const packageVersions =
       JSON.parse(fs.readFileSync(".packages-to-republish.json", "utf8"));
-
-    // XXX hardcoded order because I don't want to solve dependencies at the
-    // moment
-    const publishOrder = [
-      "jsx",
-      "react-runtime-dev",
-      "react-runtime-prod",
-      "react-runtime",
-      "react-meteor-data",
-      "react-template-helper",
-      "react"
-    ];
 
     // First, publish the packages
     publishOrder.forEach((name) => {

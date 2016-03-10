@@ -6,6 +6,8 @@ const promptSync = require("./prompt-sync");
 const execSync = require("./exec-sync");
 const { goToRootAndCheckBranch } = require("./utils");
 
+const publishOrder = require('./packages-in-order.js');
+
 // Run in a fiber, so that we can use synchronous APIs
 Sync(function () {
   try {
@@ -46,6 +48,9 @@ the --finish option?
       .compact()
       .value();
 
+    // filter out any packages that no longer exist
+    const existingChangedPackages = _.intersection(publishOrder, changedPackages);
+
     // Find out which packages depend (directly or indirectly) on the changed
     // packages; we need to republish them too, in order for people to get the
     // newest versions of everything when adding the package.
@@ -53,7 +58,7 @@ the --finish option?
     // To find indirect dependencies as well as direct ones we look at .version
     // files, which contain version information about all dependencies at the
     // time the package was last published.
-    const packagesThatDependOnChanged = _.union.apply(null, changedPackages.map(pkg => {
+    const packagesThatDependOnChanged = _.union.apply(null, existingChangedPackages.map(pkg => {
       // lines look like: packages/react/.versions:react-runtime@0.14.0
       const grepOutput = execSync(
         `git grep "${pkg}@" packages | grep .versions`).stdout;
@@ -62,7 +67,7 @@ the --finish option?
     }));
 
     const packagesToRepublish = _.union(packagesThatDependOnChanged,
-      changedPackages);
+      existingChangedPackages);
 
     console.log("Packages that need to be republished:");
     packagesToRepublish.forEach(pkg => { console.log(`* ${pkg}`); });
