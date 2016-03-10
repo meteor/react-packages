@@ -1,10 +1,12 @@
-EmptyReactComponent = React.createClass({
+import React from 'react';
+
+const EmptyReactComponent = React.createClass({
   render() {
     return <div></div>
   }
 });
 
-TextReactComponent = React.createClass({
+const TextReactComponent = React.createClass({
   propTypes: {
     text: React.PropTypes.string.isRequired
   },
@@ -13,7 +15,7 @@ TextReactComponent = React.createClass({
   }
 });
 
-ClickableReactComponent = React.createClass({
+const ClickableReactComponent = React.createClass({
   propTypes: {
     onClick: React.PropTypes.func.isRequired
   },
@@ -22,19 +24,19 @@ ClickableReactComponent = React.createClass({
   }
 });
 
-OneReactComponent = React.createClass({
+const OneReactComponent = React.createClass({
   render() {
     return <div>One</div>;
   }
 });
 
-TwoReactComponent = React.createClass({
+const TwoReactComponent = React.createClass({
   render() {
     return <div>Two</div>;
   }
 });
 
-UnmountableReactComponent = React.createClass({
+const UnmountableReactComponent = React.createClass({
   propTypes: {
     onUnmounted: React.PropTypes.func.isRequired
   },
@@ -46,3 +48,11 @@ UnmountableReactComponent = React.createClass({
   }
 });
 
+export {
+  EmptyReactComponent,
+  TextReactComponent,
+  ClickableReactComponent,
+  OneReactComponent,
+  TwoReactComponent,
+  UnmountableReactComponent
+};

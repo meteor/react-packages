@@ -1,3 +1,14 @@
+import './test-templates.html';
+
+import {
+  EmptyReactComponent,
+  TextReactComponent,
+  ClickableReactComponent,
+  OneReactComponent,
+  TwoReactComponent,
+  UnmountableReactComponent
+} from './test-components.jsx';
+
 Template.EmptyComponentTemplateWithoutContainerElement.helpers({
   emptyComponent() {
     return EmptyReactComponent;

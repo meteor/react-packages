@@ -11,7 +11,7 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-  api.versionsFrom('1.3-beta.12');
+  api.versionsFrom('1.3-beta.16');
   api.use(['ecmascript', 'tmeasday:check-npm-versions', 'underscore']);
 
   api.mainModule('react-runtime.js');

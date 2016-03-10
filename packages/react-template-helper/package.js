@@ -11,39 +11,14 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-  api.versionsFrom('METEOR@1.1.0.2');
+  api.versionsFrom('1.3-beta.16');
 
   api.use([
     'templating',
-    'react-runtime@0.14.4',
-    'underscore'
+    'underscore',
+    'ecmascript',
+    'tmeasday:check-npm-versions'
   ]);
 
   api.addFiles(['react-template-helper.js'], 'client');
-});
-
-Package.onTest(function(api) {
-  api.versionsFrom('METEOR@1.1.0.2');
-  api.use([
-    'templating',
-    'tinytest',
-    'reactive-var',
-    'react-template-helper',
-    'test-helpers',
-    'jsx@0.2.4',
-    'react-runtime@0.14.4',
-    'tracker',
-    'underscore',
-    'jquery'
-  ]);
-
-  api.addFiles([
-    // remove once Meteor 1.1.1 is released:
-    'event_simulation.js', // copied from METEOR/packages/test-helpers/
-
-    'test-templates.html',
-    'test-components.jsx',
-    'test-templates.jsx',
-    'tests.jsx'
-  ], 'client');
 });

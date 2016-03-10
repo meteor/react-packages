@@ -1,10 +1,18 @@
+import {
+  OneReactComponent,
+  TwoReactComponent,
+} from '../imports/test-components.jsx';
+
+import '../imports/test-templates.js';
+
 // Let us use `{{> ReactWithoutCompileTimeSiblingRestriction ...}}` inside
 // templates even not as the only thing inside their parent element. This
 // lets us test the run-time sibling detection code in this package
 // (that will be unnecessary once 1.1.1 is released).
 Template.ReactWithoutCompileTimeSiblingRestriction = Template.React;
 
-Tinytest.add(
+if (Meteor.isClient) {
+  Tinytest.add(
   "react-template-helper-tests - must pass `component` into `{{> React}}`",
   function (test) {
     test.throws(function () {
@@ -119,4 +127,5 @@ Tinytest.add(
     test.equal(unmounted, false);
     $(div).remove();
     test.equal(unmounted, true);
-  });
+  });  
+}

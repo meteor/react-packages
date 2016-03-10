@@ -1,0 +1,36 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'node', '/usr/local/bin/npm', 'run', 'test' ]
+2 info using npm@2.12.1
+3 info using node@v0.12.7
+4 verbose node symlink /usr/local/bin/node
+5 verbose run-script [ 'pretest', 'test', 'posttest' ]
+6 info pretest react-meteor-data-harness@
+7 info test react-meteor-data-harness@
+8 verbose unsafe-perm in lifecycle true
+9 info react-meteor-data-harness@ Failed to exec test script
+10 verbose stack Error: react-meteor-data-harness@ test: `meteor test --driver-package avital:mocha`
+10 verbose stack Exit status 8
+10 verbose stack     at EventEmitter.<anonymous> (/usr/local/lib/node_modules/npm/lib/utils/lifecycle.js:213:16)
+10 verbose stack     at EventEmitter.emit (events.js:110:17)
+10 verbose stack     at ChildProcess.<anonymous> (/usr/local/lib/node_modules/npm/lib/utils/spawn.js:24:14)
+10 verbose stack     at ChildProcess.emit (events.js:110:17)
+10 verbose stack     at maybeClose (child_process.js:1015:16)
+10 verbose stack     at Process.ChildProcess._handle.onexit (child_process.js:1087:5)
+11 verbose pkgid react-meteor-data-harness@
+12 verbose cwd /Users/tom/Meteor/react-packages/tests/react-meteor-data-harness
+13 error Darwin 15.3.0
+14 error argv "node" "/usr/local/bin/npm" "run" "test"
+15 error node v0.12.7
+16 error npm  v2.12.1
+17 error code ELIFECYCLE
+18 error react-meteor-data-harness@ test: `meteor test --driver-package avital:mocha`
+18 error Exit status 8
+19 error Failed at the react-meteor-data-harness@ test script 'meteor test --driver-package avital:mocha'.
+19 error This is most likely a problem with the react-meteor-data-harness package,
+19 error not with npm itself.
+19 error Tell the author that this fails on your system:
+19 error     meteor test --driver-package avital:mocha
+19 error You can get their info via:
+19 error     npm owner ls react-meteor-data-harness
+19 error There is likely additional logging output above.
+20 verbose exit [ 1, true ]

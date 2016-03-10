@@ -8,7 +8,7 @@ PACKAGE_DIRS=../../packages meteor test --driver-package avital:mocha
 open localhost:3000
 ```
 
-In production mode:
+In production mode [NOTE this is not currently possible, you need to just run the app in production mode and manually test this stuff]:
 ```
 npm install
 PACKAGE_DIRS=../../packages meteor test --production --driver-package avital:mocha

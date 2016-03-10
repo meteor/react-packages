@@ -4,8 +4,7 @@
   "version": "0.0.1",
   "main": "runtime.js",
   "scripts": {
-    "start": "meteor run",
-    "test": "meteor test-app --driver-package practicalmeteor:mocha"
+    "test": "PACKAGE_DIRS=../../packages meteor test --driver-package avital:mocha"
   },
   "dependencies": {
     "meteor-node-stubs": "~0.2.0",
