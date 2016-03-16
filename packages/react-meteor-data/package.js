@@ -10,6 +10,7 @@ Package.onUse(function (api) {
   api.versionsFrom('1.3-beta.16');
   api.use('tracker');
   api.use('ecmascript');
+  api.use('tmeasday:check-npm-versions@0.1.1');
 
   api.export(['ReactMeteorData']);
 
