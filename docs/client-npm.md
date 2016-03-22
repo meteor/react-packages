@@ -30,7 +30,7 @@ After you have added the packages, run your app once to let some initial setup h
 
 ### 3. Add the appropriate require statements to app.browserify.js
 
-Currently, Meteor doesn't support using `require` to load modules, so we will use a special file supported by `cosmos:browserify` to enable this. In your app, create a file called `app.browserify.js`. Inside it, you can require any of the NPM modules you loaded, and export them as "app-scope" variables, meaning they will be accessible in every JavaScript file in your app. For example, for `react-router` you might do:
+Currently, Meteor doesn't support using `require` to load modules, so we will use a special file supported by `cosmos:browserify` to enable this. In your app, create a file called `lib/app.browserify.js`. Inside it, you can require any of the NPM modules you loaded, and export them as "app-scope" variables, meaning they will be accessible in every JavaScript file in your app. For example, for `react-router` you might do:
 
 ```js
 // In lib/app.browserify.js
