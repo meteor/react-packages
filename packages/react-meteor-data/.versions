@@ -10,7 +10,7 @@ meteor@1.1.12
 modules@0.5.1
 modules-runtime@0.6.1
 promise@0.6.5
-react-meteor-data@0.2.6
+react-meteor-data@0.2.7
 tmeasday:check-npm-versions@0.2.0
 tracker@1.0.11
 underscore@1.0.6
