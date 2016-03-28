@@ -1,6 +1,6 @@
 Package.describe({
   name: 'react-runtime',
-  version: '0.14.5-beta.16',
+  version: '0.14.5',
   // Brief, one-line summary of the package.
   summary: "Facebook's React library",
   // URL to the Git repository containing the source code for this package.

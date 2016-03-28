@@ -28,4 +28,4 @@ Foo = React.createClass({
 });
 ```
 
-For more information, see [the guide](http://react-in-meteor.readthedocs.org/en/latest/meteor-data/).
+For more information, see the React article](http://guide.meteor.com/react.html) in the Meteor Guide.

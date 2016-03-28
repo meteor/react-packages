@@ -22,5 +22,4 @@ var HelloMessage = React.createClass({
 ReactDOM.render(React.createElement(HelloMessage, {name: "John"}), mountNode);
 ```
 
-Check out the [React in Meteor guide](http://react-in-meteor.readthedocs.org/en/latest/) to learn how to use Meteor and React
-together to build awesome apps.
+Check out the [React article](http://guide.meteor.com/react.html) in the Meteor Guide to learn how to use Meteor and React together to build awesome apps.
