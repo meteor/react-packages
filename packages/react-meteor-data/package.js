@@ -1,33 +1,18 @@
 Package.describe({
-  name: "react-meteor-data",
-  summary: "React mixin for reactively tracking Meteor data",
-  version: '0.2.5',
+  name: 'react-meteor-data',
+  summary: 'React mixin for reactively tracking Meteor data',
+  version: '0.2.6',
   documentation: 'README.md',
-  git: 'https://github.com/meteor/react-packages'
+  git: 'https://github.com/meteor/react-packages',
 });
 
 Package.onUse(function (api) {
-  api.versionsFrom('METEOR@1.1.0.2');
+  api.versionsFrom('1.3');
   api.use('tracker');
-  api.use('jsx@0.2.4');
+  api.use('ecmascript');
+  api.use('tmeasday:check-npm-versions@0.2.0');
 
   api.export(['ReactMeteorData']);
 
-  api.addFiles('meteor-data-mixin.jsx');
-});
-
-Package.onTest(function (api) {
-  api.versionsFrom('METEOR@1.1.0.2');
-  api.use('tinytest');
-  api.use('test-helpers');
-  api.use('react-meteor-data');
-  api.use('react-runtime@0.14.4');
-  api.use('jsx@0.2.4');
-  api.use('reactive-var');
-  api.use('underscore');
-  api.use('tracker');
-  api.use('mongo');
-
-  api.addFiles('mixin-tests-server.jsx', 'server');
-  api.addFiles('mixin-tests.jsx', 'client');
+  api.mainModule('react-meteor-data.jsx');
 });

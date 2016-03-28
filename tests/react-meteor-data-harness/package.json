@@ -1,0 +1,13 @@
+{
+  "name": "react-meteor-data-harness",
+  "private": true,
+  "scripts": {
+    "test": "PACKAGE_DIRS=../../packages meteor test --driver-package test-in-browser"
+  },
+  "dependencies": {
+    "meteor-node-stubs": "~0.2.0",
+    "react": "^0.14.7",
+    "react-addons-pure-render-mixin": "^0.14.7",
+    "react-dom": "^0.14.7"
+  }
+}

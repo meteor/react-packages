@@ -1,3 +1,12 @@
+import { checkNpmVersions } from 'meteor/tmeasday:check-npm-versions';
+checkNpmVersions({
+  'react': '0.14.x',
+  'react-dom': '0.14.x'
+});
+
+const React = require('react');
+const ReactDOM = require('react-dom');
+
 // Empty template; logic in `onRendered` below
 Template.React = new Template("Template.React", function () { return []; });
 
@@ -42,7 +51,8 @@ Template.React.onRendered(function () {
 });
 
 Template.React.onDestroyed(function () {
-  ReactDOM.unmountComponentAtNode(this.container);
+  if (this.container)
+    ReactDOM.unmountComponentAtNode(this.container);
 });
 
 // Gets the name of the template inside of which this instance of `{{>
