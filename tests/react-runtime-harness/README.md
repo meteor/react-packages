@@ -4,16 +4,16 @@ To run it in development mode:
 
 ```
 npm install
-PACKAGE_DIRS=../../packages meteor test --driver-package avital:mocha
+npm test
 open localhost:3000
 ```
 
-In production mode [NOTE this is not currently possible, you need to just run the app in production mode and manually test this stuff]:
+In production mode:
 ```
 npm install
-PACKAGE_DIRS=../../packages meteor test --production --driver-package avital:mocha
+npm run test-production
 open localhost:3000
 ```
 
 
-(Todo: console testing w/ spacejam)
+(Todo: console testing)
