@@ -2,20 +2,20 @@ import { Meteor } from 'meteor/meteor';
 import { _ } from 'meteor/underscore';
 
 const requiredPackages = {
-  react: '0.14.x',
-  'react-dom': '0.14.x',
-  'react-addons-transition-group': '0.14.x',
-  'react-addons-css-transition-group': '0.14.x',
-  'react-addons-linked-state-mixin': '0.14.x',
-  'react-addons-create-fragment': '0.14.x',
-  'react-addons-update': '0.14.x',
-  'react-addons-pure-render-mixin': '0.14.x',
+  react: '15.x',
+  'react-dom': '15.x',
+  'react-addons-transition-group': '15.x',
+  'react-addons-css-transition-group': '15.x',
+  'react-addons-linked-state-mixin': '15.x',
+  'react-addons-create-fragment': '15.x',
+  'react-addons-update': '15.x',
+  'react-addons-pure-render-mixin': '15.x',
 };
 
 if (Meteor.isDevelopment) {
   _.extend(requiredPackages, {
-    'react-addons-test-utils': '0.14.x',
-    'react-addons-perf': '0.14.x',
+    'react-addons-test-utils': '15.x',
+    'react-addons-perf': '15.x',
   });
 }
 

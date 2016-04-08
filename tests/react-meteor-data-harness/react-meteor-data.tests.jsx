@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 getInnerHtml = function (elem) {
   // clean up elem.innerHTML and strip data-reactid attributes too
-  return canonicalizeHtml(elem.innerHTML).replace(/ data-reactid=".*?"/g, '');
+  return canonicalizeHtml(elem.innerHTML).replace(/ data-reactroot=".*?"/g, '');
 };
 
 if (Meteor.isClient) {
