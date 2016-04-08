@@ -1,7 +1,7 @@
 import { checkNpmVersions } from 'meteor/tmeasday:check-npm-versions';
 checkNpmVersions({
-  react: '0.14.x',
-  'react-addons-pure-render-mixin': '0.14.x',
+  react: '15.x',
+  'react-addons-pure-render-mixin': '15.x',
 });
 
 const createContainer = require('./createContainer.jsx').default;
