@@ -2,7 +2,7 @@ import { checkNpmVersions } from 'meteor/tmeasday:check-npm-versions';
 checkNpmVersions({
   'react': '15.x',
   'react-dom': '15.x'
-});
+}, 'react-template-helper');
 
 const React = require('react');
 const ReactDOM = require('react-dom');
