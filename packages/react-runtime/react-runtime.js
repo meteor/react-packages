@@ -20,7 +20,7 @@ if (Meteor.isDevelopment) {
 }
 
 import { checkNpmVersions } from 'meteor/tmeasday:check-npm-versions';
-checkNpmVersions(requiredPackages);
+checkNpmVersions(requiredPackages, 'react-runtime');
 
 const React = require('react');
 const ReactDOM = require('react-dom');

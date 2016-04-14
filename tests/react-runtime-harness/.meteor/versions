@@ -55,7 +55,7 @@ practicalmeteor:mocha-core@0.1.4
 practicalmeteor:sinon@1.14.1_2
 promise@0.6.5
 random@1.0.7
-react-runtime@0.14.5
+react-runtime@15.0.0
 reactive-dict@1.1.5
 reactive-var@1.0.7
 reload@1.1.6

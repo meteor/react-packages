@@ -52,7 +52,7 @@ observe-sequence@1.0.9
 ordered-dict@1.0.5
 promise@0.6.5
 random@1.0.7
-react-meteor-data@0.2.7
+react-meteor-data@0.2.8
 reactive-dict@1.1.5
 reactive-var@1.0.7
 reload@1.1.6

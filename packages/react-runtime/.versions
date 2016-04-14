@@ -10,6 +10,6 @@ meteor@1.1.13
 modules@0.5.2
 modules-runtime@0.6.2
 promise@0.6.6
-react-runtime@15.0.0
+react-runtime@15.0.1
 tmeasday:check-npm-versions@0.2.0
 underscore@1.0.7

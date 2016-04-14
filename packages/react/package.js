@@ -1,6 +1,6 @@
 Package.describe({
   name: 'react',
-  version: '15.0.0',
+  version: '15.0.1',
   // Brief, one-line summary of the package.
   summary: 'Everything you need to use React with Meteor.',
   // URL to the Git repository containing the source code for this package.
@@ -17,7 +17,7 @@ Package.onUse(function(api) {
 
   api.imply([
     'ecmascript',
-    'react-runtime@15.0.0',
-    'react-meteor-data@0.2.8'
+    'react-runtime@15.0.1',
+    'react-meteor-data@0.2.9'
   ]);
 });

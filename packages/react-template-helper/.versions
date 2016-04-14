@@ -23,7 +23,7 @@ mongo-id@1.0.3
 observe-sequence@1.0.10
 promise@0.6.6
 random@1.0.8
-react-template-helper@0.2.8
+react-template-helper@0.2.9
 reactive-var@1.0.8
 spacebars@1.0.10
 spacebars-compiler@1.0.10
