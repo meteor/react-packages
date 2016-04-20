@@ -1,6 +1,6 @@
 ## `react-meteor-data`
 
-This package provides an integration between React and `tracker`(https://atmospherejs.com/meteor/tracker), Meteor's reactive data system.
+This package provides an integration between React and [`tracker`](https://atmospherejs.com/meteor/tracker), Meteor's reactive data system.
 
 ### Install
 
