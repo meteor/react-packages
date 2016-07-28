@@ -5,13 +5,14 @@ const ReactMeteorData = {
     const newData = this._meteorDataManager.calculateData();
     this._meteorDataManager.updateData(newData);
   },
-  componentWillUpdate(nextProps, nextState) {
+  componentWillUpdate(nextProps, nextState, nextContext) {
     const saveProps = this.props;
     const saveState = this.state;
+    const saveContext = this.context;
     let newData;
     try {
-      // Temporarily assign this.state and this.props,
-      // so that they are seen by getMeteorData!
+      // Temporarily assign this.state, this.props and
+      // this.context, so that they are seen by getMeteorData!
       // This is a simulation of how the proposed Observe API
       // for React will work, which calls observe() after
       // componentWillUpdate and after props and state are
@@ -19,10 +20,12 @@ const ReactMeteorData = {
       // See https://github.com/facebook/react/issues/3398.
       this.props = nextProps;
       this.state = nextState;
+      this.context = nextContext;
       newData = this._meteorDataManager.calculateData();
     } finally {
       this.props = saveProps;
       this.state = saveState;
+      this.context = saveContext;
     }
 
     this._meteorDataManager.updateData(newData);
