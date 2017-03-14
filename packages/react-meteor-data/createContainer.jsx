@@ -34,7 +34,7 @@ export default function createContainer(options = {}, Component) {
       return getInitialState(this.props);
     },
     getMeteorData() {
-      return getMeteorData(this.props, this.state);
+      return getMeteorData.call({ state: this.state }, this.props, this.state);
     },
     render() {
       return <Component {...this.props} {...this.data} />;
