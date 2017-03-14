@@ -16,6 +16,7 @@ export default function createContainer(options = {}, Component) {
   }
 
   const {
+    getInitialState = function () { return null; },
     getMeteorData,
     pure = true,
   } = expandedOptions;
@@ -29,8 +30,11 @@ export default function createContainer(options = {}, Component) {
   return React.createClass({
     displayName: 'MeteorDataContainer',
     mixins,
+    getInitialState() {
+      return getInitialState(this.props);
+    },
     getMeteorData() {
-      return getMeteorData(this.props);
+      return getMeteorData(this.props, this.state);
     },
     render() {
       return <Component {...this.props} {...this.data} />;
