@@ -18,10 +18,14 @@ npm install --save react react-addons-pure-render-mixin
 
 ### Usage
 
-This package exports a symbol `createContainer`, which you can use to create a Higher Order Container to wrap your data using container.
+This package exports a symbol `createContainer`, which you can use to wrap your components with data returned from Tracker reactive functions.
 
 ```js
 import { createContainer } from 'meteor/react-meteor-data';
+
+function Foo({ currentUser, listLoading, tasks }) {
+  // ...
+}
 
 export default FooContainer = createContainer(props => {
   // Do all your reactive data access in this method.
@@ -33,10 +37,10 @@ export default FooContainer = createContainer(props => {
     listLoading: ! handle.ready(),
     tasks: Tasks.find({ listId: props.id }).fetch(),
   };
-}, Foo);
+})(Foo);
 ```
 The first argument to `createContainer` is a reactive function that will get re-run whenever its reactive inputs change.
 
-The returned component will, when rendered, render the second argument (the "lower-order" component) with its provided `props` in addition to the result of the reactive function. So `Foo` will receive `FooContainer`'s `props` as well as `{currentUser, listLoading, tasks}`.
+The returned component will, when rendered, render `Foo` (the "lower-order" component) with its provided `props` in addition to the result of the reactive function. So `Foo` will receive `FooContainer`'s `props` as well as `{currentUser, listLoading, tasks}`.
 
 For more information, see the [React article](http://guide.meteor.com/react.html) in the Meteor Guide.

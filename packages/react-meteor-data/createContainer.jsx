@@ -26,7 +26,7 @@ export default function createContainer(options = {}, Component) {
   }
 
   /* eslint-disable react/prefer-es6-class */
-  return React.createClass({
+  const wrappedComponent = React.createClass({
     displayName: 'MeteorDataContainer',
     mixins,
     getMeteorData() {
@@ -36,4 +36,6 @@ export default function createContainer(options = {}, Component) {
       return <Component {...this.props} {...this.data} />;
     },
   });
+
+  return Component ? wrappedComponent : C => createContainer(options, C);
 }
