@@ -13,6 +13,5 @@ export default function createContainer(options = {}, Component) {
     };
   }
 
-  const connected = connect(expandedOptions, Component);
-  return React.createElement(connected);
+  return connect(expandedOptions, Component);
 }
