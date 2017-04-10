@@ -1,7 +1,9 @@
 import React from 'react';
 
-export function connect({ getMeteorData }, WrappedComponent) {
-  class ReactMeteorData extends React.Component {
+export function connect({ getMeteorData, pure = true }, WrappedComponent) {
+  const BaseComponent = pure ? React.PureComponent : React.Component;
+
+  class ReactMeteorData extends BaseComponent {
     getMeteorData() {
       return getMeteorData(this.props);
     }
