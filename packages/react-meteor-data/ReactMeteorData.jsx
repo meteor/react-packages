@@ -1,53 +1,53 @@
 import React from 'react';
 
-export function connect({ getMeteorData, pure = true }, WrappedComponent) {
+export function connect({ getMeteorData, pure = true }) {
   const BaseComponent = pure ? React.PureComponent : React.Component;
 
-  class ReactMeteorData extends BaseComponent {
-    getMeteorData() {
-      return getMeteorData(this.props);
-    }
-
-    componentWillMount() {
-      this.data = {};
-      this._meteorDataManager = new MeteorDataManager(this);
-      const newData = this._meteorDataManager.calculateData();
-      this._meteorDataManager.updateData(newData);
-    }
-
-    componentWillUpdate(nextProps, nextState) {
-      const saveProps = this.props;
-      const saveState = this.state;
-      let newData;
-      try {
-        // Temporarily assign this.state and this.props,
-        // so that they are seen by getMeteorData!
-        // This is a simulation of how the proposed Observe API
-        // for React will work, which calls observe() after
-        // componentWillUpdate and after props and state are
-        // updated, but before render() is called.
-        // See https://github.com/facebook/react/issues/3398.
-        this.props = nextProps;
-        this.state = nextState;
-        newData = this._meteorDataManager.calculateData();
-      } finally {
-        this.props = saveProps;
-        this.state = saveState;
+  return WrappedComponent => (
+    class ReactMeteorData extends BaseComponent {
+      getMeteorData() {
+        return getMeteorData(this.props);
       }
 
-      this._meteorDataManager.updateData(newData);
-    }
+      componentWillMount() {
+        this.data = {};
+        this._meteorDataManager = new MeteorDataManager(this);
+        const newData = this._meteorDataManager.calculateData();
+        this._meteorDataManager.updateData(newData);
+      }
 
-    componentWillUnmount() {
-      this._meteorDataManager.dispose();
-    }
+      componentWillUpdate(nextProps, nextState) {
+        const saveProps = this.props;
+        const saveState = this.state;
+        let newData;
+        try {
+          // Temporarily assign this.state and this.props,
+          // so that they are seen by getMeteorData!
+          // This is a simulation of how the proposed Observe API
+          // for React will work, which calls observe() after
+          // componentWillUpdate and after props and state are
+          // updated, but before render() is called.
+          // See https://github.com/facebook/react/issues/3398.
+          this.props = nextProps;
+          this.state = nextState;
+          newData = this._meteorDataManager.calculateData();
+        } finally {
+          this.props = saveProps;
+          this.state = saveState;
+        }
 
-    render() {
-      return <WrappedComponent {...this.props} {...this.data} />;
-    }
-  }
+        this._meteorDataManager.updateData(newData);
+      }
 
-  return ReactMeteorData;
+      componentWillUnmount() {
+        this._meteorDataManager.dispose();
+      }
+
+      render() {
+        return <WrappedComponent {...this.props} {...this.data} />;
+      }
+    }
+  );
 }
 
 // A class to keep the state and utility methods needed to manage

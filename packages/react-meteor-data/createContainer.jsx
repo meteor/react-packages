@@ -14,5 +14,5 @@ export default function createContainer(options = {}, Component) {
     };
   }
 
-  return connect(expandedOptions, Component);
+  return connect(expandedOptions)(Component);
 }
