@@ -10,10 +10,10 @@ To install the package, use `meteor add`:
 meteor add react-meteor-data
 ```
 
-You'll also need to install `react` and `react-addons-pure-render-mixin` if you have not already:
+You'll also need to install `react`, `create-react-class`, and `react-addons-pure-render-mixin` if you have not already:
 
 ```bash
-npm install --save react react-addons-pure-render-mixin
+npm install --save react create-react-class react-addons-pure-render-mixin
 ```
 
 ### Usage

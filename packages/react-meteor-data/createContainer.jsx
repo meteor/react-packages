@@ -2,6 +2,7 @@
  * Container helper using react-meteor-data.
  */
 
+import createReactClass from 'create-react-class';
 import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 
@@ -26,7 +27,7 @@ export default function createContainer(options = {}, Component) {
   }
 
   /* eslint-disable react/prefer-es6-class */
-  return React.createClass({
+  return createReactClass({
     displayName: 'MeteorDataContainer',
     mixins,
     getMeteorData() {
