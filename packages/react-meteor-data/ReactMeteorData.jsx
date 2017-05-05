@@ -147,9 +147,8 @@ class MeteorDataManager {
       throw new Error("Expected object returned from getMeteorData");
     }
     // update componentData in place based on newData
-    for (let key in newData) {
-      component.data[key] = newData[key];
-    }
+    component.data = newData;
+
     // if there is oldData (which is every time this method is called
     // except the first), delete keys in newData that aren't in
     // oldData.  don't interfere with other keys, in case we are
