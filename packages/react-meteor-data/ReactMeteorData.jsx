@@ -1,36 +1,54 @@
-const ReactMeteorData = {
-  componentWillMount() {
-    this.data = {};
-    this._meteorDataManager = new MeteorDataManager(this);
-    const newData = this._meteorDataManager.calculateData();
-    this._meteorDataManager.updateData(newData);
-  },
-  componentWillUpdate(nextProps, nextState) {
-    const saveProps = this.props;
-    const saveState = this.state;
-    let newData;
-    try {
-      // Temporarily assign this.state and this.props,
-      // so that they are seen by getMeteorData!
-      // This is a simulation of how the proposed Observe API
-      // for React will work, which calls observe() after
-      // componentWillUpdate and after props and state are
-      // updated, but before render() is called.
-      // See https://github.com/facebook/react/issues/3398.
-      this.props = nextProps;
-      this.state = nextState;
-      newData = this._meteorDataManager.calculateData();
-    } finally {
-      this.props = saveProps;
-      this.state = saveState;
-    }
+import React from 'react';
 
-    this._meteorDataManager.updateData(newData);
-  },
-  componentWillUnmount() {
-    this._meteorDataManager.dispose();
-  },
-};
+export function connect({ getMeteorData, pure = true }) {
+  const BaseComponent = pure ? React.PureComponent : React.Component;
+
+  return WrappedComponent => (
+    class ReactMeteorData extends BaseComponent {
+      getMeteorData() {
+        return getMeteorData(this.props);
+      }
+
+      componentWillMount() {
+        this.data = {};
+        this._meteorDataManager = new MeteorDataManager(this);
+        const newData = this._meteorDataManager.calculateData();
+        this._meteorDataManager.updateData(newData);
+      }
+
+      componentWillUpdate(nextProps, nextState) {
+        const saveProps = this.props;
+        const saveState = this.state;
+        let newData;
+        try {
+          // Temporarily assign this.state and this.props,
+          // so that they are seen by getMeteorData!
+          // This is a simulation of how the proposed Observe API
+          // for React will work, which calls observe() after
+          // componentWillUpdate and after props and state are
+          // updated, but before render() is called.
+          // See https://github.com/facebook/react/issues/3398.
+          this.props = nextProps;
+          this.state = nextState;
+          newData = this._meteorDataManager.calculateData();
+        } finally {
+          this.props = saveProps;
+          this.state = saveState;
+        }
+
+        this._meteorDataManager.updateData(newData);
+      }
+
+      componentWillUnmount() {
+        this._meteorDataManager.dispose();
+      }
+
+      render() {
+        return <WrappedComponent {...this.props} {...this.data} />;
+      }
+    }
+  );
+}
 
 // A class to keep the state and utility methods needed to manage
 // the Meteor data for a component.
@@ -51,7 +69,7 @@ class MeteorDataManager {
   calculateData() {
     const component = this.component;
 
-    if (! component.getMeteorData) {
+    if (!component.getMeteorData) {
       return null;
     }
 
@@ -79,11 +97,11 @@ class MeteorDataManager {
           try {
             component.setState = () => {
               throw new Error(
-"Can't call `setState` inside `getMeteorData` as this could cause an endless" +
-" loop. To respond to Meteor data changing, consider making this component" +
-" a \"wrapper component\" that only fetches data and passes it in as props to" +
-" a child component. Then you can use `componentWillReceiveProps` in that" +
-" child component.");
+                "Can't call `setState` inside `getMeteorData` as this could cause an endless" +
+                " loop. To respond to Meteor data changing, consider making this component" +
+                " a \"wrapper component\" that only fetches data and passes it in as props to" +
+                " a child component. Then you can use `componentWillReceiveProps` in that" +
+                " child component.");
             };
 
             data = component.getMeteorData();
@@ -111,9 +129,9 @@ class MeteorDataManager {
       Object.keys(data).forEach(function (key) {
         if (data[key] instanceof Package.mongo.Mongo.Cursor) {
           console.warn(
-  "Warning: you are returning a Mongo cursor from getMeteorData. This value " +
-  "will not be reactive. You probably want to call `.fetch()` on the cursor " +
-  "before returning it.");
+            "Warning: you are returning a Mongo cursor from getMeteorData. This value " +
+            "will not be reactive. You probably want to call `.fetch()` on the cursor " +
+            "before returning it.");
         }
       });
     }
@@ -125,7 +143,7 @@ class MeteorDataManager {
     const component = this.component;
     const oldData = this.oldData;
 
-    if (! (newData && (typeof newData) === 'object')) {
+    if (!(newData && (typeof newData) === 'object')) {
       throw new Error("Expected object returned from getMeteorData");
     }
     // update componentData in place based on newData
