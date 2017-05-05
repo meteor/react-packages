@@ -12,7 +12,7 @@ Package.onUse(function (api) {
   api.use('ecmascript');
   api.use('tmeasday:check-npm-versions@0.2.0');
 
-  api.export(['ReactMeteorData']);
+  api.export(['ReactMeteorData', 'createContainer']);
 
   api.mainModule('react-meteor-data.jsx');
 });
