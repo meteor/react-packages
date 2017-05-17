@@ -10,10 +10,10 @@ To install the package, use `meteor add`:
 meteor add react-meteor-data
 ```
 
-You'll also need to install `react` and `react-addons-pure-render-mixin` if you have not already:
+You'll also need to install `react` if you have not already:
 
 ```bash
-npm install --save react react-addons-pure-render-mixin
+npm install --save react
 ```
 
 ### Usage
@@ -23,15 +23,15 @@ This package exports a symbol `createContainer`, which you can use to create a H
 ```js
 import { createContainer } from 'meteor/react-meteor-data';
 
-export default FooContainer = createContainer(() => {
+export default FooContainer = createContainer(props => {
   // Do all your reactive data access in this method.
   // Note that this subscription will get cleaned up when your component is unmounted
-  var handle = Meteor.subscribe("todoList", this.props.id);
+  const handle = Meteor.subscribe('todoList', props.id);
 
   return {
     currentUser: Meteor.user(),
     listLoading: ! handle.ready(),
-    tasks: Tasks.find({listId: this.props.id}).fetch(),
+    tasks: Tasks.find({ listId: props.id }).fetch(),
   };
 }, Foo);
 ```
