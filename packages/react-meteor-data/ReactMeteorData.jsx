@@ -1,4 +1,5 @@
 /* global Package */
+/* eslint-disable react/prefer-stateless-function */
 
 import React from 'react';
 import { Meteor } from 'meteor/meteor';
@@ -158,9 +159,14 @@ export const ReactMeteorData = {
   },
 };
 
+class ReactComponent extends React.Component {}
+Object.assign(ReactComponent.prototype, ReactMeteorData);
+class ReactPureComponent extends React.PureComponent {}
+Object.assign(ReactPureComponent.prototype, ReactMeteorData);
+
 export function connect({ getMeteorData, pure = true }) {
-  const BaseComponent = pure ? React.PureComponent : React.Component;
-  return (WrappedComponent) => {
+  const BaseComponent = pure ? ReactPureComponent : ReactComponent;
+  return (WrappedComponent) => (
     class ReactMeteorDataComponent extends BaseComponent {
       getMeteorData() {
         return getMeteorData(this.props);
@@ -169,14 +175,5 @@ export function connect({ getMeteorData, pure = true }) {
         return <WrappedComponent {...this.props} {...this.data} />;
       }
     }
-
-    ReactMeteorDataComponent.prototype.componentWillMount =
-      ReactMeteorData.componentWillMount;
-    ReactMeteorDataComponent.prototype.componentWillUpdate =
-      ReactMeteorData.componentWillUpdate;
-    ReactMeteorDataComponent.prototype.componentWillUnmount =
-      ReactMeteorData.componentWillUnmount;
-
-    return ReactMeteorDataComponent;
-  };
+  );
 }
