@@ -13,5 +13,5 @@ export default function createContainer(options = {}, Component) {
     };
   }
 
-  return connect(expandedOptions)(Component);
+  return Component ? connect(expandedOptions)(Component) : C => createContainer(options, C);
 }
