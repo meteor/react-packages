@@ -14,7 +14,6 @@ const requiredPackages = {
 
 if (Meteor.isDevelopment) {
   _.extend(requiredPackages, {
-    'react-addons-test-utils': '15.x',
     'react-addons-perf': '15.x',
   });
 }
@@ -35,7 +34,7 @@ React.addons = {
 };
 
 if (Meteor.isDevelopment) {
-  React.addons.TestUtils = require('react-addons-test-utils');
+  React.addons.TestUtils = require('react-dom/test-utils');
   React.addons.Perf = require('react-addons-perf');
 }
 
