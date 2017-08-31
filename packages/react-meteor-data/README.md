@@ -35,12 +35,12 @@ export default withTracker(props => {
 
   return {
     currentUser: Meteor.user(),
-    listLoading: ! handle.ready(),
+    listLoading: !handle.ready(),
     tasks: Tasks.find({ listId: props.id }).fetch(),
   };
 })(Foo);
 ```
-The first argument to `createContainer` is a reactive function that will get re-run whenever its reactive inputs change.
+The first argument to `withTracker` is a reactive function that will get re-run whenever its reactive inputs change.
 
 The returned component will, when rendered, render `Foo` (the "lower-order" component) with its provided `props` in addition to the result of the reactive function. So `Foo` will receive `FooContainer`'s `props` as well as `{currentUser, listLoading, tasks}`.
 
