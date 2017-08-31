@@ -45,3 +45,15 @@ The first argument to `withTracker` is a reactive function that will get re-run 
 The returned component will, when rendered, render `Foo` (the "lower-order" component) with its provided `props` in addition to the result of the reactive function. So `Foo` will receive `FooContainer`'s `props` as well as `{currentUser, listLoading, tasks}`.
 
 For more information, see the [React article](http://guide.meteor.com/react.html) in the Meteor Guide.
+
+### Note on withTracker and createContainer
+
+The new `withTracker` function replaces `createContainer` (however it remains for backwards compatibility). The purpose of the new function is to better allow for container composability. For example when combining Meteor data with Redux and GraphQL: 
+
+```js
+const FooWithAllTheThings = compose(
+  connect(...), // some Redux
+  graphql(...), // some GraphQL
+  withTracker(...), // some Tracker data
+)(Foo);
+```
