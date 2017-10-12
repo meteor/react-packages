@@ -164,7 +164,16 @@ Object.assign(ReactComponent.prototype, ReactMeteorData);
 class ReactPureComponent extends React.PureComponent {}
 Object.assign(ReactPureComponent.prototype, ReactMeteorData);
 
-export function connect({ getMeteorData, pure = true }) {
+export default function connect(options) {
+  let expandedOptions = options;
+  if (typeof options === 'function') {
+    expandedOptions = {
+      getMeteorData: options,
+    };
+  }
+
+  const { getMeteorData, pure = true } = expandedOptions;
+
   const BaseComponent = pure ? ReactPureComponent : ReactComponent;
   return (WrappedComponent) => (
     class ReactMeteorDataComponent extends BaseComponent {
