@@ -4,6 +4,13 @@ Meteor packages for a great React developer experience
 
 [Read the guide.](http://react-in-meteor.readthedocs.org/en/latest/)
 
+## Development prerequisites
+
+**These prerequisites are for developing these packages, not for using them.**
+
+* node@8
+* npm@5
+
 ### Running the docs site locally
 
 1. Install `mkdocs` with `pip`
