@@ -29,3 +29,15 @@ Note this does not yet all lint. Working on it.
 ### Testing
 
 Due to difficulties in testing packages with "peer" NPM dependencies, we've worked around by moving package tests into harness test apps. You can find them in `tests/`.
+
+### Publishing
+
+Due to the dependency graph, the order these packages are published in can be
+important.
+
+In order to simplify the process, the `./publish-packages.sh` script can be 
+used to automatically bump package versions and publish the packages in the
+correct order.
+
+> This is a shortcut to the script in `scripts/publish-packages/index.js`.
+
