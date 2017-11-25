@@ -157,6 +157,10 @@ export const ReactMeteorData = {
   componentWillUnmount() {
     this._meteorDataManager.dispose();
   },
+
+  componentDidCatch(error, info) {
+    console.error(error);
+  },
 };
 
 class ReactComponent extends React.Component {}
