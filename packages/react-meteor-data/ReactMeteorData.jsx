@@ -180,6 +180,9 @@ export default function connect(options) {
       getMeteorData() {
         return getMeteorData(this.props);
       }
+			getWrappedComponent() {
+			  return WrappedComponent;
+			}
       render() {
         return <WrappedComponent {...this.props} {...this.data} />;
       }
