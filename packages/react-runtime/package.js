@@ -12,7 +12,7 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.versionsFrom('1.3');
-  api.use(['ecmascript', 'tmeasday:check-npm-versions@0.2.0', 'underscore']);
+  api.use(['ecmascript', 'tmeasday:check-npm-versions@0.3.2', 'underscore']);
 
   api.mainModule('react-runtime.js');
 

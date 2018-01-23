@@ -30,6 +30,6 @@ spacebars@1.0.10
 spacebars-compiler@1.1.0
 templating@1.1.8
 templating-tools@1.1.1
-tmeasday:check-npm-versions@0.2.0
+tmeasday:check-npm-versions@0.3.2
 tracker@1.1.3
 underscore@1.0.10
