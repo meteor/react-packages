@@ -68,7 +68,7 @@ templating-tools@1.0.2
 test-helpers@1.0.7
 test-in-browser@1.0.10
 tinytest@1.0.8
-tmeasday:check-npm-versions@0.2.0
+tmeasday:check-npm-versions@0.3.2
 tracker@1.0.11
 ui@1.0.9
 underscore@1.0.6
