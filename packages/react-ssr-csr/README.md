@@ -1,0 +1,2 @@
+## React server side render and client side render for Meteor with react-loadable and Meteor.subscriptions in mind
+As discussed on [StackOverflow](https://stackoverflow.com/questions/48567599/meteor-server-render-withtracker-postponing-client-rendering?noredirect=1#comment84511111_48567599), [Meteor forums](https://forums.meteor.com/t/react-ssr-data-hydration-help/35342), [rest](https://www.google.com/search?q=meteor+subscribe+ssr).
