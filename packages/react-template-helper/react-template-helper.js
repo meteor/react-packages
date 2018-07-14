@@ -46,7 +46,13 @@ Template.React.onRendered(function () {
     // End block of code to remove with Meteor 1.1.1
 
     var props = _.omit(data, 'component');
-    ReactDOM.render(React.createElement(comp, props), container);
+    // Don't stop autoruns, subscriptions, etc. created by the React component
+    // when something else invalidates the current computation, because the
+    // component is responsible for its own lifecycle and won't expect to have
+    // to recreate them.
+    Tracker.nonreactive(() => {
+      ReactDOM.render(React.createElement(comp, props), container);
+    });
   });
 });
 

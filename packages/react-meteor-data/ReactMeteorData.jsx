@@ -76,7 +76,12 @@ class MeteorDataManager {
           c.stop();
           // Calling forceUpdate() triggers componentWillUpdate which
           // recalculates getMeteorData() and re-renders the component.
-          component.forceUpdate();
+          //
+          // Use Tracker.nonreactive so that autoruns, subscriptions, etc.
+          // created by the component don't get stopped when this computation is
+          // stopped, because the component is responsible for its own lifecycle
+          // and won't expect to have to recreate them.
+          Tracker.nonreactive(() => component.forceUpdate());
         }
       })
     ));
