@@ -25,26 +25,6 @@ Template.React.onRendered(function () {
           "`component` argument.");
     }
 
-    // Remove this block of code once we ship Meteor 1.1.1 or above,
-    // where we detect these cases (and more) when templates are
-    // compiled:
-    // https://github.com/meteor/meteor/commit/29d907e8365fa28b22994cb63311de60fd58cc1f
-
-    // expected nodes that aren't whitespace-only text nodes
-    var expectedContainerChildNodes = c.firstRun ? 0 : 1;
-    if (numChildNodes(container) > expectedContainerChildNodes) {
-      var compDescriptor = comp.displayName
-            ? "the React component " + comp.displayName
-            : "a React component";
-
-      throw new Error(
-        "Template \"" + parentTemplate + "\" must render " + compDescriptor +
-          " as the only child of its parent element. Learn more at " +
-          "https://github.com/meteor/meteor/wiki/React-components-must-be-the-only-thing-in-their-wrapper-element");
-    }
-
-    // End block of code to remove with Meteor 1.1.1
-
     var props = _.omit(data, 'component');
     ReactDOM.render(React.createElement(comp, props), container);
   });
@@ -80,18 +60,4 @@ function parentTemplateName () {
 
   // not sure when this could happen
   return "<unknown>";
-};
-
-// Gets the number of child nodes of `el` that aren't only whitespace
-function numChildNodes (el) {
-  var numChildNodes = 0;
-  for (var node = el.firstChild; node; node = node.nextSibling) {
-    if (!((node.nodeType === 3 /*Node.TEXT_NODE (which isn't in old IE)*/
-           || node.nodeType === 8) /*Node.COMMENT_NODE; Blaze uses in old IE*/
-          && node.nodeValue.match(/^\s*$/))) {
-      numChildNodes++;
-    }
-  }
-
-  return numChildNodes;
 };
