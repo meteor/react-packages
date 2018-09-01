@@ -175,7 +175,7 @@ export default function connect(options) {
   const { getMeteorData, pure = true } = expandedOptions;
 
   const BaseComponent = pure ? ReactPureComponent : ReactComponent;
-  return (WrappedComponent) => (
+  return (WrappedComponent) => {
     class ReactMeteorDataComponent extends BaseComponent {
       getMeteorData() {
         return getMeteorData(this.props);
@@ -184,5 +184,7 @@ export default function connect(options) {
         return <WrappedComponent {...this.props} {...this.data} />;
       }
     }
-  );
+    ReactMeteorDataComponent.displayName = 'withTracker(' + WrappedComponent.displayName + ')';
+    return ReactMeteorDataComponent;
+  };
 }
