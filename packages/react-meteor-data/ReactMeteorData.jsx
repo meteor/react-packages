@@ -56,7 +56,7 @@ class MeteorDataManager {
                 + 'cause an endless loop. To respond to Meteor data changing, '
                 + 'consider making this component a \"wrapper component\" that '
                 + 'only fetches data and passes it in as props to a child '
-                + 'component. Then you can use `componentWillReceiveProps` in '
+                + 'component. Then you can use `componentDidReceiveProps` in '
                 + 'that child component.');
             };
 
@@ -72,9 +72,9 @@ class MeteorDataManager {
           // for the lifetime of the component is that Tracker only
           // re-runs autoruns at flush time, while we need to be able to
           // re-call getMeteorData synchronously whenever we want, e.g.
-          // from componentWillUpdate.
+          // from componentDidUpdate.
           c.stop();
-          // Calling forceUpdate() triggers componentWillUpdate which
+          // Calling forceUpdate() triggers componentDidUpdate which
           // recalculates getMeteorData() and re-renders the component.
           component.forceUpdate();
         }
@@ -124,14 +124,7 @@ class MeteorDataManager {
 }
 
 export const ReactMeteorData = {
-  componentWillMount() {
-    this.data = {};
-    this._meteorDataManager = new MeteorDataManager(this);
-    const newData = this._meteorDataManager.calculateData();
-    this._meteorDataManager.updateData(newData);
-  },
-
-  componentWillUpdate(nextProps, nextState) {
+  componentWillUpdate(nextProps, prevState) {
     const saveProps = this.props;
     const saveState = this.state;
     let newData;
@@ -144,7 +137,7 @@ export const ReactMeteorData = {
       // updated, but before render() is called.
       // See https://github.com/facebook/react/issues/3398.
       this.props = nextProps;
-      this.state = nextState;
+      this.state = prevState;
       newData = this._meteorDataManager.calculateData();
     } finally {
       this.props = saveProps;
@@ -159,9 +152,25 @@ export const ReactMeteorData = {
   },
 };
 
-class ReactComponent extends React.Component {}
+class ReactComponent extends React.Component {
+  constructor(props) {
+    super(props);
+    this.data = {};
+    this._meteorDataManager = new MeteorDataManager(this);
+    const newData = this._meteorDataManager.calculateData();
+    this._meteorDataManager.updateData(newData);
+  }
+}
 Object.assign(ReactComponent.prototype, ReactMeteorData);
-class ReactPureComponent extends React.PureComponent {}
+class ReactPureComponent extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.data = {};
+    this._meteorDataManager = new MeteorDataManager(this);
+    const newData = this._meteorDataManager.calculateData();
+    this._meteorDataManager.updateData(newData);
+  }
+}
 Object.assign(ReactPureComponent.prototype, ReactMeteorData);
 
 export default function connect(options) {

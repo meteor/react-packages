@@ -1,7 +1,7 @@
 Package.describe({
   name: 'react-meteor-data',
   summary: 'React higher-order component for reactively tracking Meteor data',
-  version: '0.2.16',
+  version: '0.2.17',
   documentation: 'README.md',
   git: 'https://github.com/meteor/react-packages',
 });
