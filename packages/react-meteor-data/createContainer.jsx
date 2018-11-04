@@ -4,7 +4,7 @@
 
 import { Meteor } from 'meteor/meteor';
 import React from 'react';
-import connect from './ReactMeteorData.jsx';
+import withTracker from './withTracker.jsx';
 
 let hasDisplayedWarning = false;
 
@@ -17,5 +17,5 @@ export default function createContainer(options, Component) {
     hasDisplayedWarning = true;
   }
 
-  return connect(options)(Component);
+  return withTracker(options)(Component);
 }

@@ -18,6 +18,8 @@ npm install --save react
 
 ### Usage
 
+@TODO document `useTracker` hook
+ 
 This package exports a symbol `withTracker`, which you can use to wrap your components with data returned from Tracker reactive functions.
 
 ```js
