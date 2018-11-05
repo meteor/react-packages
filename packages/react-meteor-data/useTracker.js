@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Tracker } from 'meteor/tracker';
 import { Meteor } from 'meteor/meteor';
 
@@ -11,15 +11,13 @@ if (Meteor.isServer) {
 }
 else {
   useTracker = (reactiveFn, dependencies) => {
-    const callback = useCallback(reactiveFn, dependencies);
-
     // Run the function once with no autorun to get the initial return value.
     // @todo Reach out to the React team to see if there's a better way ? Maybe abort the initial render instead ?
     const [trackerData, setTrackerData] = useState(() => {
       // We need to prevent subscriptions from running in that initial run.
       const realSubscribe = Meteor.subscribe;
       Meteor.subscribe = () => ({ stop: () => {}, ready: () => false });
-      const initialData = Tracker.nonreactive(callback);
+      const initialData = Tracker.nonreactive(reactiveFn);
       Meteor.subscribe = realSubscribe;
       return initialData;
     });
@@ -33,7 +31,7 @@ else {
       // it stops the inner one.
       Tracker.nonreactive(() => {
         computation = Tracker.autorun(() => {
-          const data = callback();
+          const data = reactiveFn();
           if (Package.mongo && Package.mongo.Mongo && data instanceof Package.mongo.Mongo.Cursor) {
             console.warn(
               'Warning: you are returning a Mongo cursor from useEffect. '
@@ -45,7 +43,7 @@ else {
         });
       });
       return () => computation.stop();
-    }, [callback]);
+    }, dependencies);
 
     return trackerData;
   };
