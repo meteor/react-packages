@@ -11,8 +11,18 @@ if (Meteor.isServer) {
 }
 else {
   useTracker = (reactiveFn, dependencies) => {
-    const [trackerData, setTrackerData] = useState(null);
     const callback = useCallback(reactiveFn, dependencies);
+
+    // Run the function once with no autorun to get the initial return value.
+    // @todo Reach out to the React team to see if there's a better way ? Maybe abort the initial render instead ?
+    const [trackerData, setTrackerData] = useState(() => {
+      // We need to prevent subscriptions from running in that initial run.
+      const realSubscribe = Meteor.subscribe;
+      Meteor.subscribe = () => ({ stop: () => {}, ready: () => false });
+      const initialData = Tracker.nonreactive(callback);
+      Meteor.subscribe = realSubscribe;
+      return initialData;
+    });
 
     useEffect(() => {
       let computation;

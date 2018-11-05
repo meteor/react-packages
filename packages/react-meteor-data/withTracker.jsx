@@ -21,7 +21,7 @@ export default function withTracker(options) {
         });
       }
 
-      return data ? <Component {...{ ...props, ...data }} /> : null;
+      return <Component {...{ ...props, ...data }} />;
     }
 
     return pure ? memo(WithTracker) : WithTracker;
