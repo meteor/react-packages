@@ -66,7 +66,11 @@ else {
         // console.log('setup deferred subscriptions');
         deferredSubscriptions.current.forEach(([name, ...args]) => {
           const { stop } = Meteor.subscribe(name, ...args);
-          computation.current.onStop(stop);
+          // Manually stop the subscriptions when the computation invalidates,
+          // as Meteor would do for "regular" subscriptions made during autotrun.
+          // @todo if the computation then resubscribes to the same publication,
+          // the usual "skip unsubscribe / resubscribe" optimisation doesn't get applied.
+          computation.current.onInvalidate(stop);
         });
         deferredSubscriptions.current = null;
       }
