@@ -10,9 +10,12 @@ if (Meteor.isServer) {
   useTracker = reactiveFn => reactiveFn();
 }
 else {
+  // @todo specify a default value for dependencies ? Omitting them can be very bad perf-wise.
   useTracker = (reactiveFn, dependencies) => {
-    // Run the function once with no autorun to get the initial return value.
-    // @todo Reach out to the React team to see if there's a better way ? Maybe abort the initial render instead ?
+    // Run the function once on mount without autorun or subscriptions,
+    // to get the initial return value.
+    // Note: maybe when React Suspense is officially available we could
+    // throw a Promise instead to skip the 1st render altogether ?
     const [trackerData, setTrackerData] = useState(() => {
       // We need to prevent subscriptions from running in that initial run.
       const realSubscribe = Meteor.subscribe;
