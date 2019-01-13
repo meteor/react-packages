@@ -20,5 +20,5 @@ Package.onUse(function(api) {
     'tmeasday:check-npm-versions@0.3.2'
   ]);
 
-  api.addFiles(['react-template-helper.js'], 'client', {lazy: true});
+  api.mainModule('react-template-helper.js', 'client', {lazy: true});
 });
