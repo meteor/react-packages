@@ -175,14 +175,23 @@ export default function connect(options) {
   const { getMeteorData, pure = true } = expandedOptions;
 
   const BaseComponent = pure ? ReactPureComponent : ReactComponent;
-  return (WrappedComponent) => (
+
+  return (WrappedComponent) => {
     class ReactMeteorDataComponent extends BaseComponent {
       getMeteorData() {
-        return getMeteorData(this.props);
+        const { forwardedRef, ...props } = this.props;
+
+        return getMeteorData(props);
       }
+
       render() {
-        return <WrappedComponent {...this.props} {...this.data} />;
+        const { forwardedRef, ...props } = this.props;
+        return <WrappedComponent ref={forwardedRef} {...props} {...this.data} />;
       }
     }
-  );
+
+    return React.forwardRef((props, ref) => (
+      <ReactMeteorDataComponent {...props} forwardedRef={ref} />
+    ));
+  };
 }
