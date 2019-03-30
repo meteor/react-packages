@@ -1,9 +1,34 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tracker } from 'meteor/tracker';
 import { Meteor } from 'meteor/meteor';
 
-let useTracker;
+// Warns if data is a Mongo.Cursor or a POJO containing a Mongo.Cursor.
+function checkCursor(data) {
+  let shouldWarn = false;
+  if (Package.mongo && Package.mongo.Mongo && typeof data === 'object') {
+    if (data instanceof Package.mongo.Mongo.Cursor) {
+      shouldWarn = true;
+    }
+    else if (Object.getPrototypeOf(data) === Object.prototype) {
+      Object.keys(data).forEach((key) => {
+        if (data[key] instanceof Package.mongo.Mongo.Cursor) {
+          shouldWarn = true;
+        }
+      });
+    }
+  }
+  if (shouldWarn) {
+    // Use React.warn() if available (should ship in React 16.9).
+    const warn = React.warn || console.warn.bind(console);
+    warn(
+      'Warning: your reactive function is returning a Mongo cursor. '
+      + 'This value will not be reactive. You probably want to call '
+      + '`.fetch()` on the cursor before returning it.'
+    );
+  }
+}
 
+let useTracker;
 if (Meteor.isServer) {
   // When rendering on the server, we don't want to use the Tracker.
   // We only do the first rendering on the server so we can get the data right away
@@ -35,13 +60,7 @@ else {
       Tracker.nonreactive(() => {
         computation = Tracker.autorun(() => {
           const data = reactiveFn();
-          if (Package.mongo && Package.mongo.Mongo && data instanceof Package.mongo.Mongo.Cursor) {
-            console.warn(
-              'Warning: you are returning a Mongo cursor from useTracker. '
-              + 'This value will not be reactive. You probably want to call '
-              + '`.fetch()` on the cursor before returning it.'
-            );
-          }
+          checkCursor(data);
           setTrackerData(data);
         });
       });
