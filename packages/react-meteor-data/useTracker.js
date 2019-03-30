@@ -37,7 +37,7 @@ else {
           const data = reactiveFn();
           if (Package.mongo && Package.mongo.Mongo && data instanceof Package.mongo.Mongo.Cursor) {
             console.warn(
-              'Warning: you are returning a Mongo cursor from useEffect. '
+              'Warning: you are returning a Mongo cursor from useTracker. '
               + 'This value will not be reactive. You probably want to call '
               + '`.fetch()` on the cursor before returning it.'
             );
