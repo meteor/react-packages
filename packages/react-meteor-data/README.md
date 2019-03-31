@@ -74,8 +74,7 @@ Note : the [eslint-plugin-react-hooks](https://www.npmjs.com/package/eslint-plug
 You can use the `withTracker` HOC to wrap your components and pass them additional props values from a Tracker reactive function. The reactive function will get re-run whenever its reactive inputs change, and the wrapped component will re-render with the new values for the additional props.
 
 Arguments:
-- `reactiveFn`: a Tracker reactive function, getting the props as a parameter, 
-and returning an object of additional props to pass to the wrapped component.
+- `reactiveFn`: a Tracker reactive function, getting the props as a parameter, and returning an object of additional props to pass to the wrapped component.
 
 ```js
 import { withTracker } from 'meteor/react-meteor-data';
