@@ -33,7 +33,7 @@ You can use the `useTracker` hook to get the value of a Tracker reactive functio
 
 Arguments:
 - `reactiveFn`: a Tracker reactive function (with no parameters)
-- `deps`: an array of "dependencies" of the reactive function, i.e. the list of values that, when changed, need to stop the current Tracker computation and start a new one - for example, the value of a prop used in a subscription or a Minimongo query; see example below. This array typically includes all variables from the outer scope "captured" in the closure passed as the 1st argument. This is very similar to how the `deps` argument for [React's built-in `useEffect`, `useCallback` or `useMemo` hooks](https://reactjs.org/docs/hooks-reference.html) work.
+- `deps`: an array of "dependencies" of the reactive function, i.e. the list of values that, when changed, need to stop the current Tracker computation and start a new one - for example, the value of a prop used in a subscription or a Minimongo query; see example below. This array typically includes all variables from the outer scope "captured" in the closure passed as the 1st argument. This is very similar to how the `deps` argument for [React's built-in `useEffect`, `useCallback` or `useMemo` hooks](https://reactjs.org/docs/hooks-reference.html) work.  
 If omitted, it defaults to `[]` (no dependency), and the Tracker computation will run unchanged until the component is unmounted.
 
 ```js
@@ -69,7 +69,7 @@ function Foo({ listId }) {
 
 Note : the [eslint-plugin-react-hooks](https://www.npmjs.com/package/eslint-plugin-react-hooks) package provides ESLint hints to help detect missing values in the `deps` argument of React built-in hooks. It can be configured with `options: [{additionalHooks: 'useTracker|useSomeOtherHook|...'}]` to also validate the `deps` argument of the `useTracker` hook or some other hooks.
 
-#### `withTracker` higher-prder component
+#### `withTracker(reactiveFn)` higher-prder component
 
 You can use the `withTracker` HOC to wrap your components and pass them additional props values from a Tracker reactive function. The reactive function will get re-run whenever its reactive inputs change, and the wrapped component will re-render with the new values for the additional props.
 
