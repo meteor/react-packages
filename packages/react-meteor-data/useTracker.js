@@ -28,8 +28,8 @@ function checkCursor(data) {
   }
 }
 
-// @todo specify a default value for dependencies ? Omitting them can be very bad perf-wise.
-function useTracker(reactiveFn, dependencies) {
+// Forgetting the deps parameter would cause an infinite rerender loop, so we default to [].
+function useTracker(reactiveFn, deps = []) {
   // Note : we always run the reactiveFn in Tracker.nonreactive in case
   // we are already inside a Tracker Computation. This can happen if someone calls
   // `ReactDOM.render` inside a Computation. In that case, we want to opt out
@@ -60,14 +60,14 @@ function useTracker(reactiveFn, dependencies) {
     );
     // On effect cleanup, stop the computation.
     return () => computation.stop();
-  }, dependencies);
+  }, deps);
 
   return trackerData;
 }
 
 // When rendering on the server, we don't want to use the Tracker.
 // We only do the first rendering on the server so we can get the data right away
-function useTracker__server(reactiveFn, dependencies) {
+function useTracker__server(reactiveFn, deps) {
   return reactiveFn();
 }
 
