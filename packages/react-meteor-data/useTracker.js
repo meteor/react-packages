@@ -57,14 +57,15 @@ else {
     });
 
     useEffect(() => {
-      let computation;
-      Tracker.nonreactive(() => {
-        computation = Tracker.autorun(() => {
+      // Set up the reactive computation.
+      const computation = Tracker.nonreactive(() =>
+        Tracker.autorun(() => {
           const data = reactiveFn();
           checkCursor(data);
           setTrackerData(data);
-        });
-      });
+        })
+      );
+      // On effect cleanup, stop the computation.
       return () => computation.stop();
     }, dependencies);
 
