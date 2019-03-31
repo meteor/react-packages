@@ -28,49 +28,47 @@ function checkCursor(data) {
   }
 }
 
-let useTracker;
-if (Meteor.isServer) {
-  // When rendering on the server, we don't want to use the Tracker.
-  // We only do the first rendering on the server so we can get the data right away
-  useTracker = reactiveFn => reactiveFn();
-}
-else {
-  // @todo specify a default value for dependencies ? Omitting them can be very bad perf-wise.
-  useTracker = (reactiveFn, dependencies) => {
-    // Note : we always run the reactiveFn in Tracker.nonreactive in case
-    // we are already inside a Tracker Computation. This can happen if someone calls
-    // `ReactDOM.render` inside a Computation. In that case, we want to opt out
-    // of the normal behavior of nested Computations, where if the outer one is
-    // invalidated or stopped, it stops the inner one too.
+// @todo specify a default value for dependencies ? Omitting them can be very bad perf-wise.
+function useTracker(reactiveFn, dependencies) {
+  // Note : we always run the reactiveFn in Tracker.nonreactive in case
+  // we are already inside a Tracker Computation. This can happen if someone calls
+  // `ReactDOM.render` inside a Computation. In that case, we want to opt out
+  // of the normal behavior of nested Computations, where if the outer one is
+  // invalidated or stopped, it stops the inner one too.
 
-    const [trackerData, setTrackerData] = useState(() => {
-      // No side-effects are allowed when computing the initial value.
-      // To get the initial return value for the 1st render on mount,
-      // we run reactiveFn without autorun or subscriptions.
-      // Note: maybe when React Suspense is officially available we could
-      // throw a Promise instead to skip the 1st render altogether ?
-      const realSubscribe = Meteor.subscribe;
-      Meteor.subscribe = () => ({ stop: () => {}, ready: () => false });
-      const initialData = Tracker.nonreactive(reactiveFn);
-      Meteor.subscribe = realSubscribe;
-      return initialData;
-    });
+  const [trackerData, setTrackerData] = useState(() => {
+    // No side-effects are allowed when computing the initial value.
+    // To get the initial return value for the 1st render on mount,
+    // we run reactiveFn without autorun or subscriptions.
+    // Note: maybe when React Suspense is officially available we could
+    // throw a Promise instead to skip the 1st render altogether ?
+    const realSubscribe = Meteor.subscribe;
+    Meteor.subscribe = () => ({ stop: () => {}, ready: () => false });
+    const initialData = Tracker.nonreactive(reactiveFn);
+    Meteor.subscribe = realSubscribe;
+    return initialData;
+  });
 
-    useEffect(() => {
-      // Set up the reactive computation.
-      const computation = Tracker.nonreactive(() =>
-        Tracker.autorun(() => {
-          const data = reactiveFn();
-          checkCursor(data);
-          setTrackerData(data);
-        })
-      );
-      // On effect cleanup, stop the computation.
-      return () => computation.stop();
-    }, dependencies);
+  useEffect(() => {
+    // Set up the reactive computation.
+    const computation = Tracker.nonreactive(() =>
+      Tracker.autorun(() => {
+        const data = reactiveFn();
+        checkCursor(data);
+        setTrackerData(data);
+      })
+    );
+    // On effect cleanup, stop the computation.
+    return () => computation.stop();
+  }, dependencies);
 
-    return trackerData;
-  };
+  return trackerData;
 }
 
-export default useTracker;
+// When rendering on the server, we don't want to use the Tracker.
+// We only do the first rendering on the server so we can get the data right away
+function useTracker__server(reactiveFn, dependencies) {
+  return reactiveFn();
+}
+
+export default (Meteor.isServer ? useTracker__server : useTracker);
