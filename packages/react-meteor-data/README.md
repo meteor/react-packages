@@ -19,10 +19,10 @@ npm install --save react
 ### Usage
 
 This package provides two ways to use Tracker reactive data in your React components:
-- a hook: `useTracker`,
-- a higher-order component (HOC): `withTracker`.
+- a hook: `useTracker` (v2 only, requires React ^16.8)
+- a higher-order component (HOC): `withTracker` (v1 and v2).
 
-The `useTracker` hook, introduced in recent versions of `react-meteor-data`, is slightly more straightforward to use (lets you access reactive data sources directly within your componenent, rather than adding them from an external wrapper), and slightly more performant (avoids adding wrapper layers in the React tree). But, like all React hooks, it can only be used in function components, not in class components.  
+The `useTracker` hook, introduced in version 2.0.0, is slightly more straightforward to use (lets you access reactive data sources directly within your componenent, rather than adding them from an external wrapper), and slightly more performant (avoids adding wrapper layers in the React tree). But, like all React hooks, it can only be used in function components, not in class components.  
 The `withTracker` HOC can be used with all components, function or class.
 
 It is not necessary to rewrite existing applications to use the `useTracker` hook instead of the existing `withTracker` HOC. But for new components, it is suggested to prefer the `useTracker` hook when dealing with function components.
@@ -108,3 +108,19 @@ export default withTracker(({ listId }) => {
 The returned component will, when rendered, render `Foo` (the "lower-order" component) with its provided props in addition to the result of the reactive function. So `Foo` will receive `{ listId }` (provided by its parent) as well as `{ currentUser, listLoading, tasks }` (added by the `withTracker` HOC).
 
 For more information, see the [React article](http://guide.meteor.com/react.html) in the Meteor Guide.
+
+### Version compatibility notes
+
+- `react-meteor-data` v2.x :
+  - `useTracker` hook + `withTracker` HOC
+  - Requires React ^16.8.
+  - Implementation is compatible with the forthcoming "React Suspense" features.
+  - The `withTracker` HOC is strictly backwards-compatible with the one provided in v1.x, the major version number is only motivated by the bump of React version requirement.  
+Provided they use a compatible React version, existing Meteor apps leveraging the `withTracker` HOC can freely upgrade from v1.x to v2.x, and gain compatibility with 
+ 
+- `react-meteor-data` v1.x / v0.x :
+  - `withTracker` HOC (+ `createContainer` kept for backwards compatibility with early v0.x releases)
+  - Requires React ^15.3 or ^16.0
+  - Implementation relies on React lifecycle methods (`componentWillMount` / `componentWillUpdate`) that are marked for deprecation in future React versions ("React Suspense").
+
+ 
