@@ -22,7 +22,7 @@ This package provides two ways to use Tracker reactive data in your React compon
 - a hook: `useTracker`,
 - a higher-order component (HOC): `withTracker`.
 
-The `useTracker` hook, introduced in recent versions of `react-meteor-data`, is slightly more straightforward to use (lets you access reactive data sources directly within your compnenent, rather than adding them from an external wrapper), and slightly more performant (avoids adding wrapper layers in the React tree). But, like all React hooks, it can only be used in function components, not in class components.  
+The `useTracker` hook, introduced in recent versions of `react-meteor-data`, is slightly more straightforward to use (lets you access reactive data sources directly within your componenent, rather than adding them from an external wrapper), and slightly more performant (avoids adding wrapper layers in the React tree). But, like all React hooks, it can only be used in function components, not in class components.  
 The `withTracker` HOC can be used with all components, function or class.
 
 It is not necessary to rewrite existing applications to use the `useTracker` hook instead of the existing `withTracker` HOC. But for new components, it is suggested to prefer the `useTracker` hook when dealing with function components.
@@ -69,7 +69,7 @@ function Foo({ listId }) {
 
 Note : the [eslint-plugin-react-hooks](https://www.npmjs.com/package/eslint-plugin-react-hooks) package provides ESLint hints to help detect missing values in the `deps` argument of React built-in hooks. It can be configured with `options: [{additionalHooks: 'useTracker|useSomeOtherHook|...'}]` to also validate the `deps` argument of the `useTracker` hook or some other hooks.
 
-#### `withTracker(reactiveFn)` higher-prder component
+#### `withTracker(reactiveFn)` higher-order component
 
 You can use the `withTracker` HOC to wrap your components and pass them additional props values from a Tracker reactive function. The reactive function will get re-run whenever its reactive inputs change, and the wrapped component will re-render with the new values for the additional props.
 
