@@ -19,7 +19,7 @@ npm install --save react
 ### Usage
 
 This package provides two ways to use Tracker reactive data in your React components:
-- a hook: `useTracker` (v2 only, requires React ^16.8)
+- a hook: `useTracker` (v2 only, requires React `^16.8`)
 - a higher-order component (HOC): `withTracker` (v1 and v2).
 
 The `useTracker` hook, introduced in version 2.0.0, is slightly more straightforward to use (lets you access reactive data sources directly within your componenent, rather than adding them from an external wrapper), and slightly more performant (avoids adding wrapper layers in the React tree). But, like all React hooks, it can only be used in function components, not in class components.  
@@ -113,14 +113,12 @@ For more information, see the [React article](http://guide.meteor.com/react.html
 
 - `react-meteor-data` v2.x :
   - `useTracker` hook + `withTracker` HOC
-  - Requires React ^16.8.
+  - Requires React `^16.8`.
   - Implementation is compatible with the forthcoming "React Suspense" features.
   - The `withTracker` HOC is strictly backwards-compatible with the one provided in v1.x, the major version number is only motivated by the bump of React version requirement.  
-Provided they use a compatible React version, existing Meteor apps leveraging the `withTracker` HOC can freely upgrade from v1.x to v2.x, and gain compatibility with 
+Provided they use a compatible React version, existing Meteor apps leveraging the `withTracker` HOC can freely upgrade from v1.x to v2.x, and gain compatibility with future React versions.
  
 - `react-meteor-data` v1.x / v0.x :
-  - `withTracker` HOC (+ `createContainer` kept for backwards compatibility with early v0.x releases)
-  - Requires React ^15.3 or ^16.0
-  - Implementation relies on React lifecycle methods (`componentWillMount` / `componentWillUpdate`) that are marked for deprecation in future React versions ("React Suspense").
-
- 
+  - `withTracker` HOC (+ `createContainer`, kept for backwards compatibility with early v0.x releases)
+  - Requires React `^15.3` or `^16.0`.
+  - Implementation relies on React lifecycle methods (`componentWillMount` / `componentWillUpdate`) that are [marked for deprecation in future React versions](https://reactjs.org/blog/2018/03/29/react-v-16-3.html#component-lifecycle-changes) ("React Suspense").
