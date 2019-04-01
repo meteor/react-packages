@@ -108,15 +108,3 @@ export default withTracker(({ listId }) => {
 The returned component will, when rendered, render `Foo` (the "lower-order" component) with its provided props in addition to the result of the reactive function. So `Foo` will receive `{ listId }` (provided by its parent) as well as `{ currentUser, listLoading, tasks }` (added by the `withTracker` HOC).
 
 For more information, see the [React article](http://guide.meteor.com/react.html) in the Meteor Guide.
-
-### Note on `withTracker` and `createContainer`
-
-The new `withTracker` function replaces `createContainer` (however it remains for backwards compatibility). For `createContainer` usage, please [see prior documentation](https://github.com/meteor/react-packages/blob/ac251a6d6c2d0ddc22daad36a7484ef04b11862e/packages/react-meteor-data/README.md). The purpose of the new function is to better allow for container composability. For example when combining Meteor data with Redux and GraphQL: 
-
-```js
-const FooWithAllTheThings = compose(
-  connect(...), // some Redux
-  graphql(...), // some GraphQL
-  withTracker(...), // some Tracker data
-)(Foo);
-```
