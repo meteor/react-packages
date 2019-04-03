@@ -67,7 +67,11 @@ function Foo({ listId }) {
 }
 ```
 
-Note : the [eslint-plugin-react-hooks](https://www.npmjs.com/package/eslint-plugin-react-hooks) package provides ESLint hints to help detect missing values in the `deps` argument of React built-in hooks. It can be configured with `options: [{additionalHooks: 'useTracker|useSomeOtherHook|...'}]` to also validate the `deps` argument of the `useTracker` hook or some other hooks.
+**Note:** the [eslint-plugin-react-hooks](https://www.npmjs.com/package/eslint-plugin-react-hooks) package provides ESLint hints to help detect missing values in the `deps` argument of React built-in hooks. It can be configured to also validate the `deps` argument of the `useTracker` hook or some other hooks, with the following `eslintrc` config:
+
+```
+"react-hooks/exhaustive-deps": ["warn", { "additionalHooks": "useTracker|useSomeOtherHook|..." }]
+```
 
 #### `withTracker(reactiveFn)` higher-order component
 
