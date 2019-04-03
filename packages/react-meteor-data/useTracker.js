@@ -54,7 +54,7 @@ function useTracker(reactiveFn, deps = []) {
     const computation = Tracker.nonreactive(() =>
       Tracker.autorun(() => {
         const data = reactiveFn();
-        checkCursor(data);
+        Meteor.isDevelopment && checkCursor(data);
         setTrackerData(data);
       })
     );
