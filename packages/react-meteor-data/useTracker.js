@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 // Warns if data is a Mongo.Cursor or a POJO containing a Mongo.Cursor.
 function checkCursor(data) {
   let shouldWarn = false;
-  if (Package.mongo && Package.mongo.Mongo && typeof data === 'object') {
+  if (Package.mongo && Package.mongo.Mongo && data && typeof data === 'object') {
     if (data instanceof Package.mongo.Mongo.Cursor) {
       shouldWarn = true;
     }
