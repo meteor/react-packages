@@ -83,8 +83,9 @@ function useTracker(reactiveFn, deps) {
   };
 
   // this is called like at componentWillMount and componentWillUpdate equally
-  // simulates a synchronous useEffect, as a replacement for calculateData()
-  // if prevDeps or deps are not set shallowEqualArray always returns false
+  // in order to support render calls with synchronous data from the reactive computation
+  // if prevDeps or deps are not set areHookInputsEqual always returns false
+  // and the reactive functions is always called
   if (!areHookInputsEqual(deps, previousDeps.current)) {
     dispose();
 
