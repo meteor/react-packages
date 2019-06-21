@@ -104,8 +104,9 @@ function useTracker(reactiveFn, deps) {
           previousDeps.current = deps;
           trackerData.current = data;
         } else {
-          // makes sure that shallowEqualArray returns false on next render
-          previousDeps.current = Math.random();
+          // makes sure that shallowEqualArray returns false
+          // which is always the case when prev or nextDeps are not set
+          previousDeps.current = null;
           // Stop this computation instead of using the re-run.
           // We use a brand-new autorun for each call to getMeteorData
           // to capture dependencies on any reactive data sources that
