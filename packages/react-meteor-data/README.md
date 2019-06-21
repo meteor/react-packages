@@ -22,7 +22,7 @@ This package provides two ways to use Tracker reactive data in your React compon
 - a hook: `useTracker` (v2 only, requires React `^16.8`)
 - a higher-order component (HOC): `withTracker` (v1 and v2).
 
-The `useTracker` hook, introduced in version 2.0.0, is slightly more straightforward to use (lets you access reactive data sources directly within your componenent, rather than adding them from an external wrapper), and slightly more performant (avoids adding wrapper layers in the React tree). But, like all React hooks, it can only be used in function components, not in class components.  
+The `useTracker` hook, introduced in version 2.0.0, is slightly more straightforward to use (lets you access reactive data sources directly within your componenent, rather than adding them from an external wrapper), and slightly more performant (avoids adding wrapper layers in the React tree). But, like all React hooks, it can only be used in function components, not in class components.
 The `withTracker` HOC can be used with all components, function or class.
 
 It is not necessary to rewrite existing applications to use the `useTracker` hook instead of the existing `withTracker` HOC. But for new components, it is suggested to prefer the `useTracker` hook when dealing with function components.
@@ -33,8 +33,8 @@ You can use the `useTracker` hook to get the value of a Tracker reactive functio
 
 Arguments:
 - `reactiveFn`: a Tracker reactive function (with no parameters)
-- `deps`: an array of "dependencies" of the reactive function, i.e. the list of values that, when changed, need to stop the current Tracker computation and start a new one - for example, the value of a prop used in a subscription or a Minimongo query; see example below. This array typically includes all variables from the outer scope "captured" in the closure passed as the 1st argument. This is very similar to how the `deps` argument for [React's built-in `useEffect`, `useCallback` or `useMemo` hooks](https://reactjs.org/docs/hooks-reference.html) work.  
-If omitted, it defaults to `[]` (no dependency), and the Tracker computation will run unchanged until the component is unmounted.
+- `deps`: an array of "dependencies" of the reactive function, i.e. the list of values that, when changed, need to stop the current Tracker computation and start a new one - for example, the value of a prop used in a subscription or a Minimongo query; see example below. This array typically includes all variables from the outer scope "captured" in the closure passed as the 1st argument. This is very similar to how the `deps` argument for [React's built-in `useEffect`, `useCallback` or `useMemo` hooks](https://reactjs.org/docs/hooks-reference.html) work.
+If omitted, the Tracker computation will be recreated on every call.
 
 ```js
 import { useTracker } from 'meteor/react-meteor-data';
