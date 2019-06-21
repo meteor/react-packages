@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Tracker } from 'meteor/tracker';
 import { Meteor } from 'meteor/meteor';
 
@@ -28,41 +28,105 @@ function checkCursor(data) {
   }
 }
 
-// Forgetting the deps parameter would cause an infinite rerender loop, so we default to [].
-function useTracker(reactiveFn, deps = []) {
-  // Note : we always run the reactiveFn in Tracker.nonreactive in case
-  // we are already inside a Tracker Computation. This can happen if someone calls
-  // `ReactDOM.render` inside a Computation. In that case, we want to opt out
-  // of the normal behavior of nested Computations, where if the outer one is
-  // invalidated or stopped, it stops the inner one too.
+// taken from https://github.com/facebook/react/blob/
+// 34ce57ae751e0952fd12ab532a3e5694445897ea/packages/shared/objectIs.js
+function is(x, y) {
+  return (
+    (x === y && (x !== 0 || 1 / x === 1 / y))
+    || (x !== x && y !== y) // eslint-disable-line no-self-compare
+  );
+}
 
-  const [trackerData, setTrackerData] = useState(() => {
-    // No side-effects are allowed when computing the initial value.
-    // To get the initial return value for the 1st render on mount,
-    // we run reactiveFn without autorun or subscriptions.
-    // Note: maybe when React Suspense is officially available we could
-    // throw a Promise instead to skip the 1st render altogether ?
-    const realSubscribe = Meteor.subscribe;
-    Meteor.subscribe = () => ({ stop: () => {}, ready: () => false });
-    const initialData = Tracker.nonreactive(reactiveFn);
-    Meteor.subscribe = realSubscribe;
-    return initialData;
-  });
+// inspired by https://github.com/facebook/react/blob/
+// 34ce57ae751e0952fd12ab532a3e5694445897ea/packages/
+// react-reconciler/src/ReactFiberHooks.js#L307-L354
+// used to replicate dep change behavior and stay consistent
+// with React.useEffect()
+function areHookInputsEqual(nextDeps, prevDeps) {
+  if (!nextDeps || !prevDeps) {
+    return false;
+  }
 
-  useEffect(() => {
-    // Set up the reactive computation.
-    const computation = Tracker.nonreactive(() =>
-      Tracker.autorun(() => {
-        const data = reactiveFn();
-        Meteor.isDevelopment && checkCursor(data);
-        setTrackerData(data);
+  const len = nextDeps.length;
+
+  if (prevDeps.length !== len) {
+    return false;
+  }
+
+  for (let i = 0; i < len; i++) {
+    if (!is(nextDeps[i], prevDeps[i])) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function useTracker(reactiveFn, deps) {
+  // When rendering on the server, we don't want to use the Tracker.
+  // We only do the first rendering on the server so we can get the data right away
+  if (Meteor.isServer) {
+    return reactiveFn();
+  }
+
+  const previousDeps = useRef();
+  const computation = useRef();
+  const trackerData = useRef();
+
+  const [, forceUpdate] = useState();
+
+  const dispose = () => {
+    if (computation.current) {
+      computation.current.stop();
+      computation.current = null;
+    }
+  };
+
+  // this is called like at componentWillMount and componentWillUpdate equally
+  // simulates a synchronous useEffect, as a replacement for calculateData()
+  // if prevDeps or deps are not set shallowEqualArray always returns false
+  if (!areHookInputsEqual(deps, previousDeps.current)) {
+    dispose();
+
+    // Use Tracker.nonreactive in case we are inside a Tracker Computation.
+    // This can happen if someone calls `ReactDOM.render` inside a Computation.
+    // In that case, we want to opt out of the normal behavior of nested
+    // Computations, where if the outer one is invalidated or stopped,
+    // it stops the inner one.
+    computation.current = Tracker.nonreactive(() => (
+      Tracker.autorun((c) => {
+        if (c.firstRun) {
+          const data = reactiveFn();
+          Meteor.isDevelopment && checkCursor(data);
+
+          // store the deps for comparison on next render
+          previousDeps.current = deps;
+          trackerData.current = data;
+        } else {
+          // makes sure that shallowEqualArray returns false on next render
+          previousDeps.current = Math.random();
+          // Stop this computation instead of using the re-run.
+          // We use a brand-new autorun for each call to getMeteorData
+          // to capture dependencies on any reactive data sources that
+          // are accessed.  The reason we can't use a single autorun
+          // for the lifetime of the component is that Tracker only
+          // re-runs autoruns at flush time, while we need to be able to
+          // re-call the reactive function synchronously whenever we want, e.g.
+          // from next render.
+          c.stop();
+          // use Math.random() to trigger a state change to enforce a re-render
+          // Calling forceUpdate() triggers componentWillUpdate which
+          // calls the reactive function and re-renders the component.
+          forceUpdate(Math.random());
+        }
       })
-    );
-    // On effect cleanup, stop the computation.
-    return () => computation.stop();
-  }, deps);
+    ));
+  }
 
-  return trackerData;
+  // stop the computation on unmount only
+  useEffect(() => dispose, []);
+
+  return trackerData.current;
 }
 
 // When rendering on the server, we don't want to use the Tracker.
