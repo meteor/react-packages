@@ -43,7 +43,12 @@ function is(x, y) {
 // used to replicate dep change behavior and stay consistent
 // with React.useEffect()
 function areHookInputsEqual(nextDeps, prevDeps) {
-  if (!nextDeps || !prevDeps) {
+  if (prevDeps === null || prevDeps === undefined) {
+    return false;
+  }
+
+  // checking prevDeps is unnecessary as prevDeps is always the last version of nextDeps
+  if (!Array.isArray(nextDeps)) {
     return false;
   }
 
@@ -100,10 +105,10 @@ function useTracker(reactiveFn, deps) {
           trackerData.current = data;
         } else {
           // makes sure that shallowEqualArray returns false
-          // which is always the case when prev or nextDeps are not set
+          // which is always the case when prevDeps is null
           previousDeps.current = null;
           // Stop this computation instead of using the re-run.
-          // We use a brand-new autorun for each call to getMeteorData
+          // We use a brand-new autorun for each call
           // to capture dependencies on any reactive data sources that
           // are accessed.  The reason we can't use a single autorun
           // for the lifetime of the component is that Tracker only
@@ -111,9 +116,9 @@ function useTracker(reactiveFn, deps) {
           // re-call the reactive function synchronously whenever we want, e.g.
           // from next render.
           c.stop();
-          // use Math.random() to trigger a state change to enforce a re-render
-          // Calling forceUpdate() triggers componentWillUpdate which
-          // calls the reactive function and re-renders the component.
+          // use a uniqueCounter to trigger a state change to enforce a re-render
+          // which calls the reactive function and re-renders the component with
+          // new data from the reactive function.
           forceUpdate(++uniqueCounter);
         }
       })
