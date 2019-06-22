@@ -134,7 +134,20 @@ function useTracker(reactiveFn, deps) {
   }
 
   // stop the computation on unmount only
-  useEffect(() => dispose, []);
+  useEffect(() => {
+    if (Meteor.isDevelopment
+      && deps !== null && deps !== undefined
+      && !Array.isArray(deps)) {
+      // Use React.warn() if available (should ship in React 16.9).
+      const warn = React.warn || console.warn.bind(console);
+      warn(
+        'Warning: useTracker expected an initial dependency value of '
+        + `type array but got type of ${typeof deps} instead.`
+      );
+    }
+
+    return dispose;
+  }, []);
 
   return trackerData.current;
 }
