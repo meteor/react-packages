@@ -43,11 +43,10 @@ function is(x, y) {
 // used to replicate dep change behavior and stay consistent
 // with React.useEffect()
 function areHookInputsEqual(nextDeps, prevDeps) {
-  if (prevDeps === null || prevDeps === undefined) {
+  if (prevDeps === null || prevDeps === undefined || !Array.isArray(prevDeps)) {
     return false;
   }
 
-  // checking prevDeps is unnecessary as prevDeps is always the last version of nextDeps
   if (!Array.isArray(nextDeps)) {
     if (Meteor.isDevelopment) {
       // Use React.warn() if available (should ship in React 16.9).
