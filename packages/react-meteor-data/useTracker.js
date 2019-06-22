@@ -49,6 +49,14 @@ function areHookInputsEqual(nextDeps, prevDeps) {
 
   // checking prevDeps is unnecessary as prevDeps is always the last version of nextDeps
   if (!Array.isArray(nextDeps)) {
+    if (Meteor.isDevelopment) {
+      // Use React.warn() if available (should ship in React 16.9).
+      const warn = React.warn || console.warn.bind(console);
+      warn(
+        'Warning: useTracker expected an dependency value of '
+        + `type array but got type of ${typeof nextDeps} instead.`
+      );
+    }
     return false;
   }
 
@@ -68,6 +76,7 @@ function areHookInputsEqual(nextDeps, prevDeps) {
 }
 
 let uniqueCounter = 0;
+
 function useTracker(reactiveFn, deps) {
   const previousDeps = useRef();
   const computation = useRef();
