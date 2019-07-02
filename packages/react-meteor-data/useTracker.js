@@ -92,12 +92,15 @@ function useTracker(reactiveFn, deps) {
   // if prevDeps or deps are not set areHookInputsEqual always returns false
   // and the reactive functions is always called
   if (!areHookInputsEqual(deps, previousDeps.current)) {
+    // if we are re-creating the computation, we need to stop the old one.
+    dispose();
+
     // Use Tracker.nonreactive in case we are inside a Tracker Computation.
     // This can happen if someone calls `ReactDOM.render` inside a Computation.
     // In that case, we want to opt out of the normal behavior of nested
     // Computations, where if the outer one is invalidated or stopped,
     // it stops the inner one.
-    Tracker.nonreactive(() => (
+    computation.current = Tracker.nonreactive(() => (
       Tracker.autorun((c) => {
         // This will capture data synchronously on first run (and after deps change).
         // Additional cycles will follow the normal computation behavior.
@@ -106,12 +109,6 @@ function useTracker(reactiveFn, deps) {
         trackerData.current = data;
 
         if (c.firstRun) {
-          // if we are re-creating the computation, we need to stop the old one.
-          dispose();
-
-          // store the new computation
-          computation.current = c;
-
           // store the deps for comparison on next render
           previousDeps.current = deps;
         } else {
