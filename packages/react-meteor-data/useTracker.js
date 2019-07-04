@@ -93,6 +93,9 @@ function useTracker(reactiveFn, deps) {
     // if we are re-creating the computation, we need to stop the old one.
     dispose();
 
+    // store the deps for comparison on next render
+    refs.previousDeps = deps;
+
     // Use Tracker.nonreactive in case we are inside a Tracker Computation.
     // This can happen if someone calls `ReactDOM.render` inside a Computation.
     // In that case, we want to opt out of the normal behavior of nested
@@ -100,16 +103,22 @@ function useTracker(reactiveFn, deps) {
     // it stops the inner one.
     refs.computation = Tracker.nonreactive(() => (
       Tracker.autorun((c) => {
-        // This will capture data synchronously on first run (and after deps change).
-        // Additional cycles will follow the normal computation behavior.
-        const data = reactiveFn();
-        if (Meteor.isDevelopment) checkCursor(data);
-        refs.trackerData = data;
+        const runReactiveFn = () => {
+          const data = reactiveFn();
+          if (Meteor.isDevelopment) checkCursor(data);
+          refs.trackerData = data;
+        };
 
         if (c.firstRun) {
-          // store the deps for comparison on next render
-          refs.previousDeps = deps;
+          // This will capture data synchronously on first run (and after deps change).
+          // Additional cycles will follow the normal computation behavior.
+          runReactiveFn();
         } else {
+          // Only run reactiveFn if the hooks have not change, or are not falsy.
+          if (areHookInputsEqual(deps, refs.previousDeps)) {
+            runReactiveFn();
+          }
+          // If deps have changed or are falsy, let the reactiveFn run on next render.
           // use a uniqueCounter to trigger a state change to force a re-render
           forceUpdate(++uniqueCounter);
         }
