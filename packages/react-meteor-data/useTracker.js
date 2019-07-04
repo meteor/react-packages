@@ -92,6 +92,7 @@ function useTracker(reactiveFn, deps) {
   // if prevDeps or deps are not set areHookInputsEqual always returns false
   // and the reactive functions is always called
   if (!areHookInputsEqual(deps, previousDeps.current)) {
+    // if we are re-creating the computation, we need to stop the old one.
     dispose();
 
     // Use Tracker.nonreactive in case we are inside a Tracker Computation.
@@ -101,29 +102,17 @@ function useTracker(reactiveFn, deps) {
     // it stops the inner one.
     computation.current = Tracker.nonreactive(() => (
       Tracker.autorun((c) => {
-        if (c.firstRun) {
-          const data = reactiveFn();
-          if (Meteor.isDevelopment) checkCursor(data);
+        // This will capture data synchronously on first run (and after deps change).
+        // Additional cycles will follow the normal computation behavior.
+        const data = reactiveFn();
+        if (Meteor.isDevelopment) checkCursor(data);
+        trackerData.current = data;
 
+        if (c.firstRun) {
           // store the deps for comparison on next render
           previousDeps.current = deps;
-          trackerData.current = data;
         } else {
-          // makes sure that shallowEqualArray returns false
-          // which is always the case when prevDeps is null
-          previousDeps.current = null;
-          // Stop this computation instead of using the re-run.
-          // We use a brand-new autorun for each call
-          // to capture dependencies on any reactive data sources that
-          // are accessed.  The reason we can't use a single autorun
-          // for the lifetime of the component is that Tracker only
-          // re-runs autoruns at flush time, while we need to be able to
-          // re-call the reactive function synchronously whenever we want, e.g.
-          // from next render.
-          c.stop();
-          // use a uniqueCounter to trigger a state change to enforce a re-render
-          // which calls the reactive function and re-renders the component with
-          // new data from the reactive function.
+          // use a uniqueCounter to trigger a state change to force a re-render
           forceUpdate(++uniqueCounter);
         }
       })
