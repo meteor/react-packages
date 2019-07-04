@@ -1,6 +1,8 @@
+/* global Meteor, Package, Tracker */
 import React, { useState, useEffect, useRef } from 'react';
-import { Tracker } from 'meteor/tracker';
-import { Meteor } from 'meteor/meteor';
+
+// Use React.warn() if available (should ship in React 16.9).
+const warn = React.warn || console.warn.bind(console);
 
 // Warns if data is a Mongo.Cursor or a POJO containing a Mongo.Cursor.
 function checkCursor(data) {
@@ -8,8 +10,7 @@ function checkCursor(data) {
   if (Package.mongo && Package.mongo.Mongo && data && typeof data === 'object') {
     if (data instanceof Package.mongo.Mongo.Cursor) {
       shouldWarn = true;
-    }
-    else if (Object.getPrototypeOf(data) === Object.prototype) {
+    } else if (Object.getPrototypeOf(data) === Object.prototype) {
       Object.keys(data).forEach((key) => {
         if (data[key] instanceof Package.mongo.Mongo.Cursor) {
           shouldWarn = true;
@@ -18,8 +19,6 @@ function checkCursor(data) {
     }
   }
   if (shouldWarn) {
-    // Use React.warn() if available (should ship in React 16.9).
-    const warn = React.warn || console.warn.bind(console);
     warn(
       'Warning: your reactive function is returning a Mongo cursor. '
       + 'This value will not be reactive. You probably want to call '
@@ -49,8 +48,6 @@ function areHookInputsEqual(nextDeps, prevDeps) {
 
   if (!Array.isArray(nextDeps)) {
     if (Meteor.isDevelopment) {
-      // Use React.warn() if available (should ship in React 16.9).
-      const warn = React.warn || console.warn.bind(console);
       warn(
         'Warning: useTracker expected an dependency value of '
         + `type array but got type of ${typeof nextDeps} instead.`
@@ -95,6 +92,7 @@ function useTracker(reactiveFn, deps) {
   // if prevDeps or deps are not set areHookInputsEqual always returns false
   // and the reactive functions is always called
   if (!areHookInputsEqual(deps, previousDeps.current)) {
+    // if we are re-creating the computation, we need to stop the old one.
     dispose();
 
     // Use Tracker.nonreactive in case we are inside a Tracker Computation.
@@ -104,29 +102,17 @@ function useTracker(reactiveFn, deps) {
     // it stops the inner one.
     computation.current = Tracker.nonreactive(() => (
       Tracker.autorun((c) => {
-        if (c.firstRun) {
-          const data = reactiveFn();
-          Meteor.isDevelopment && checkCursor(data);
+        // This will capture data synchronously on first run (and after deps change).
+        // Additional cycles will follow the normal computation behavior.
+        const data = reactiveFn();
+        if (Meteor.isDevelopment) checkCursor(data);
+        trackerData.current = data;
 
+        if (c.firstRun) {
           // store the deps for comparison on next render
           previousDeps.current = deps;
-          trackerData.current = data;
         } else {
-          // makes sure that shallowEqualArray returns false
-          // which is always the case when prevDeps is null
-          previousDeps.current = null;
-          // Stop this computation instead of using the re-run.
-          // We use a brand-new autorun for each call
-          // to capture dependencies on any reactive data sources that
-          // are accessed.  The reason we can't use a single autorun
-          // for the lifetime of the component is that Tracker only
-          // re-runs autoruns at flush time, while we need to be able to
-          // re-call the reactive function synchronously whenever we want, e.g.
-          // from next render.
-          c.stop();
-          // use a uniqueCounter to trigger a state change to enforce a re-render
-          // which calls the reactive function and re-renders the component with
-          // new data from the reactive function.
+          // use a uniqueCounter to trigger a state change to force a re-render
           forceUpdate(++uniqueCounter);
         }
       })
@@ -138,8 +124,6 @@ function useTracker(reactiveFn, deps) {
     if (Meteor.isDevelopment
       && deps !== null && deps !== undefined
       && !Array.isArray(deps)) {
-      // Use React.warn() if available (should ship in React 16.9).
-      const warn = React.warn || console.warn.bind(console);
       warn(
         'Warning: useTracker expected an initial dependency value of '
         + `type array but got type of ${typeof deps} instead.`
@@ -154,8 +138,8 @@ function useTracker(reactiveFn, deps) {
 
 // When rendering on the server, we don't want to use the Tracker.
 // We only do the first rendering on the server so we can get the data right away
-function useTracker__server(reactiveFn, deps) {
+function useTrackerServer(reactiveFn) {
   return reactiveFn();
 }
 
-export default (Meteor.isServer ? useTracker__server : useTracker);
+export default (Meteor.isServer ? useTrackerServer : useTracker);
