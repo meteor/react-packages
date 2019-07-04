@@ -114,11 +114,13 @@ function useTracker(reactiveFn, deps) {
           // Additional cycles will follow the normal computation behavior.
           runReactiveFn();
         } else {
-          // Only run reactiveFn if the hooks have not change, or are not falsy.
-          if (areHookInputsEqual(deps, refs.previousDeps)) {
+          // Only run reactiveFn if the deps or are not falsy.
+          if (!deps || !refs.previousDeps) {
+            // Dispose early, if refs are falsy - we'll rebuild and run on the next render.
+            dispose();
+          } else {
             runReactiveFn();
           }
-          // If deps have changed or are falsy, let the reactiveFn run on next render.
           // use a uniqueCounter to trigger a state change to force a re-render
           forceUpdate(++uniqueCounter);
         }
