@@ -74,16 +74,14 @@ function areHookInputsEqual(nextDeps, prevDeps) {
 let uniqueCounter = 0;
 
 function useTracker(reactiveFn, deps) {
-  const previousDeps = useRef();
-  const computation = useRef();
-  const trackerData = useRef();
+  const { current: refs } = useRef({});
 
   const [, forceUpdate] = useState();
 
   const dispose = () => {
-    if (computation.current) {
-      computation.current.stop();
-      computation.current = null;
+    if (refs.computation) {
+      refs.computation.stop();
+      refs.computation = null;
     }
   };
 
@@ -91,27 +89,37 @@ function useTracker(reactiveFn, deps) {
   // in order to support render calls with synchronous data from the reactive computation
   // if prevDeps or deps are not set areHookInputsEqual always returns false
   // and the reactive functions is always called
-  if (!areHookInputsEqual(deps, previousDeps.current)) {
+  if (!areHookInputsEqual(deps, refs.previousDeps)) {
     // if we are re-creating the computation, we need to stop the old one.
     dispose();
+
+    // store the deps for comparison on next render
+    refs.previousDeps = deps;
 
     // Use Tracker.nonreactive in case we are inside a Tracker Computation.
     // This can happen if someone calls `ReactDOM.render` inside a Computation.
     // In that case, we want to opt out of the normal behavior of nested
     // Computations, where if the outer one is invalidated or stopped,
     // it stops the inner one.
-    computation.current = Tracker.nonreactive(() => (
+    refs.computation = Tracker.nonreactive(() => (
       Tracker.autorun((c) => {
-        // This will capture data synchronously on first run (and after deps change).
-        // Additional cycles will follow the normal computation behavior.
-        const data = reactiveFn();
-        if (Meteor.isDevelopment) checkCursor(data);
-        trackerData.current = data;
+        const runReactiveFn = () => {
+          const data = reactiveFn();
+          if (Meteor.isDevelopment) checkCursor(data);
+          refs.trackerData = data;
+        };
 
         if (c.firstRun) {
-          // store the deps for comparison on next render
-          previousDeps.current = deps;
+          // This will capture data synchronously on first run (and after deps change).
+          // Additional cycles will follow the normal computation behavior.
+          runReactiveFn();
         } else {
+          // If deps are falsy, stop computation and let next render handle reactiveFn.
+          if (!refs.previousDeps) {
+            dispose();
+          } else {
+            runReactiveFn();
+          }
           // use a uniqueCounter to trigger a state change to force a re-render
           forceUpdate(++uniqueCounter);
         }
@@ -133,7 +141,7 @@ function useTracker(reactiveFn, deps) {
     return dispose;
   }, []);
 
-  return trackerData.current;
+  return refs.trackerData;
 }
 
 // When rendering on the server, we don't want to use the Tracker.
