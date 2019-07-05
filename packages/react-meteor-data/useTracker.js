@@ -114,9 +114,8 @@ function useTracker(reactiveFn, deps) {
           // Additional cycles will follow the normal computation behavior.
           runReactiveFn();
         } else {
-          // Only run reactiveFn if the deps or are not falsy.
-          if (!deps || !refs.previousDeps) {
-            // Dispose early, if refs are falsy - we'll rebuild and run on the next render.
+          // If deps are falsy, stop computation and let next render handle reactiveFn.
+          if (!refs.previousDeps) {
             dispose();
           } else {
             runReactiveFn();
