@@ -71,12 +71,10 @@ function areHookInputsEqual(nextDeps, prevDeps) {
   return true;
 }
 
-let uniqueCounter = 0;
-
 function useTracker(reactiveFn, deps) {
   const { current: refs } = useRef({});
 
-  const [, forceUpdate] = useState();
+  const [counter, forceUpdate] = useState(0);
 
   const dispose = () => {
     if (refs.computation) {
@@ -121,7 +119,7 @@ function useTracker(reactiveFn, deps) {
             runReactiveFn();
           }
           // use a uniqueCounter to trigger a state change to force a re-render
-          forceUpdate(++uniqueCounter);
+          forceUpdate(counter + 1);
         }
       })
     ));
