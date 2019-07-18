@@ -73,12 +73,16 @@ function areHookInputsEqual(nextDeps, prevDeps) {
 
 let uniqueCounter = 0;
 
-function useTracker(reactiveFn, deps) {
+function useTracker(reactiveFn, deps, computationHandler) {
   const { current: refs } = useRef({});
 
   const [, forceUpdate] = useState();
 
   const dispose = () => {
+    if (refs.computationCleanup) {
+      refs.computationCleanup();
+      delete refs.computationCleanup;
+    }
     if (refs.computation) {
       refs.computation.stop();
       refs.computation = null;
@@ -110,6 +114,11 @@ function useTracker(reactiveFn, deps) {
         };
 
         if (c.firstRun) {
+          // If there is a computationHandler, pass it the computation, and store the
+          // result, which may be a cleanup method.
+          if (computationHandler) {
+            refs.computationCleanup = computationHandler(c);
+          }
           // This will capture data synchronously on first run (and after deps change).
           // Additional cycles will follow the normal computation behavior.
           runReactiveFn();
