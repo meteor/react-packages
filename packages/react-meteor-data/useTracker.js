@@ -117,7 +117,16 @@ function useTracker(reactiveFn, deps, computationHandler) {
           // If there is a computationHandler, pass it the computation, and store the
           // result, which may be a cleanup method.
           if (computationHandler) {
-            refs.computationCleanup = computationHandler(c);
+            const cleanupHandler = computationHandler(c);
+            if (cleanupHandler) {
+              if (Meteor.isDevelopment && cleanupHandler !== 'function') {
+                warn(
+                  'Warning: Computation handler should only return a function '
+                  + 'to be used for cleanup, and never return any other value.'
+                );
+              }
+              refs.computationCleanup = cleanupHandler;
+            }
           }
           // This will capture data synchronously on first run (and after deps change).
           // Additional cycles will follow the normal computation behavior.
