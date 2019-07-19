@@ -22,19 +22,19 @@ This package provides two ways to use Tracker reactive data in your React compon
 - a hook: `useTracker` (v2 only, requires React `^16.8`)
 - a higher-order component (HOC): `withTracker` (v1 and v2).
 
-The `useTracker` hook, introduced in version 2.0.0, is slightly more straightforward to use (lets you access reactive data sources directly within your componenent, rather than adding them from an external wrapper), and slightly more performant (avoids adding wrapper layers in the React tree). But, like all React hooks, it can only be used in function components, not in class components.
-The `withTracker` HOC can be used with all components, function or class.
+The `useTracker` hook, introduced in version 2.0.0, embraces the [benefits of hooks](https://reactjs.org/docs/hooks-faq.html). Like all React hooks, it can only be used in function components, not in class components.
 
-It is not necessary to rewrite existing applications to use the `useTracker` hook instead of the existing `withTracker` HOC. But for new components, it is suggested to prefer the `useTracker` hook when dealing with function components.
+The `withTracker` HOC can be used with all components, function or class based.
+
+It is not necessary to rewrite existing applications to use the `useTracker` hook instead of the existing `withTracker` HOC.
 
 #### `useTracker(reactiveFn, deps)` hook
 
 You can use the `useTracker` hook to get the value of a Tracker reactive function in your (function) components. The reactive function will get re-run whenever its reactive inputs change, and the component will re-render with the new value.
 
 Arguments:
-- `reactiveFn`: a Tracker reactive function (with no parameters)
-- `deps`: an array of "dependencies" of the reactive function, i.e. the list of values that, when changed, need to stop the current Tracker computation and start a new one - for example, the value of a prop used in a subscription or a Minimongo query; see example below. This array typically includes all variables from the outer scope "captured" in the closure passed as the 1st argument. This is very similar to how the `deps` argument for [React's built-in `useEffect`, `useCallback` or `useMemo` hooks](https://reactjs.org/docs/hooks-reference.html) work.
-If omitted, the Tracker computation will be recreated on every call.
+- `reactiveFn`: A Tracker reactive function (with no parameters).
+- `deps`: An optional array of "dependencies" of the reactive function. This is very similar to how the `deps` argument for [React's built-in `useEffect`, `useCallback` or `useMemo` hooks](https://reactjs.org/docs/hooks-reference.html) work. If omitted, the Tracker computation will be recreated on every render (Note: `withTracker` has always done this). If provided, the computation will be retained, and reactive updates after the first run will run asynchronously from the react render cycle. This array typically includes all variables from the outer scope "captured" in the closure passed as the 1st argument. For example, the value of a prop used in a subscription or a Minimongo query; see example below.
 
 ```js
 import { useTracker } from 'meteor/react-meteor-data';
@@ -42,14 +42,20 @@ import { useTracker } from 'meteor/react-meteor-data';
 // React function component.
 function Foo({ listId }) {
   // This computation uses no value from the outer scope,
-  // and thus does not needs to pass a 'deps' argument (same as passing []).
-  const currentUser = useTracker(() => Meteor.user());
-  // The following two computations both depend on the 'listId' prop,
-  // and thus need to specify it in the 'deps' argument,
-  // in order to subscribe to the expected 'todoList' subscription
-  // or fetch the expected Tasks when the 'listId' prop changes.
+  // and thus does not needs to pass a 'deps' argument.
+  // However, we can optimize the use of the computation
+  // by providing an empty deps array. With it, the
+  // computation will be retained instead of torn down and
+  // rebuilt on every render. useTracker will produce the
+  // same results either way.
+  const currentUser = useTracker(() => Meteor.user(), []);
+
+  // The following two computations both depend on the
+  // listId prop. When deps are specified, the computation
+  // will be retained.
   const listLoading = useTracker(() => {
-    // Note that this subscription will get cleaned up when your component is unmounted.
+    // Note that this subscription will get cleaned up
+    // when your component is unmounted or deps change.
     const handle = Meteor.subscribe('todoList', listId);
     return !handle.ready();
   }, [listId]);
@@ -119,9 +125,9 @@ For more information, see the [React article](http://guide.meteor.com/react.html
   - `useTracker` hook + `withTracker` HOC
   - Requires React `^16.8`.
   - Implementation is compatible with the forthcoming "React Suspense" features.
-  - The `withTracker` HOC is strictly backwards-compatible with the one provided in v1.x, the major version number is only motivated by the bump of React version requirement.  
-Provided they use a compatible React version, existing Meteor apps leveraging the `withTracker` HOC can freely upgrade from v1.x to v2.x, and gain compatibility with future React versions.
- 
+  - The `withTracker` HOC is strictly backwards-compatible with the one provided in v1.x, the major version number is only motivated by the bump of React version requirement. Provided a compatible React version, existing Meteor apps leveraging the `withTracker` HOC can freely upgrade from v1.x to v2.x, and gain compatibility with future React versions.
+  - The previously deprecated `createContainer` has been removed.
+
 - `react-meteor-data` v1.x / v0.x :
   - `withTracker` HOC (+ `createContainer`, kept for backwards compatibility with early v0.x releases)
   - Requires React `^15.3` or `^16.0`.
