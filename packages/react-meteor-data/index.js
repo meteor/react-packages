@@ -1,3 +1,4 @@
+/* global Meteor*/
 import React from 'react';
 
 if (Meteor.isDevelopment) {
