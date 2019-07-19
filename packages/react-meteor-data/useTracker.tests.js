@@ -6,7 +6,8 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import useTracker from './useTracker';
 
 Tinytest.add('useTracker - no deps', async function (test) {
-  const reactiveDict = new ReactiveDict('test1', { key: 'initial' });
+  const reactiveDict = new ReactiveDict();
+  reactiveDict.setDefault('key', 'initial')
   let runCount = 0;
 
   const { result, rerender, unmount, waitForNextUpdate } = renderHook(
@@ -45,7 +46,7 @@ Tinytest.add('useTracker - no deps', async function (test) {
 });
 
 Tinytest.add('useTracker - with deps', async function (test) {
-  const reactiveDict = new ReactiveDict('test2', {});
+  const reactiveDict = new ReactiveDict();
   let runCount = 0;
 
   const { result, rerender, unmount, waitForNextUpdate } = renderHook(
