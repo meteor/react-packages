@@ -117,7 +117,7 @@ function useTracker(reactiveFn, deps, computationHandler) {
           if (computationHandler) {
             const cleanupHandler = computationHandler(c);
             if (cleanupHandler) {
-              if (Meteor.isDevelopment && cleanupHandler !== 'function') {
+              if (Meteor.isDevelopment && typeof cleanupHandler !== 'function') {
                 warn(
                   'Warning: Computation handler should only return a function '
                   + 'to be used for cleanup, and never return any other value.'
