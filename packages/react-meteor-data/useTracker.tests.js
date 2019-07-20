@@ -6,44 +6,58 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import useTracker from './useTracker';
 
 Tinytest.add('useTracker - no deps', async function (test) {
-  const reactiveDict = new ReactiveDict('test1', { key: 'initial' });
-  let renderCount = 0;
+  const reactiveDict = new ReactiveDict();
+  let runCount = 0;
 
   const { result, rerender, unmount, waitForNextUpdate } = renderHook(
-    () => useTracker(() => {
-      renderCount++;
-      return reactiveDict.get('key');
-    })
+    ({ name }) => useTracker(() => {
+      runCount++;
+      reactiveDict.setDefault(name, 'initial');
+      return reactiveDict.get(name);
+    }),
+    { initialProps: { name: 'key' } }
   );
 
   test.equal(result.current, 'initial', 'Expect initial value to be "initial"');
-  test.equal(renderCount, 1, 'Should run rendered 1 times');
-
-  if (Meteor.isServer) return;
+  test.equal(runCount, 1, 'Should have run 1 times');
 
   act(() => reactiveDict.set('key', 'changed'));
   await waitForNextUpdate();
 
   test.equal(result.current, 'changed', 'Expect new value to be "changed"');
-  test.equal(renderCount, 2, 'Should run rendered 2 times');
+  test.equal(runCount, 2, 'Should have run 2 times');
 
   rerender();
+  await waitForNextUpdate();
 
   test.equal(result.current, 'changed', 'Expect value of "changed" to persist after rerender');
-  test.equal(renderCount, 3, 'Should run rendered 3 times');
+  test.equal(runCount, 3, 'Should have run 3 times');
+
+  rerender({ name: 'different' });
+  await waitForNextUpdate();
+
+  test.equal(result.current, 'default', 'After deps change, the default value should have returned');
+  test.equal(runCount, 4, 'Should have run 4 times');
 
   unmount();
+  test.equal(runCount, 4, 'Unmount should not cause a tracker run');
+
+  act(() => reactiveDict.set('different', 'changed again'));
+  // we can't use await waitForNextUpdate() here because it doesn't trigger re-render - is there a way to test that?
+
+  test.equal(result.current, 'default', 'After unmount, changes to the reactive source should not update the value.');
+  test.equal(runCount, 4, 'After unmount, useTracker should no longer be tracking');
+
   reactiveDict.destroy();
-  test.equal(renderCount, 3, 'Should run rendered 3 times');
 });
 
 Tinytest.add('useTracker - with deps', async function (test) {
-  const reactiveDict = new ReactiveDict('test2', {});
-  let renderCount = 0;
+  const reactiveDict = new ReactiveDict();
+  let runCount = 0;
 
   const { result, rerender, unmount, waitForNextUpdate } = renderHook(
     ({ name }) => useTracker(() => {
-      renderCount++;
+      runCount++;
       reactiveDict.setDefault(name, 'default');
       return reactiveDict.get(name);
     }, [name]),
@@ -51,27 +65,34 @@ Tinytest.add('useTracker - with deps', async function (test) {
   );
 
   test.equal(result.current, 'default', 'Expect the default value for given name to be "default"');
-  test.equal(renderCount, 1, 'Should run rendered 1 times');
-
-  if (Meteor.isServer) return;
+  test.equal(runCount, 1, 'Should have run 1 times');
 
   act(() => reactiveDict.set('name', 'changed'));
   await waitForNextUpdate();
 
   test.equal(result.current, 'changed', 'Expect the new value for given name to be "changed"');
-  test.equal(renderCount, 2, 'Should run rendered 2 times');
+  test.equal(runCount, 2, 'Should have run 2 times');
 
   rerender();
+  await waitForNextUpdate();
 
   test.equal(result.current, 'changed', 'Expect the new value "changed" for given name to have persisted through render');
-  test.equal(renderCount, 3, 'Should run rendered 3 times');
+  test.equal(runCount, 3, 'Should have run 3 times');
 
   rerender({ name: 'different' });
+  await waitForNextUpdate();
 
   test.equal(result.current, 'default', 'After deps change, the default value should have returned');
-  test.equal(renderCount, 4, 'Should run rendered 4 times');
+  test.equal(runCount, 4, 'Should have run 4 times');
 
   unmount();
+  test.equal(runCount, 4, 'Unmount should not cause a tracker run');
+  // we can't use await waitForNextUpdate() here because it doesn't trigger re-render - is there a way to test that?
+
+  act(() => reactiveDict.set('different', 'changed again'));
+
+  test.equal(result.current, 'default', 'After unmount, changes to the reactive source should not update the value.');
+  test.equal(runCount, 4, 'After unmount, useTracker should no longer be tracking');
+
   reactiveDict.destroy();
-  test.equal(renderCount, 4, 'Should run rendered 4 times');
 });
