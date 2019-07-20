@@ -72,6 +72,27 @@ function areHookInputsEqual(nextDeps, prevDeps) {
 }
 
 function useTracker(reactiveFn, deps, computationHandler) {
+  if (Meteor.isDevelopment) {
+    if (typeof reactiveFn !== 'function') {
+      warn(
+        `Warning: useTracker expected a function in it's first argument `
+        + `(reactiveFn), but got type of ${typeof reactiveFn}.`
+      )
+    }
+    if (deps && !Array.isArray(deps)) {
+      warn(
+        `Warning: useTracker expected an array in it's second argument `
+        + `(dependency), but got type of ${typeof deps}.`
+      );
+    }
+    if (typeof computationHandler !== 'function') {
+      warn(
+        `Warning: useTracker expected a function in it's third argument`
+        + `(computationHandler), but got type of ${typeof computationHandler}.`
+      );
+    }
+  }
+
   const { current: refs } = useRef({});
 
   const [counter, forceUpdate] = useState(0);
