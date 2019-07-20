@@ -119,7 +119,10 @@ function useTracker(reactiveFn, deps) {
           } else {
             runReactiveFn();
           }
-          // use a uniqueCounter to trigger a state change to force a re-render
+          // Increment a reference to counter to trigger a state change to force a re-render
+          // Since this computation callback is reused, we'll need to make sure to access the
+          // counter value from a reference instead of using the enclosed value, so we can
+          // get the value of any updates.
           forceUpdate(refs.counter + 1);
         }
       })
