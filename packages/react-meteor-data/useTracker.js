@@ -1,5 +1,5 @@
 /* global Meteor, Package, Tracker */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useReducer, useEffect, useRef } from 'react';
 
 // Use React.warn() if available (should ship in React 16.9).
 const warn = React.warn || console.warn.bind(console);
@@ -71,11 +71,14 @@ function areHookInputsEqual(nextDeps, prevDeps) {
   return true;
 }
 
+// Used to create a forceUpdate from useReducer. Forces update by
+// incrementing a number whenever the dispatch method is invoked.
+const fur = x => x + 1;
+
 function useTracker(reactiveFn, deps) {
   const { current: refs } = useRef({});
 
-  const [counter, forceUpdate] = useState(0);
-  refs.counter = counter
+  const [, forceUpdate] = useReducer(fur, 0);
 
   const dispose = () => {
     if (refs.computation) {
@@ -119,11 +122,7 @@ function useTracker(reactiveFn, deps) {
           } else {
             runReactiveFn();
           }
-          // Increment a reference to counter to trigger a state change to force a re-render
-          // Since this computation callback is reused, we'll need to make sure to access the
-          // counter value from a reference instead of using the enclosed value, so we can
-          // get the value of any updates.
-          forceUpdate(refs.counter + 1);
+          forceUpdate();
         }
       })
     ));
