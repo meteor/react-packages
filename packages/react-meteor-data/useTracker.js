@@ -87,6 +87,12 @@ function useTracker(reactiveFn, deps) {
     }
   };
 
+  const runReactiveFn = () => {
+    const data = reactiveFn();
+    if (Meteor.isDevelopment) checkCursor(data);
+    refs.trackerData = data;
+  };
+
   // this is called like at componentWillMount and componentWillUpdate equally
   // in order to support render calls with synchronous data from the reactive computation
   // if prevDeps or deps are not set areHookInputsEqual always returns false
@@ -95,8 +101,30 @@ function useTracker(reactiveFn, deps) {
     // if we are re-creating the computation, we need to stop the old one.
     dispose();
 
+    // No side-effects are allowed when computing the initial value.
+    // To get the initial return value for the 1st render on mount,
+    // we run reactiveFn without autorun or subscriptions.
+    // Note: maybe when React Suspense is officially available we could
+    // throw a Promise instead to skip the 1st render altogether ?
+    const realSubscribe = Meteor.subscribe;
+    Meteor.subscribe = () => ({ stop: () => {}, ready: () => false });
+    Tracker.nonreactive(runReactiveFn);
+    Meteor.subscribe = realSubscribe;
+
     // store the deps for comparison on next render
     refs.previousDeps = deps;
+  }
+
+  // stop the computation on unmount only
+  useEffect(() => {
+    if (Meteor.isDevelopment
+      && deps !== null && deps !== undefined
+      && !Array.isArray(deps)) {
+      warn(
+        'Warning: useTracker expected an initial dependency value of '
+        + `type array but got type of ${typeof deps} instead.`
+      );
+    }
 
     // Use Tracker.nonreactive in case we are inside a Tracker Computation.
     // This can happen if someone calls `ReactDOM.render` inside a Computation.
@@ -105,12 +133,6 @@ function useTracker(reactiveFn, deps) {
     // it stops the inner one.
     refs.computation = Tracker.nonreactive(() => (
       Tracker.autorun((c) => {
-        const runReactiveFn = () => {
-          const data = reactiveFn();
-          if (Meteor.isDevelopment) checkCursor(data);
-          refs.trackerData = data;
-        };
-
         if (c.firstRun) {
           // This will capture data synchronously on first run (and after deps change).
           // Additional cycles will follow the normal computation behavior.
@@ -126,21 +148,9 @@ function useTracker(reactiveFn, deps) {
         }
       })
     ));
-  }
-
-  // stop the computation on unmount only
-  useEffect(() => {
-    if (Meteor.isDevelopment
-      && deps !== null && deps !== undefined
-      && !Array.isArray(deps)) {
-      warn(
-        'Warning: useTracker expected an initial dependency value of '
-        + `type array but got type of ${typeof deps} instead.`
-      );
-    }
 
     return dispose;
-  }, []);
+  }, deps);
 
   return refs.trackerData;
 }
