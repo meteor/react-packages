@@ -24,7 +24,10 @@ Tinytest.add('useTracker - no deps', async function (test) {
   test.equal(result.current, 'initial', 'Expect initial value to be "initial"');
   test.equal(runCount, 1, 'Should have run 1 times');
 
-  act(() => reactiveDict.set('key', 'changed'));
+  act(() => {
+    reactiveDict.set('key', 'changed');
+    Tracker.flush({_throwFirstError: true});
+  });
   await waitForNextUpdate();
 
   test.equal(result.current, 'changed', 'Expect new value to be "changed"');
@@ -45,7 +48,10 @@ Tinytest.add('useTracker - no deps', async function (test) {
   unmount();
   test.equal(runCount, 4, 'Unmount should not cause a tracker run');
 
-  act(() => reactiveDict.set('different', 'changed again'));
+  act(() => {
+    reactiveDict.set('different', 'changed again');
+    Tracker.flush({_throwFirstError: true});
+  });
   // we can't use await waitForNextUpdate() here because it doesn't trigger re-render - is there a way to test that?
 
   test.equal(result.current, 'default', 'After unmount, changes to the reactive source should not update the value.');
@@ -70,7 +76,10 @@ Tinytest.add('useTracker - with deps', async function (test) {
   test.equal(result.current, 'default', 'Expect the default value for given name to be "default"');
   test.equal(runCount, 1, 'Should have run 1 times');
 
-  act(() => reactiveDict.set('name', 'changed'));
+  act(() => {
+    reactiveDict.set('name', 'changed');
+    Tracker.flush({_throwFirstError: true});
+  });
   await waitForNextUpdate();
 
   test.equal(result.current, 'changed', 'Expect the new value for given name to be "changed"');
@@ -92,7 +101,10 @@ Tinytest.add('useTracker - with deps', async function (test) {
   test.equal(runCount, 4, 'Unmount should not cause a tracker run');
   // we can't use await waitForNextUpdate() here because it doesn't trigger re-render - is there a way to test that?
 
-  act(() => reactiveDict.set('different', 'changed again'));
+  act(() => {
+    reactiveDict.set('different', 'changed again');
+    Tracker.flush({_throwFirstError: true});
+  });
 
   test.equal(result.current, 'default', 'After unmount, changes to the reactive source should not update the value.');
   test.equal(runCount, 4, 'After unmount, useTracker should no longer be tracking');
@@ -106,7 +118,7 @@ const getInnerHtml = function (elem) {
 };
 
 if (Meteor.isClient) {
-  Tinytest.add('react-meteor-data - basic track', function (test) {
+  Tinytest.add('useTracker - basic track', function (test) {
     var div = document.createElement("DIV");
 
     var x = new ReactiveVar('aaa');
@@ -139,7 +151,7 @@ if (Meteor.isClient) {
   // nested, invalidating the outer one stops the inner one, unless
   // Tracker.nonreactive is used.  This test tests for the use of
   // Tracker.nonreactive around the mixin's autorun.
-  Tinytest.add('react-meteor-data - render in autorun', function (test) {
+  Tinytest.add('useTracker - render in autorun', function (test) {
     var div = document.createElement("DIV");
 
     var x = new ReactiveVar('aaa');
@@ -167,7 +179,7 @@ if (Meteor.isClient) {
     ReactDOM.unmountComponentAtNode(div);
   });
 
-  Tinytest.add('react-meteor-data - track based on props and state', function (test) {
+  Tinytest.add('useTracker - track based on props and state', function (test) {
     var div = document.createElement("DIV");
 
     var xs = [new ReactiveVar('aaa'),
@@ -217,7 +229,7 @@ if (Meteor.isClient) {
     ReactDOM.unmountComponentAtNode(div);
   });
 
-  Tinytest.add('react-meteor-data - track based on props and state (with deps)', function (test) {
+  Tinytest.add('useTracker - track based on props and state (with deps)', function (test) {
     var div = document.createElement("DIV");
 
     var xs = [new ReactiveVar('aaa'),
@@ -276,17 +288,17 @@ if (Meteor.isClient) {
     });
   };
 
-  testAsyncMulti('react-meteor-data - resubscribe', [
+  testAsyncMulti('useTracker - resubscribe', [
     function (test, expect) {
       var self = this;
       self.div = document.createElement("DIV");
-      self.collection = new Mongo.Collection("react-meteor-data-mixin-coll");
+      self.collection = new Mongo.Collection("useTracker-mixin-coll");
       self.num = new ReactiveVar(1);
       self.someOtherVar = new ReactiveVar('foo');
       self.Foo = () => {
         const data = useTracker(() => {
           self.handle =
-            Meteor.subscribe("react-meteor-data-mixin-sub",
+            Meteor.subscribe("useTracker-mixin-sub",
                              self.num.get());
 
           return {
@@ -382,7 +394,7 @@ if (Meteor.isClient) {
   ]);
 
   // Tinytest.add(
-  //   "react-meteor-data - print warning if return cursor from useTracker",
+  //   "useTracker - print warning if return cursor from useTracker",
   //   function (test) {
   //     var coll = new Mongo.Collection(null);
   //     var ComponentWithCursor = () => {
@@ -414,11 +426,10 @@ if (Meteor.isClient) {
   //   });
 
 } else {
-  Meteor.publish("react-meteor-data-mixin-sub", function (num) {
-  Meteor.defer(() => {  // because subs are blocking
-    this.added("react-meteor-data-mixin-coll", 'id'+num, {});
-    this.ready();
+  Meteor.publish("useTracker-mixin-sub", function (num) {
+    Meteor.defer(() => {  // because subs are blocking
+      this.added("useTracker-mixin-coll", 'id'+num, {});
+      this.ready();
+    });
   });
-});
-
 }
