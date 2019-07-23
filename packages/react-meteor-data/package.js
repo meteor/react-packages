@@ -17,7 +17,8 @@ Package.onUse((api) => {
 });
 
 Package.onTest((api) => {
-  api.use(['ecmascript', 'reactive-dict', 'tracker', 'tinytest']);
+  api.use(['ecmascript', 'reactive-dict', 'reactive-var', 'tracker', 'tinytest', 'underscore', 'mongo']);
+  api.use('test-helpers');
   api.use('react-meteor-data');
   api.mainModule('tests.js');
 });
