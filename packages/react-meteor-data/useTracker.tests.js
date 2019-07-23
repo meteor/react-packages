@@ -100,107 +100,6 @@ Tinytest.add('useTracker - with deps', async function (test) {
   reactiveDict.destroy();
 });
 
-const canonicalizeHtml = function(html) {
-  var h = html;
-  // kill IE-specific comments inserted by DomRange
-  h = h.replace(/<!--IE-->/g, '');
-  h = h.replace(/<!---->/g, '');
-  // ignore exact text of comments
-  h = h.replace(/<!--.*?-->/g, '<!---->');
-  // make all tags lowercase
-  h = h.replace(/<\/?(\w+)/g, function(m) {
-    return m.toLowerCase(); });
-  // replace whitespace sequences with spaces
-  h = h.replace(/\s+/g, ' ');
-  // Trim leading and trailing whitespace
-  h = h.replace(/^\s+|\s+$/g, '');
-  // remove whitespace before and after tags
-  h = h.replace(/\s*(<\/?\w.*?>)\s*/g, function (m, tag) {
-    return tag; });
-  // make tag attributes uniform
-  h = h.replace(/<(\w+)\s+(.*?)\s*>/g, function(m, tagName, attrs) {
-    // Drop expando property used by Sizzle (part of jQuery) which leaks into
-    // attributes in IE8. Note that its value always contains spaces.
-    attrs = attrs.replace(/sizcache[0-9]+="[^"]*"/g, ' ');
-    // Similarly for expando properties used by jQuery to track data.
-    attrs = attrs.replace(/jQuery[0-9]+="[0-9]+"/g, ' ');
-    // Similarly for expando properties used to DOMBackend to keep
-    // track of callbacks to fire when an element is removed
-    attrs = attrs.replace(/\$blaze_teardown_callbacks="[^"]*"/g, ' ');
-    // And by DOMRange to keep track of the element's DOMRange
-    attrs = attrs.replace(/\$blaze_range="[^"]*"/g, ' ');
-
-    attrs = attrs.replace(/\s*=\s*/g, '=');
-    attrs = attrs.replace(/^\s+/g, '');
-    attrs = attrs.replace(/\s+$/g, '');
-    attrs = attrs.replace(/\s+/g, ' ');
-    // quote unquoted attribute values, as in `type=checkbox`.  This
-    // will do the wrong thing if there's an `=` in an attribute value.
-    attrs = attrs.replace(/(\w)=([^'" >/]+)/g, '$1="$2"');
-
-    // for the purpose of splitting attributes in a string like 'a="b"
-    // c="d"', assume they are separated by a single space and values
-    // are double- or single-quoted, but allow for spaces inside the
-    // quotes.  Split on space following quote.
-    var attrList = attrs.replace(/(\w)='([^']*)' /g, "$1='$2'\u0000");
-    attrList = attrList.replace(/(\w)="([^"]*)" /g, '$1="$2"\u0000');
-    attrList = attrList.split("\u0000");
-    // put attributes in alphabetical order
-    attrList.sort();
-
-    var tagContents = [tagName];
-
-    for(var i=0; i<attrList.length; i++) {
-      // If there were no attrs, attrList could be `[""]`,
-      // so skip falsy values.
-      if (! attrList[i])
-        continue;
-      var a = attrList[i].split('=');
-
-      // In IE8, attributes whose value is "" appear
-      // without the '=' sign altogether.
-      if (a.length < 2)
-        a.push("");
-
-      var key = a[0];
-      // Drop another expando property used by Sizzle.
-      if (key === 'sizset')
-        continue;
-      var value = a[1];
-
-      // make sure the attribute is doubled-quoted
-      if (value.charAt(0) === '"') {
-        // Do nothing
-      } else {
-        if (value.charAt(0) !== "'") {
-          // attribute is unquoted. should be unreachable because of
-          // regex above.
-          value = '"' + value + '"';
-        } else {
-          // attribute is single-quoted. make it double-quoted.
-          value = value.replace(/\"/g, "&quot;");
-        }
-        value = value.replace(/["'`]/g, '"');
-      }
-
-      // Encode quotes and double quotes in the attribute.
-      var attr = value.slice(1, -1);
-      attr = attr.replace(/\"/g, "&quot;");
-      attr = attr.replace(/\'/g, "&quot;");
-      value = '"' + attr + '"';
-
-      // Ensure that styles do not end with a semicolon.
-      if (key === 'style') {
-        value = value.replace(/;\"$/, '"');
-      }
-
-      tagContents.push(key+'='+value);
-    }
-    return '<'+tagContents.join(' ')+'>';
-  });
-  return h;
-};
-
 const getInnerHtml = function (elem) {
   // clean up elem.innerHTML and strip data-reactid attributes too
   return canonicalizeHtml(elem.innerHTML).replace(/ data-reactroot=".*?"/g, '');
@@ -345,6 +244,7 @@ if (Meteor.isClient) {
             docs: self.collection.find().fetch()
           };
         });
+        self.data = data;
         return <div>{
           _.map(data.docs, (doc) => <span key={doc._id}>{doc._id}</span>)
         }</div>;
@@ -390,7 +290,7 @@ if (Meteor.isClient) {
       // data is still there
       test.equal(getInnerHtml(self.div), '<div><span>id1</span></div>');
       // handle is no longer ready
-      var handle = self.component.handle;
+      var handle = self.handle;
       test.isFalse(handle.ready());
       // different sub ID
       test.isTrue(self.oldHandle2.subscriptionId);
@@ -411,17 +311,17 @@ if (Meteor.isClient) {
                  '<div><span>id2</span></div>');
 
       self.someOtherVar.set('baz');
-      self.oldHandle3 = self.component.handle;
+      self.oldHandle3 = self.handle;
 
       Tracker.afterFlush(expect());
     },
     function (test, expect) {
       var self = this;
-      test.equal(self.component.data.v, 'baz');
-      test.notEqual(self.oldHandle3, self.component.handle);
+      test.equal(self.data.v, 'baz');
+      test.notEqual(self.oldHandle3, self.handle);
       test.equal(self.oldHandle3.subscriptionId,
-                 self.component.handle.subscriptionId);
-      test.isTrue(self.component.handle.ready());
+                 self.handle.subscriptionId);
+      test.isTrue(self.handle.ready());
     },
     function (test, expect) {
       ReactDOM.unmountComponentAtNode(this.div);
@@ -431,40 +331,37 @@ if (Meteor.isClient) {
     }
   ]);
 
-  Tinytest.add(
-    "react-meteor-data - print warning if return cursor from getMeteorData",
-    function (test) {
-      var coll = new Mongo.Collection(null);
-      var ComponentWithCursor = React.createClass({
-        mixins: [ReactMeteorData],
-        getMeteorData() {
-          return {
-            theCursor: coll.find()
-          };
-        },
-        render() {
-          return <span></span>;
-        }
-      });
+  // Tinytest.add(
+  //   "react-meteor-data - print warning if return cursor from useTracker",
+  //   function (test) {
+  //     var coll = new Mongo.Collection(null);
+  //     var ComponentWithCursor = () => {
+  //       useTracker(() => {
+  //         return {
+  //           theCursor: coll.find()
+  //         };
+  //       });
+  //       return <span></span>;
+  //     };
 
-      // Check if we print a warning to console about props
-      // You can be sure this test is correct because we have an identical one in
-      // react-runtime-dev
-      let warning;
-      try {
-        var oldWarn = console.warn;
-        console.warn = function specialWarn(message) {
-          warning = message;
-        };
+  //     // Check if we print a warning to console about props
+  //     // You can be sure this test is correct because we have an identical one in
+  //     // react-runtime-dev
+  //     let warning;
+  //     try {
+  //       var oldWarn = console.warn;
+  //       console.warn = function specialWarn(message) {
+  //         warning = message;
+  //       };
 
-        var div = document.createElement("DIV");
-        ReactDOM.render(<ComponentWithCursor />, div);
+  //       var div = document.createElement("DIV");
+  //       ReactDOM.render(<ComponentWithCursor />, div);
 
-        test.matches(warning, /cursor from getMeteorData/);
-      } finally {
-        console.warn = oldWarn;
-      }
-    });
+  //       test.matches(warning, /cursor before returning it/);
+  //     } finally {
+  //       console.warn = oldWarn;
+  //     }
+  //   });
 
 } else {
   Meteor.publish("react-meteor-data-mixin-sub", function (num) {
