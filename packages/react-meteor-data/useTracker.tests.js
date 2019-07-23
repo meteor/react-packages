@@ -21,6 +21,7 @@ Tinytest.add('useTracker - no deps', async function (test) {
       reactiveDict.setDefault(name, 'initial');
       return reactiveDict.get(name);
     }, null, (c) => {
+      test.isFalse(c === computation, 'The new computation should always be a new instance');
       computation = c;
       createdCount++;
       return () => {
