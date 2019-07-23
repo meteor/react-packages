@@ -32,9 +32,9 @@ function checkCursor(data) {
 const fur = x => x + 1;
 
 function useTracker(reactiveFn, deps) {
-  const { current: refs } = useRef({});
+  const { current: refs } = useRef({ memoCounter: 0 });
 
-  const [counter, forceUpdate] = useReducer(fur, 0);
+  const [, forceUpdate] = useReducer(fur, 0);
 
   const dispose = () => {
     if (refs.computation) {
@@ -47,10 +47,9 @@ function useTracker(reactiveFn, deps) {
   // runs synchronously with render, so we can think of it being called like
   // componentWillMount or componentWillUpdate. One case we have to work around is
   // if deps are falsy. In that case, we need to increment a value for every render
-  // since this should always run when deps are falsy. Since we already have
-  // an incrementing value from forceUpdate, we can use that.
+  // since this should always run when deps are falsy.
   const memoDeps = (deps !== null && deps !== undefined && !Array.isArray(deps))
-    ? [counter]
+    ? [++refs.memoCounter]
     : deps;
 
   useMemo(() => {
