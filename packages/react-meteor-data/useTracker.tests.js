@@ -217,6 +217,56 @@ if (Meteor.isClient) {
     ReactDOM.unmountComponentAtNode(div);
   });
 
+  Tinytest.add('react-meteor-data - track based on props and state (with deps)', function (test) {
+    var div = document.createElement("DIV");
+
+    var xs = [new ReactiveVar('aaa'),
+              new ReactiveVar('bbb'),
+              new ReactiveVar('ccc')];
+
+    let setState;
+    var Foo = (props) => {
+      const [state, _setState] = useState({ m: 0 });
+      setState = _setState;
+      const data = useTracker(() => {
+        return {
+          x: xs[state.m + props.n].get()
+        };
+      }, [state.m, props.n]);
+      return <span>{data.x}</span>;
+    };
+
+    var comp = ReactDOM.render(<Foo n={0}/>, div);
+
+    test.equal(getInnerHtml(div), '<span>aaa</span>');
+    xs[0].set('AAA');
+    test.equal(getInnerHtml(div), '<span>aaa</span>');
+    Tracker.flush({_throwFirstError: true});
+    test.equal(getInnerHtml(div), '<span>AAA</span>');
+
+    {
+      let comp2 = ReactDOM.render(<Foo n={1}/>, div);
+      test.isTrue(comp === comp2);
+    }
+
+    test.equal(getInnerHtml(div), '<span>bbb</span>');
+    xs[1].set('BBB');
+    Tracker.flush({_throwFirstError: true});
+    test.equal(getInnerHtml(div), '<span>BBB</span>');
+
+    setState({m: 1});
+    test.equal(getInnerHtml(div), '<span>ccc</span>');
+    xs[2].set('CCC');
+    Tracker.flush({_throwFirstError: true});
+    test.equal(getInnerHtml(div), '<span>CCC</span>');
+
+    ReactDOM.render(<Foo n={0}/>, div);
+    setState({m: 0});
+    test.equal(getInnerHtml(div), '<span>AAA</span>');
+
+    ReactDOM.unmountComponentAtNode(div);
+  });
+
   function waitFor(func, callback) {
     Tracker.autorun(function (c) {
       if (func()) {
