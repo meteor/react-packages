@@ -8,7 +8,7 @@ Package.describe({
   git: 'https://github.com/meteor/react-packages',
 });
 
-Package.onUse((api) => {
+Package.onUse(function (api) {
   api.versionsFrom('1.3');
   api.use('tracker');
   api.use('ecmascript');
@@ -16,7 +16,7 @@ Package.onUse((api) => {
   api.mainModule('index.js');
 });
 
-Package.onTest((api) => {
+Package.onTest(function (api) {
   api.use(['ecmascript', 'reactive-dict', 'reactive-var', 'tracker', 'tinytest', 'underscore', 'mongo']);
   api.use('test-helpers');
   api.use('react-meteor-data');
