@@ -89,7 +89,7 @@ function useTracker(reactiveFn, deps, computationHandler) {
         + `(dependency), but got type of ${typeof deps}.`
       );
     }
-    if (typeof computationHandler !== 'function') {
+    if (computationHandler && typeof computationHandler !== 'function') {
       warn(
         `Warning: useTracker expected a function in it's third argument`
         + `(computationHandler), but got type of ${typeof computationHandler}.`
