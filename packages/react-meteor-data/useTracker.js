@@ -162,7 +162,8 @@ function useTracker(reactiveFn, deps, computationHandler) {
 
     // When rendering on the server, we don't want to use the Tracker.
     if (Meteor.isServer) {
-      refs.computation = tracked(null);
+      refs.computation = null;
+      tracked(null);
     } else {
       // Use Tracker.nonreactive in case we are inside a Tracker Computation.
       // This can happen if someone calls `ReactDOM.render` inside a Computation.
