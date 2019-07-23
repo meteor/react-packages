@@ -117,7 +117,7 @@ function useTracker(reactiveFn, deps) {
           runReactiveFn();
         } else {
           // If deps are falsy, stop computation and let next render handle reactiveFn.
-          if (!refs.previousDeps !== null && refs.previousDeps !== undefined
+          if (refs.previousDeps !== null && refs.previousDeps !== undefined
             && !Array.isArray(refs.previousDeps)) {
             dispose();
           } else {
