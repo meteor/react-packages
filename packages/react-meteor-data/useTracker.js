@@ -76,27 +76,6 @@ function areHookInputsEqual(nextDeps, prevDeps) {
 const fur = x => x + 1;
 
 function useTracker(reactiveFn, deps, computationHandler) {
-  if (Meteor.isDevelopment) {
-    if (typeof reactiveFn !== 'function') {
-      warn(
-        `Warning: useTracker expected a function in it's first argument `
-        + `(reactiveFn), but got type of ${typeof reactiveFn}.`
-      )
-    }
-    if (deps && !Array.isArray(deps)) {
-      warn(
-        `Warning: useTracker expected an array in it's second argument `
-        + `(dependency), but got type of ${typeof deps}.`
-      );
-    }
-    if (computationHandler && typeof computationHandler !== 'function') {
-      warn(
-        `Warning: useTracker expected a function in it's third argument`
-        + `(computationHandler), but got type of ${typeof computationHandler}.`
-      );
-    }
-  }
-
   const { current: refs } = useRef({});
 
   const [, forceUpdate] = useReducer(fur, 0);
@@ -139,7 +118,7 @@ function useTracker(reactiveFn, deps, computationHandler) {
             if (Meteor.isDevelopment && typeof cleanupHandler !== 'function') {
               warn(
                 'Warning: Computation handler should return a function '
-                + 'to be used for cleanup or nothing.'
+                + 'to be used for cleanup or return nothing.'
               );
             }
             refs.computationCleanup = cleanupHandler;
@@ -180,4 +159,28 @@ function useTracker(reactiveFn, deps, computationHandler) {
   return refs.trackerData;
 }
 
-export default useTracker;
+export default Meteor.isDevelopment
+  ? (reactiveFn, deps, computationHandler) => {
+    if (Meteor.isDevelopment) {
+      if (typeof reactiveFn !== 'function') {
+        warn(
+          `Warning: useTracker expected a function in it's first argument `
+          + `(reactiveFn), but got type of ${typeof reactiveFn}.`
+        );
+      }
+      if (deps && !Array.isArray(deps)) {
+        warn(
+          `Warning: useTracker expected an array in it's second argument `
+          + `(dependency), but got type of ${typeof deps}.`
+        );
+      }
+      if (computationHandler && typeof computationHandler !== 'function') {
+        warn(
+          `Warning: useTracker expected a function in it's third argument`
+          + `(computationHandler), but got type of ${typeof computationHandler}.`
+        );
+      }
+    }
+    return useTracker(reactiveFn, deps, computationHandler);
+  }
+  : useTracker;
