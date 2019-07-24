@@ -47,12 +47,6 @@ function areHookInputsEqual(nextDeps, prevDeps) {
   }
 
   if (nextDeps === null || nextDeps === undefined || !Array.isArray(nextDeps)) {
-    if (Meteor.isDevelopment) {
-      warn(
-        'Warning: useTracker expected an dependency value of '
-        + `type array but got type of ${typeof nextDeps} instead.`
-      );
-    }
     return false;
   }
 
@@ -160,25 +154,23 @@ function useTracker(reactiveFn, deps, computationHandler) {
 
 export default Meteor.isDevelopment
   ? (reactiveFn, deps, computationHandler) => {
-    if (Meteor.isDevelopment) {
-      if (typeof reactiveFn !== 'function') {
-        warn(
-          `Warning: useTracker expected a function in it's first argument `
-          + `(reactiveFn), but got type of ${typeof reactiveFn}.`
-        );
-      }
-      if (deps && !Array.isArray(deps)) {
-        warn(
-          `Warning: useTracker expected an array in it's second argument `
-          + `(dependency), but got type of ${typeof deps}.`
-        );
-      }
-      if (computationHandler && typeof computationHandler !== 'function') {
-        warn(
-          `Warning: useTracker expected a function in it's third argument`
-          + `(computationHandler), but got type of ${typeof computationHandler}.`
-        );
-      }
+    if (typeof reactiveFn !== 'function') {
+      warn(
+        `Warning: useTracker expected a function in it's first argument `
+        + `(reactiveFn), but got type of ${typeof reactiveFn}.`
+      );
+    }
+    if (deps && !Array.isArray(deps)) {
+      warn(
+        `Warning: useTracker expected an array in it's second argument `
+        + `(dependency), but got type of ${typeof deps}.`
+      );
+    }
+    if (computationHandler && typeof computationHandler !== 'function') {
+      warn(
+        `Warning: useTracker expected a function in it's third argument`
+        + `(computationHandler), but got type of ${typeof computationHandler}.`
+      );
     }
     return useTracker(reactiveFn, deps, computationHandler);
   }
