@@ -46,11 +46,12 @@ function areHookInputsEqual(nextDeps, prevDeps) {
     return false;
   }
 
-  if (!Array.isArray(nextDeps)) {
-    if (Meteor.isDevelopment) {
+  if (nextDeps === null || nextDeps === undefined || !Array.isArray(nextDeps)) {
+    // falsy deps is okay, but if deps is not falsy, it must be an array
+    if (Meteor.isDevelopment && (nextDeps && !Array.isArray(nextDeps))) {
       warn(
         'Warning: useTracker expected an dependency value of '
-        + `type array but got type of ${typeof nextDeps} instead.`
+        + `type array, null or undefined but got type of ${typeof nextDeps} instead.`
       );
     }
     return false;
@@ -130,9 +131,8 @@ function useTracker(reactiveFn, deps) {
 
   // stop the computation on unmount only
   useEffect(() => {
-    if (Meteor.isDevelopment
-      && deps !== null && deps !== undefined
-      && !Array.isArray(deps)) {
+    // falsy deps is okay, but if deps is not falsy, it must be an array
+    if (Meteor.isDevelopment && (deps && !Array.isArray(deps))) {
       warn(
         'Warning: useTracker expected an initial dependency value of '
         + `type array, null or undefined but got type of ${typeof deps} instead.`
