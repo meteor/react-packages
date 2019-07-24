@@ -128,9 +128,8 @@ function useTracker(reactiveFn, deps, computationHandler) {
         // Additional cycles will follow the normal computation behavior.
         runReactiveFn();
       } else {
-        // If deps are falsy, stop computation and let next render handle reactiveFn.
-        if (refs.previousDeps !== null && refs.previousDeps !== undefined
-          && !Array.isArray(refs.previousDeps)) {
+        // If deps are anything other than an array, stop computation and let next render handle reactiveFn.
+        if (deps === null || deps === undefined || !Array.isArray(deps)) {
           dispose();
         } else {
           runReactiveFn();
