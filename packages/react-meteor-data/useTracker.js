@@ -46,7 +46,7 @@ function areHookInputsEqual(nextDeps, prevDeps) {
     return false;
   }
 
-  if (!Array.isArray(nextDeps)) {
+  if (nextDeps === null || nextDeps === undefined || !Array.isArray(nextDeps)) {
     if (Meteor.isDevelopment) {
       warn(
         'Warning: useTracker expected an dependency value of '
