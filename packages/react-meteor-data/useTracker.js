@@ -43,15 +43,6 @@ function useTracker(reactiveFn, deps) {
     }
   };
 
-  // useMemo is used only to leverage React's core deps compare algorithm. useMemo
-  // runs synchronously with render, so we can think of it being called like
-  // componentWillMount or componentWillUpdate. One case we have to work around is
-  // if deps are falsy. In that case, we need to increment a value for every render
-  // since this should always run when deps are falsy.
-  const memoDeps = (deps !== null && deps !== undefined && !Array.isArray(deps))
-    ? [++refs.memoCounter]
-    : deps;
-
   useMemo(() => {
     // if we are re-creating the computation, we need to stop the old one.
     dispose();
@@ -85,7 +76,7 @@ function useTracker(reactiveFn, deps) {
         }
       })
     ));
-  }, memoDeps);
+  }, deps);
 
   // stop the computation on unmount only
   useEffect(() => {
