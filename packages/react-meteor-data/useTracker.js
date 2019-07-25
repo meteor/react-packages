@@ -1,5 +1,5 @@
 /* global Meteor, Package, Tracker */
-import React, { useReducer, useEffect, useRef } from 'react';
+import React, { useReducer, useEffect, useRef, useMemo } from 'react';
 
 // Use React.warn() if available (should ship in React 16.9).
 const warn = React.warn || console.warn.bind(console);
@@ -27,57 +27,12 @@ function checkCursor(data) {
   }
 }
 
-// taken from https://github.com/facebook/react/blob/
-// 34ce57ae751e0952fd12ab532a3e5694445897ea/packages/shared/objectIs.js
-function is(x, y) {
-  return (
-    (x === y && (x !== 0 || 1 / x === 1 / y))
-    || (x !== x && y !== y) // eslint-disable-line no-self-compare
-  );
-}
-
-// inspired by https://github.com/facebook/react/blob/
-// 34ce57ae751e0952fd12ab532a3e5694445897ea/packages/
-// react-reconciler/src/ReactFiberHooks.js#L307-L354
-// used to replicate dep change behavior and stay consistent
-// with React.useEffect()
-function areHookInputsEqual(nextDeps, prevDeps) {
-  if (prevDeps === null || prevDeps === undefined || !Array.isArray(prevDeps)) {
-    return false;
-  }
-
-  if (nextDeps === null || nextDeps === undefined || !Array.isArray(nextDeps)) {
-    // falsy deps is okay, but if deps is not falsy, it must be an array
-    if (Meteor.isDevelopment && (nextDeps && !Array.isArray(nextDeps))) {
-      warn(
-        'Warning: useTracker expected an dependency value of '
-        + `type array, null or undefined but got type of ${typeof nextDeps} instead.`
-      );
-    }
-    return false;
-  }
-
-  const len = nextDeps.length;
-
-  if (prevDeps.length !== len) {
-    return false;
-  }
-
-  for (let i = 0; i < len; i++) {
-    if (!is(nextDeps[i], prevDeps[i])) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
 // Used to create a forceUpdate from useReducer. Forces update by
 // incrementing a number whenever the dispatch method is invoked.
 const fur = x => x + 1;
 
 function useTracker(reactiveFn, deps) {
-  const { current: refs } = useRef({});
+  const { current: refs } = useRef({ memoCounter: 0 });
 
   const [, forceUpdate] = useReducer(fur, 0);
 
@@ -88,16 +43,18 @@ function useTracker(reactiveFn, deps) {
     }
   };
 
-  // this is called like at componentWillMount and componentWillUpdate equally
-  // in order to support render calls with synchronous data from the reactive computation
-  // if prevDeps or deps are not set areHookInputsEqual always returns false
-  // and the reactive functions is always called
-  if (!areHookInputsEqual(deps, refs.previousDeps)) {
+  // useMemo is used only to leverage React's core deps compare algorithm. useMemo
+  // runs synchronously with render, so we can think of it being called like
+  // componentWillMount or componentWillUpdate. One case we have to work around is
+  // if deps are falsy. In that case, we need to increment a value for every render
+  // since this should always run when deps are falsy.
+  const memoDeps = (deps !== null && deps !== undefined && !Array.isArray(deps))
+    ? [++refs.memoCounter]
+    : deps;
+
+  useMemo(() => {
     // if we are re-creating the computation, we need to stop the old one.
     dispose();
-
-    // store the deps for comparison on next render
-    refs.previousDeps = deps;
 
     // Use Tracker.nonreactive in case we are inside a Tracker Computation.
     // This can happen if someone calls `ReactDOM.render` inside a Computation.
@@ -128,7 +85,7 @@ function useTracker(reactiveFn, deps) {
         }
       })
     ));
-  }
+  }, memoDeps);
 
   // stop the computation on unmount only
   useEffect(() => {
