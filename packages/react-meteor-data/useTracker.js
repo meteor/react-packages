@@ -107,7 +107,7 @@ function useTracker(reactiveFn, deps) {
     refs.computation = Tracker.nonreactive(() => (
       Tracker.autorun((c) => {
         const runReactiveFn = () => {
-          const data = reactiveFn();
+          const data = reactiveFn(c);
           if (Meteor.isDevelopment) checkCursor(data);
           refs.trackerData = data;
         };
