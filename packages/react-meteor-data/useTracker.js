@@ -118,6 +118,7 @@ function useTracker(reactiveFn, deps) {
           runReactiveFn();
         } else {
           // If deps are anything other than an array, stop computation and let next render handle reactiveFn.
+          // These null and undefined checks are optimizations to avoid calling Array.isArray in these cases.
           if (deps === null || deps === undefined || !Array.isArray(deps)) {
             dispose();
           } else {
