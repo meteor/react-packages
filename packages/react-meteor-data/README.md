@@ -124,7 +124,7 @@ For more information, see the [React article](http://guide.meteor.com/react.html
 - `react-meteor-data` v2.x :
   - `useTracker` hook + `withTracker` HOC
   - Requires React `^16.8`.
-  - Implementation is compatible with the forthcoming "React Suspense" features.
+  - Implementation is **not** compatible with the forthcoming "React Suspense" features. You can use it, but make sure to call `useTracker` *after* any hooks which may throw a Promise. We are looking at ways to improve support for Suspense without sacrificing performance.
   - The `withTracker` HOC is strictly backwards-compatible with the one provided in v1.x, the major version number is only motivated by the bump of React version requirement. Provided a compatible React version, existing Meteor apps leveraging the `withTracker` HOC can freely upgrade from v1.x to v2.x, and gain compatibility with future React versions.
   - The previously deprecated `createContainer` has been removed.
 
