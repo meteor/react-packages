@@ -4,10 +4,10 @@ import useTracker from './useTracker.js';
 export default function withTracker(options) {
   return Component => {
     const expandedOptions = typeof options === 'function' ? { getMeteorData: options } : options;
-    const { getMeteorData, pure = true, deps = null } = expandedOptions;
+    const { getMeteorData, pure = true } = expandedOptions;
 
     const WithTracker = forwardRef((props, ref) => {
-      const data = useTracker(() => getMeteorData(props) || {}, deps);
+      const data = useTracker(() => getMeteorData(props) || {});
       return <Component ref={ref} {...props} {...data} />;
     });
 

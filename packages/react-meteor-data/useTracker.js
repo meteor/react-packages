@@ -64,7 +64,7 @@ function useTracker(reactiveFn, deps) {
     refs.computation = Tracker.nonreactive(() => (
       Tracker.autorun((c) => {
         const runReactiveFn = () => {
-          const data = reactiveFn();
+          const data = reactiveFn(c);
           if (Meteor.isDevelopment) checkCursor(data);
           refs.trackerData = data;
         };
@@ -74,8 +74,9 @@ function useTracker(reactiveFn, deps) {
           // Additional cycles will follow the normal computation behavior.
           runReactiveFn();
         } else {
-          // If deps are falsy, stop computation and let next render handle reactiveFn.
-          if (deps !== null && deps !== undefined && !Array.isArray(deps)) {
+          // If deps are anything other than an array, stop computation and let next render handle reactiveFn.
+          // These null and undefined checks are optimizations to avoid calling Array.isArray in these cases.
+          if (deps === null || deps === undefined || !Array.isArray(deps)) {
             dispose();
           } else {
             runReactiveFn();
@@ -88,12 +89,11 @@ function useTracker(reactiveFn, deps) {
 
   // stop the computation on unmount only
   useEffect(() => {
-    if (Meteor.isDevelopment
-      && deps !== null && deps !== undefined
-      && !Array.isArray(deps)) {
+    // falsy deps is okay, but if deps is not falsy, it must be an array
+    if (Meteor.isDevelopment && (deps && !Array.isArray(deps))) {
       warn(
         'Warning: useTracker expected an initial dependency value of '
-        + `type array but got type of ${typeof deps} instead.`
+        + `type array, null or undefined but got type of ${typeof deps} instead.`
       );
     }
 
