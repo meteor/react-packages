@@ -32,7 +32,7 @@ function checkCursor(data) {
 const fur = x => x + 1;
 
 function useTracker(reactiveFn, deps, computationHandler) {
-  const { current: refs } = useRef({});
+  const { current: refs } = useRef({ isSuspended: true });
 
   const [, forceUpdate] = useReducer(fur, 0);
 
@@ -47,6 +47,7 @@ function useTracker(reactiveFn, deps, computationHandler) {
     }
   };
 
+  // We are abusing useMemo a little bit, using it for it's deps compare, but not for it's memoization.
   useMemo(() => {
     // if we are re-creating the computation, we need to stop the old one.
     dispose();
@@ -99,11 +100,22 @@ function useTracker(reactiveFn, deps, computationHandler) {
       // Computations, where if the outer one is invalidated or stopped,
       // it stops the inner one.
       refs.computation = Tracker.nonreactive(() => Tracker.autorun(tracked));
+      // We are  creating a side effect here, which can be problematic in some React contexts, such as
+      // Suspense. To get around that, we'll set a time out to automatically clean it up, if it's life
+      // cycle hasn't been confirmed by a flag set in useEffect.
+      refs.disposeId = setTimeout(() => {
+        if (refs.isSuspended) dispose();
+      }, 50);
     }
   }, deps);
 
-  // stop the computation on unmount
-  useEffect(() => dispose, []);
+  useEffect(() => {
+    // To make sure the computation is still valid, we set a flag. When React suspends a render
+    // it does not run useEffect. If useEffect does run, then its dispose method is also run.
+    refs.isSuspended = false;
+    // stop the computation on unmount
+    return dispose;
+  }, []);
 
   return refs.trackerData;
 }
