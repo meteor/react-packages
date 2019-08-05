@@ -50,13 +50,13 @@ function useTracker(reactiveFn, deps, computationHandler) {
     }
   };
 
-  const tracked = (c) => {
-    const runReactiveFn = () => {
-      const data = reactiveFn(c);
-      if (Meteor.isDevelopment) checkCursor(data);
-      refs.trackerData = data;
-    };
+  const runReactiveFn = (c) => {
+    const data = reactiveFn(c);
+    if (Meteor.isDevelopment) checkCursor(data);
+    refs.trackerData = data;
+  };
 
+  const tracked = (c) => {
     if (c === null || c.firstRun) {
       // If there is a computationHandler, pass it the computation, and store the
       // result, which may be a cleanup method.
@@ -74,17 +74,20 @@ function useTracker(reactiveFn, deps, computationHandler) {
       }
       // This will capture data synchronously on first run (and after deps change).
       // Additional cycles will follow the normal computation behavior.
-      runReactiveFn();
+      runReactiveFn(c);
     } else {
       // If deps are anything other than an array, stop computation and let next render handle reactiveFn.
       // These null and undefined checks are optimizations to avoid calling Array.isArray in these cases.
       if (deps === null || deps === undefined || !Array.isArray(deps)) {
         dispose();
+      } else if (refs.isMounted) {
+        // Only run the reactiveFn if the component is mounted
+        runReactiveFn(c);
       } else {
-        runReactiveFn();
+        refs.doDeferredRender = true;
       }
       // :???: I'm not sure what would happen if we try to update state after a render has been tossed - does
-      // it throw an error? It seems to cause no problems to forceUpdate unmounted components.
+      // it throw an error? It seems to cause no problems to call forceUpdate on unmounted components.
       forceUpdate();
     }
   };
@@ -113,7 +116,6 @@ function useTracker(reactiveFn, deps, computationHandler) {
       // and watching a set of references to make sure everything is choreographed correctly.
       if (!refs.isMounted) {
         refs.disposeId = setTimeout(() => {
-          console.log('timed out')
           if (!refs.isMounted) {
             dispose();
           }
@@ -128,8 +130,9 @@ function useTracker(reactiveFn, deps, computationHandler) {
 
     if (!Meteor.isServer) {
       clearTimeout(refs.disposeId);
+      delete refs.disposeId;
 
-      // If it took longer than 50ms to get to useEffect, we may need to restart the computation.
+      // If it took longer than 50ms to get to useEffect, we might need to restart the computation.
       if (!refs.computation) {
         if (Array.isArray(deps)) {
           refs.computation = Tracker.nonreactive(() => Tracker.autorun(tracked));
@@ -140,7 +143,9 @@ function useTracker(reactiveFn, deps, computationHandler) {
 
       // We may have a queued render from a reactive update which happened before useEffect.
       if (refs.doDeferredRender) {
+        runReactiveFn(refs.computation);
         forceUpdate();
+        delete refs.doDeferredRender
       }
     }
 
