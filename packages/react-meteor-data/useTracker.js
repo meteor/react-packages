@@ -32,7 +32,10 @@ function checkCursor(data) {
 const fur = x => x + 1;
 
 function useTracker(reactiveFn, deps, computationHandler) {
-  const { current: refs } = useRef({ isSuspended: true });
+  const { current: refs } = useRef({
+    isMounted: false,
+    doDeferredRender: false
+  });
 
   const [, forceUpdate] = useReducer(fur, 0);
 
@@ -47,47 +50,49 @@ function useTracker(reactiveFn, deps, computationHandler) {
     }
   };
 
+  const tracked = (c) => {
+    const runReactiveFn = () => {
+      const data = reactiveFn(c);
+      if (Meteor.isDevelopment) checkCursor(data);
+      refs.trackerData = data;
+    };
+
+    if (c === null || c.firstRun) {
+      // If there is a computationHandler, pass it the computation, and store the
+      // result, which may be a cleanup method.
+      if (computationHandler) {
+        const cleanupHandler = computationHandler(c);
+        if (cleanupHandler) {
+          if (Meteor.isDevelopment && typeof cleanupHandler !== 'function') {
+            warn(
+              'Warning: Computation handler should return a function '
+              + 'to be used for cleanup or return nothing.'
+            );
+          }
+          refs.computationCleanup = cleanupHandler;
+        }
+      }
+      // This will capture data synchronously on first run (and after deps change).
+      // Additional cycles will follow the normal computation behavior.
+      runReactiveFn();
+    } else {
+      // If deps are anything other than an array, stop computation and let next render handle reactiveFn.
+      // These null and undefined checks are optimizations to avoid calling Array.isArray in these cases.
+      if (deps === null || deps === undefined || !Array.isArray(deps)) {
+        dispose();
+      } else {
+        runReactiveFn();
+      }
+      // :???: I'm not sure what would happen if we try to update state after a render has been tossed - does
+      // it throw an error? It seems to cause no problems to forceUpdate unmounted components.
+      forceUpdate();
+    }
+  };
+
   // We are abusing useMemo a little bit, using it for it's deps compare, but not for it's memoization.
   useMemo(() => {
     // if we are re-creating the computation, we need to stop the old one.
     dispose();
-
-    const tracked = (c) => {
-      const runReactiveFn = () => {
-        const data = reactiveFn(c);
-        if (Meteor.isDevelopment) checkCursor(data);
-        refs.trackerData = data;
-      };
-
-      if (c === null || c.firstRun) {
-        // If there is a computationHandler, pass it the computation, and store the
-        // result, which may be a cleanup method.
-        if (computationHandler) {
-          const cleanupHandler = computationHandler(c);
-          if (cleanupHandler) {
-            if (Meteor.isDevelopment && typeof cleanupHandler !== 'function') {
-              warn(
-                'Warning: Computation handler should return a function '
-                + 'to be used for cleanup or return nothing.'
-              );
-            }
-            refs.computationCleanup = cleanupHandler;
-          }
-        }
-        // This will capture data synchronously on first run (and after deps change).
-        // Additional cycles will follow the normal computation behavior.
-        runReactiveFn();
-      } else {
-        // If deps are anything other than an array, stop computation and let next render handle reactiveFn.
-        // These null and undefined checks are optimizations to avoid calling Array.isArray in these cases.
-        if (deps === null || deps === undefined || !Array.isArray(deps)) {
-          dispose();
-        } else {
-          runReactiveFn();
-        }
-        forceUpdate();
-      }
-    };
 
     // When rendering on the server, we don't want to use the Tracker.
     if (Meteor.isServer) {
@@ -100,19 +105,45 @@ function useTracker(reactiveFn, deps, computationHandler) {
       // Computations, where if the outer one is invalidated or stopped,
       // it stops the inner one.
       refs.computation = Tracker.nonreactive(() => Tracker.autorun(tracked));
-      // We are  creating a side effect here, which can be problematic in some React contexts, such as
-      // Suspense. To get around that, we'll set a time out to automatically clean it up, if it's life
-      // cycle hasn't been confirmed by a flag set in useEffect.
-      refs.disposeId = setTimeout(() => {
-        if (refs.isSuspended) dispose();
-      }, 50);
+
+      // We are creating a side effect in render, which can be problematic in some cases, such as
+      // Suspense or concurrent rendering or if an error is thrown and handled by an error boundary.
+      // We still want synchronous rendering for a number of reason (see readme), so we work around
+      // possible memory/resource leaks by setting a time out to automatically clean everything up,
+      // and watching a set of references to make sure everything is choreographed correctly.
+      if (!refs.isMounted) {
+        refs.disposeId = setTimeout(() => {
+          console.log('timed out')
+          if (!refs.isMounted) {
+            dispose();
+          }
+        }, 50);
+      }
     }
   }, deps);
 
   useEffect(() => {
-    // To make sure the computation is still valid, we set a flag. When React suspends a render
-    // it does not run useEffect. If useEffect does run, then its dispose method is also run.
-    refs.isSuspended = false;
+    // Now that we are mounted, we can set the flag, and cancel the timeout
+    refs.isMounted = true;
+
+    if (!Meteor.isServer) {
+      clearTimeout(refs.disposeId);
+
+      // If it took longer than 50ms to get to useEffect, we may need to restart the computation.
+      if (!refs.computation) {
+        if (Array.isArray(deps)) {
+          refs.computation = Tracker.nonreactive(() => Tracker.autorun(tracked));
+        }
+        // Do a render, to make sure we are up to date with computation data
+        refs.doDeferredRender = true;
+      }
+
+      // We may have a queued render from a reactive update which happened before useEffect.
+      if (refs.doDeferredRender) {
+        forceUpdate();
+      }
+    }
+
     // stop the computation on unmount
     return dispose;
   }, []);
