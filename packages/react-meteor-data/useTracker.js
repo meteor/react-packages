@@ -86,16 +86,15 @@ function useTracker(reactiveFn, deps, computationHandler) {
       // These null and undefined checks are optimizations to avoid calling Array.isArray in these cases.
       if (deps === null || deps === undefined || !Array.isArray(deps)) {
         dispose();
+        forceUpdate();
       } else if (refs.isMounted) {
         // Only run the reactiveFn if the component is mounted.
         runReactiveFn(c);
+        forceUpdate();
       } else {
         // If not mounted, defer render until mounted.
         refs.doDeferredRender = true;
       }
-      // :???: I'm not sure what would happen if we try to update state after a render has been tossed - does
-      // it throw an error? It seems to cause no problems to call forceUpdate on unmounted components.
-      forceUpdate();
     }
   };
 
