@@ -33,7 +33,7 @@ const fur = x => x + 1;
 
 function useTracker(reactiveFn, deps, computationHandler) {
   const { current: refs } = useRef({
-    isMounted: false,
+    isMounted: null,
     doDeferredRender: false
   });
 
@@ -73,7 +73,13 @@ function useTracker(reactiveFn, deps, computationHandler) {
         }
       }
       // This will capture data synchronously on first run (and after deps change).
-      // Additional cycles will follow the normal computation behavior.
+      // Don't run if refs.isMounted === false. Do run if === null, because that's the first run.
+      if (refs.isMounted === false) {
+        return;
+      }
+      if (refs.isMounted === null) {
+        refs.isMounted = false;
+      }
       runReactiveFn(c);
     } else {
       // If deps are anything other than an array, stop computation and let next render handle reactiveFn.
@@ -81,9 +87,10 @@ function useTracker(reactiveFn, deps, computationHandler) {
       if (deps === null || deps === undefined || !Array.isArray(deps)) {
         dispose();
       } else if (refs.isMounted) {
-        // Only run the reactiveFn if the component is mounted
+        // Only run the reactiveFn if the component is mounted.
         runReactiveFn(c);
       } else {
+        // If not mounted, defer render until mounted.
         refs.doDeferredRender = true;
       }
       // :???: I'm not sure what would happen if we try to update state after a render has been tossed - does
