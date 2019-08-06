@@ -119,12 +119,20 @@ The returned component will, when rendered, render `Foo` (the "lower-order" comp
 
 For more information, see the [React article](http://guide.meteor.com/react.html) in the Meteor Guide.
 
+### Concurrent Mode, Suspense, and Error Boundaries
+
+One of the things React developers often stress is that we should not create "side-effects" directly in the render method or in functional components. There are a number of good reasons for this, including allowing the React runtime to cancel renders without leaking memory. This ability allows certain features such as concurrent mode, suspense, and error boundaries to work.
+
+Side-effects, such as subscribing to data sources, setting up a callback, or creating a Meteor computation should generally be done in `useEffect`. However, this is problematic for Meteor, which mixes an initial data query with setting up the computation to watch those data sources all in one shot. If we wait to do that in `useEffect`, we'll end up rendering 2 times for every use of `useTracker` or `withTracker`.
+
+To work around that and keep things efficient, we are creating the computation (the side-effect) in the render method, and doing a number of checks later in `useEffect` to make sure we keep that computation fresh and everything up to date, while also making sure to clean things up if we detect the render has been tossed away. For the most part, this should all be transparent. The only thing to note is that even though we create the computation in the render directly, your reactive function will only be called one time, until our internal `useEffect` is run after render to confirm the component will not be tossed away. This will generally happen in miliseconds, but it's worth knowing about if you have a particularly fast changing data source.
+
 ### Version compatibility notes
 
 - `react-meteor-data` v2.x :
   - `useTracker` hook + `withTracker` HOC
   - Requires React `^16.8`.
-  - Implementation is **not** compatible with the forthcoming "React Suspense" features. You can use it, but make sure to call `useTracker` *after* any hooks which may throw a Promise. We are looking at ways to improve support for Suspense without sacrificing performance.
+  - Implementation is compatible with "React Suspense", concurrent mode and error boundaries.
   - The `withTracker` HOC is strictly backwards-compatible with the one provided in v1.x, the major version number is only motivated by the bump of React version requirement. Provided a compatible React version, existing Meteor apps leveraging the `withTracker` HOC can freely upgrade from v1.x to v2.x, and gain compatibility with future React versions.
   - The previously deprecated `createContainer` has been removed.
 
