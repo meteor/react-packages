@@ -1,8 +1,9 @@
 /* global Tinytest */
-import React, { useState } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 
 import { renderHook, act } from '@testing-library/react-hooks';
+import { render, cleanup, waitForDomChange } from '@testing-library/react'
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { ReactiveVar } from 'meteor/reactive-var';
 
@@ -162,6 +163,56 @@ const getInnerHtml = function (elem) {
 };
 
 if (Meteor.isClient) {
+  Tinytest.addAsync('useTracker - suspense, no deps', async function (test) {
+    const x = new ReactiveVar(0);
+
+    const cache = { value: 0 };
+    const timeout = time => new Promise(resolve => setTimeout(resolve, time));
+    const wait = async () => {
+      await timeout(100);
+      cache.value = 1;
+      return cache.value;
+    };
+
+    // this simulates a bunch of outside reactive activity
+    let i = 0;
+    const iId = setInterval(() => {
+      x.set(++i);
+    }, 2);
+    setTimeout(() => {
+      clearInterval(iId);
+    }, 200);
+
+    let reactiveCount = 0;
+    let renderCount = 0;
+    const Loading = () => <span>loading</span>
+    const Foo = () => {
+      const data = useTracker(() => {
+        return {
+          x: x.get()
+        };
+      });
+
+      const { value } = cache;
+
+      if (!value) {
+        throw wait();
+      }
+
+      return <span>complete</span>;
+    };
+
+    var { getByText, container } = render(<Suspense fallback={<Loading />}><Foo/></Suspense>);
+    test.isTrue(getByText('loading'));
+
+    test.equal(getInnerHtml(container), '<span>loading</span>', 'When suspended on first render, loading text should be displayed.');
+    await waitForDomChange({ container, timeout: 250 });
+
+    test.equal(getInnerHtml(container), '<span>complete</span>', 'Once the thrown promise resoles, we should have the complete content.');
+
+    cleanup();
+  });
+
   Tinytest.add('useTracker - basic track', function (test) {
     var div = document.createElement("DIV");
 
@@ -224,8 +275,6 @@ if (Meteor.isClient) {
   });
 
   Tinytest.add('useTracker - track based on props and state', function (test) {
-    var div = document.createElement("DIV");
-
     var xs = [new ReactiveVar('aaa'),
               new ReactiveVar('bbb'),
               new ReactiveVar('ccc')];
@@ -242,40 +291,39 @@ if (Meteor.isClient) {
       return <span>{data.x}</span>;
     };
 
-    var comp = ReactDOM.render(<Foo n={0}/>, div);
+    var { getByText } = render(<Foo n={0}/>);
 
-    test.equal(getInnerHtml(div), '<span>aaa</span>');
+    test.isTrue(getByText('aaa'), 'Content should still be “aaa” in initial render');
     xs[0].set('AAA');
-    test.equal(getInnerHtml(div), '<span>aaa</span>');
-    Tracker.flush({_throwFirstError: true});
-    test.equal(getInnerHtml(div), '<span>AAA</span>');
+    test.isTrue(getByText('aaa'), 'Content should still be “aaa” in the dom, since we haven’t flushed yet');
+    act(() => Tracker.flush({_throwFirstError: true}));
+    test.isTrue(getByText('AAA'), 'Content should still be “AAA” in the dom after Tracker flush');
 
-    {
-      let comp2 = ReactDOM.render(<Foo n={1}/>, div);
-      test.isTrue(comp === comp2);
-    }
+    cleanup();
+    var { getByText } = render(<Foo n={1}/>);
 
-    test.equal(getInnerHtml(div), '<span>bbb</span>');
+    test.isTrue(getByText('bbb'));
     xs[1].set('BBB');
-    Tracker.flush({_throwFirstError: true});
-    test.equal(getInnerHtml(div), '<span>BBB</span>');
+    act(() => Tracker.flush({_throwFirstError: true}));
+    test.isTrue(getByText('BBB'));
 
     setState({m: 1});
-    test.equal(getInnerHtml(div), '<span>ccc</span>');
+
+    test.isTrue(getByText('ccc'));
     xs[2].set('CCC');
-    Tracker.flush({_throwFirstError: true});
-    test.equal(getInnerHtml(div), '<span>CCC</span>');
+    act(() => Tracker.flush({_throwFirstError: true}));
+    test.isTrue(getByText('CCC'));
 
-    ReactDOM.render(<Foo n={0}/>, div);
+    cleanup();
+    var { getByText } = render(<Foo n={0}/>);
+
     setState({m: 0});
-    test.equal(getInnerHtml(div), '<span>AAA</span>');
+    test.isTrue(getByText('AAA'));
 
-    ReactDOM.unmountComponentAtNode(div);
+    cleanup();
   });
 
   Tinytest.add('useTracker - track based on props and state (with deps)', function (test) {
-    var div = document.createElement("DIV");
-
     var xs = [new ReactiveVar('aaa'),
               new ReactiveVar('bbb'),
               new ReactiveVar('ccc')];
@@ -292,35 +340,35 @@ if (Meteor.isClient) {
       return <span>{data.x}</span>;
     };
 
-    var comp = ReactDOM.render(<Foo n={0}/>, div);
+    var { getByText } = render(<Foo n={0}/>);
 
-    test.equal(getInnerHtml(div), '<span>aaa</span>');
+    test.isTrue(getByText('aaa'), 'Content should still be “aaa” in initial render');
     xs[0].set('AAA');
-    test.equal(getInnerHtml(div), '<span>aaa</span>');
-    Tracker.flush({_throwFirstError: true});
-    test.equal(getInnerHtml(div), '<span>AAA</span>');
+    test.isTrue(getByText('aaa'), 'Content should still be “aaa” in the dom, since we haven’t flushed yet');
+    act(() => Tracker.flush({_throwFirstError: true}));
+    test.isTrue(getByText('AAA'), 'Content should still be “AAA” in the dom after Tracker flush');
 
-    {
-      let comp2 = ReactDOM.render(<Foo n={1}/>, div);
-      test.isTrue(comp === comp2);
-    }
+    cleanup();
+    var { getByText } = render(<Foo n={1}/>);
 
-    test.equal(getInnerHtml(div), '<span>bbb</span>');
+    test.isTrue(getByText('bbb'));
     xs[1].set('BBB');
-    Tracker.flush({_throwFirstError: true});
-    test.equal(getInnerHtml(div), '<span>BBB</span>');
+    act(() => Tracker.flush({_throwFirstError: true}));
+    test.isTrue(getByText('BBB'));
 
     setState({m: 1});
-    test.equal(getInnerHtml(div), '<span>ccc</span>');
+    test.isTrue(getByText('ccc'));
     xs[2].set('CCC');
-    Tracker.flush({_throwFirstError: true});
-    test.equal(getInnerHtml(div), '<span>CCC</span>');
+    act(() => Tracker.flush({_throwFirstError: true}));
+    test.isTrue(getByText('CCC'));
 
-    ReactDOM.render(<Foo n={0}/>, div);
+    cleanup();
+    var { getByText } = render(<Foo n={0}/>);
+
     setState({m: 0});
-    test.equal(getInnerHtml(div), '<span>AAA</span>');
+    test.isTrue(getByText('AAA'));
 
-    ReactDOM.unmountComponentAtNode(div);
+    cleanup();
   });
 
   function waitFor(func, callback) {
