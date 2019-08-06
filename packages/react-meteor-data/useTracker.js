@@ -31,30 +31,33 @@ function checkCursor(data) {
 // incrementing a number whenever the dispatch method is invoked.
 const fur = x => x + 1;
 
+const dispose = (refs) => {
+  if (refs.computationCleanup) {
+    refs.computationCleanup();
+    delete refs.computationCleanup;
+  }
+  if (refs.computation) {
+    refs.computation.stop();
+    refs.computation = null;
+  }
+};
+
+const runReactiveFn = Meteor.isDevelopment
+  ? (refs, c) => {
+    const data = refs.reactiveFn(c);
+    checkCursor(data);
+    refs.trackerData = data;
+  }
+  : (refs, c) => {
+    refs.trackerData = refs.reactiveFn(c);
+  };
+
 function useTracker(reactiveFn, deps, computationHandler) {
-  const { current: refs } = useRef({
-    isMounted: null,
-    doDeferredRender: false
-  });
+  const { current: refs } = useRef({});
 
   const [, forceUpdate] = useReducer(fur, 0);
 
-  const dispose = () => {
-    if (refs.computationCleanup) {
-      refs.computationCleanup();
-      delete refs.computationCleanup;
-    }
-    if (refs.computation) {
-      refs.computation.stop();
-      refs.computation = null;
-    }
-  };
-
-  const runReactiveFn = (c) => {
-    const data = reactiveFn(c);
-    if (Meteor.isDevelopment) checkCursor(data);
-    refs.trackerData = data;
-  };
+  refs.reactiveFn = reactiveFn;
 
   const tracked = (c) => {
     if (c === null || c.firstRun) {
@@ -73,23 +76,24 @@ function useTracker(reactiveFn, deps, computationHandler) {
         }
       }
       // This will capture data synchronously on first run (and after deps change).
-      // Don't run if refs.isMounted === false. Do run if === null, because that's the first run.
+      // Don't run if refs.isMounted === false. Do run if === undefined, because that's the first run.
       if (refs.isMounted === false) {
         return;
       }
-      if (refs.isMounted === null) {
+      // If isMounted is undefined, we set it to false, to indicate first run is finished.
+      if (!refs.isMounted) {
         refs.isMounted = false;
       }
-      runReactiveFn(c);
+      runReactiveFn(refs, c);
     } else {
       // If deps are anything other than an array, stop computation and let next render handle reactiveFn.
       // These null and undefined checks are optimizations to avoid calling Array.isArray in these cases.
       if (deps === null || deps === undefined || !Array.isArray(deps)) {
-        dispose();
+        dispose(refs);
         forceUpdate();
       } else if (refs.isMounted) {
         // Only run the reactiveFn if the component is mounted.
-        runReactiveFn(c);
+        runReactiveFn(refs, c);
         forceUpdate();
       } else {
         // If not mounted, defer render until mounted.
@@ -101,7 +105,7 @@ function useTracker(reactiveFn, deps, computationHandler) {
   // We are abusing useMemo a little bit, using it for it's deps compare, but not for it's memoization.
   useMemo(() => {
     // if we are re-creating the computation, we need to stop the old one.
-    dispose();
+    dispose(refs);
 
     // When rendering on the server, we don't want to use the Tracker.
     if (Meteor.isServer) {
@@ -123,7 +127,7 @@ function useTracker(reactiveFn, deps, computationHandler) {
       if (!refs.isMounted) {
         refs.disposeId = setTimeout(() => {
           if (!refs.isMounted) {
-            dispose();
+            dispose(refs);
           }
         }, 50);
       }
@@ -149,14 +153,14 @@ function useTracker(reactiveFn, deps, computationHandler) {
 
       // We may have a queued render from a reactive update which happened before useEffect.
       if (refs.doDeferredRender) {
-        runReactiveFn(refs.computation);
+        runReactiveFn(refs, refs.computation);
         forceUpdate();
         delete refs.doDeferredRender
       }
     }
 
     // stop the computation on unmount
-    return dispose;
+    return () => dispose(refs);
   }, []);
 
   return refs.trackerData;
