@@ -81,7 +81,7 @@ function useTracker(reactiveFn, deps, computationHandler) {
         return;
       }
       // If isMounted is undefined, we set it to false, to indicate first run is finished.
-      if (!refs.isMounted) {
+      if (refs.isMounted === undefined) {
         refs.isMounted = false;
       }
       runReactiveFn(refs, c);
