@@ -155,7 +155,7 @@ function useTracker(reactiveFn, deps, computationHandler) {
       if (refs.doDeferredRender) {
         runReactiveFn(refs, refs.computation);
         forceUpdate();
-        delete refs.doDeferredRender
+        delete refs.doDeferredRender;
       }
     }
 
