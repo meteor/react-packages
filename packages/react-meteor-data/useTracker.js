@@ -31,6 +31,9 @@ function checkCursor(data) {
 // incrementing a number whenever the dispatch method is invoked.
 const fur = x => x + 1;
 
+// The follow functions were hoisted out of the closure to reduce allocations.
+// Since they no longer have access to the local vars, we pass them in and mutate here.
+/* eslint-disable no-param-reassign */
 const dispose = (refs) => {
   if (refs.computationCleanup) {
     refs.computationCleanup();
@@ -41,7 +44,6 @@ const dispose = (refs) => {
     refs.computation = null;
   }
 };
-
 const runReactiveFn = Meteor.isDevelopment
   ? (refs, c) => {
     const data = refs.reactiveFn(c);
@@ -51,6 +53,7 @@ const runReactiveFn = Meteor.isDevelopment
   : (refs, c) => {
     refs.trackerData = refs.reactiveFn(c);
   };
+/* eslint-enable no-param-reassign */
 
 function useTracker(reactiveFn, deps, computationHandler) {
   const { current: refs } = useRef({});
@@ -76,7 +79,8 @@ function useTracker(reactiveFn, deps, computationHandler) {
         }
       }
       // This will capture data synchronously on first run (and after deps change).
-      // Don't run if refs.isMounted === false. Do run if === undefined, because that's the first render.
+      // Don't run if refs.isMounted === false. Do run if === undefined, because
+      // that's the first render.
       if (refs.isMounted === false) {
         return;
       }
@@ -86,8 +90,9 @@ function useTracker(reactiveFn, deps, computationHandler) {
       }
       runReactiveFn(refs, c);
     } else {
-      // If deps are anything other than an array, stop computation and let next render handle reactiveFn.
-      // These null and undefined checks are optimizations to avoid calling Array.isArray in these cases.
+      // If deps are anything other than an array, stop computation and let next render
+      // handle reactiveFn. These null and undefined checks are optimizations to avoid
+      // calling Array.isArray in these cases.
       if (deps === null || deps === undefined || !Array.isArray(deps)) {
         dispose(refs);
         forceUpdate();
@@ -102,7 +107,8 @@ function useTracker(reactiveFn, deps, computationHandler) {
     }
   };
 
-  // We are abusing useMemo a little bit, using it for it's deps compare, but not for it's memoization.
+  // We are abusing useMemo a little bit, using it for it's deps
+  // compare, but not for it's memoization.
   useMemo(() => {
     // if we are re-creating the computation, we need to stop the old one.
     dispose(refs);
@@ -172,19 +178,19 @@ export default Meteor.isDevelopment
   ? (reactiveFn, deps, computationHandler) => {
     if (typeof reactiveFn !== 'function') {
       warn(
-        `Warning: useTracker expected a function in it's first argument `
+        'Warning: useTracker expected a function in it\'s first argument '
         + `(reactiveFn), but got type of ${typeof reactiveFn}.`
       );
     }
     if (deps && !Array.isArray(deps)) {
       warn(
-        `Warning: useTracker expected an array in it's second argument `
+        'Warning: useTracker expected an array in it\'s second argument '
         + `(dependency), but got type of ${typeof deps}.`
       );
     }
     if (computationHandler && typeof computationHandler !== 'function') {
       warn(
-        `Warning: useTracker expected a function in it's third argument`
+        'Warning: useTracker expected a function in it\'s third argument'
         + `(computationHandler), but got type of ${typeof computationHandler}.`
       );
     }
