@@ -76,7 +76,7 @@ function useTracker(reactiveFn, deps, computationHandler) {
         }
       }
       // This will capture data synchronously on first run (and after deps change).
-      // Don't run if refs.isMounted === false. Do run if === undefined, because that's the first run.
+      // Don't run if refs.isMounted === false. Do run if === undefined, because that's the first render.
       if (refs.isMounted === false) {
         return;
       }
@@ -125,6 +125,8 @@ function useTracker(reactiveFn, deps, computationHandler) {
       // possible memory/resource leaks by setting a time out to automatically clean everything up,
       // and watching a set of references to make sure everything is choreographed correctly.
       if (!refs.isMounted) {
+        // Functional components yield to allow the browser to paint before useEffect is run, so we
+        // set a 50ms timeout to allow for that.
         refs.disposeId = setTimeout(() => {
           if (!refs.isMounted) {
             dispose(refs);
