@@ -128,7 +128,7 @@ function useTracker(reactiveFn, deps, computationHandler) {
     }
   }, deps);
 
-  // We are using useEffectLayout here to run synchronously with render. We can use useEffect, but
+  // We are using useLayoutEffect here to run synchronously with render. We can use useEffect, but
   // it substantially increases complexity, and we aren't doing anything particularly resource
   // intensive here anyway.
   useLayoutEffect(() => {
