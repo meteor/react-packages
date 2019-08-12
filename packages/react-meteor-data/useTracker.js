@@ -1,5 +1,5 @@
 /* global Meteor, Package, Tracker */
-import React, { useReducer, useEffect, useRef, useMemo } from 'react';
+import React, { useReducer, useLayoutEffect, useRef, useMemo } from 'react';
 
 // Use React.warn() if available (should ship in React 16.9).
 const warn = React.warn || console.warn.bind(console);
@@ -78,32 +78,22 @@ function useTracker(reactiveFn, deps, computationHandler) {
           refs.computationCleanup = cleanupHandler;
         }
       }
-      // This will capture data synchronously on first run (and after deps change).
-      // Don't run if refs.isMounted === false. Do run if === undefined, because
-      // that's the first render.
-      if (refs.isMounted === false) {
-        return;
-      }
-      // If isMounted is undefined, we set it to false, to indicate first run is finished.
-      if (refs.isMounted === undefined) {
-        refs.isMounted = false;
-      }
+      // This will capture data synchronously on first run, after deps change
+      // or if deps are not an array (usually undefined).
       runReactiveFn(refs, c);
     } else {
-      // If deps are anything other than an array, stop computation and let next render
-      // handle reactiveFn. These null and undefined checks are optimizations to avoid
+      // These null and undefined checks are optimizations to avoid
       // calling Array.isArray in these cases.
       if (deps === null || deps === undefined || !Array.isArray(deps)) {
+        // If deps are anything other than an array, stop computation and
+        // let next render handle reactiveFn.
         dispose(refs);
-        forceUpdate();
-      } else if (refs.isMounted) {
-        // Only run the reactiveFn if the component is mounted.
-        runReactiveFn(refs, c);
-        forceUpdate();
       } else {
-        // If not mounted, defer render until mounted.
-        refs.doDeferredRender = true;
+        // If deps is an array, run the reactiveFn now. It will not rerun
+        // in the next render.
+        runReactiveFn(refs, c);
       }
+      forceUpdate();
     }
   };
 
@@ -127,43 +117,25 @@ function useTracker(reactiveFn, deps, computationHandler) {
 
       // We are creating a side effect in render, which can be problematic in some cases, such as
       // Suspense or concurrent rendering or if an error is thrown and handled by an error boundary.
-      // We still want synchronous rendering for a number of reason (see readme), so we work around
-      // possible memory/resource leaks by setting a time out to automatically clean everything up,
-      // and watching a set of references to make sure everything is choreographed correctly.
-      if (!refs.isMounted) {
-        // Functional components yield to allow the browser to paint before useEffect is run, so we
-        // set a 50ms timeout to allow for that.
+      // We still want synchronous rendering for a number of reasons (see readme), so we work around
+      // possible memory/resource leaks by setting a timeout to automatically clean everything up,
+      // and immediately cancelling it in `useLayoutEffect` if the render is committed.
+      if (!refs.isCommitted) {
         refs.disposeId = setTimeout(() => {
-          if (!refs.isMounted) {
-            dispose(refs);
-          }
-        }, 50);
+          dispose(refs);
+        }, 0);
       }
     }
   }, deps);
 
-  useEffect(() => {
-    // Now that we are mounted, we can set the flag, and cancel the timeout
-    refs.isMounted = true;
-
-    if (!Meteor.isServer) {
-      clearTimeout(refs.disposeId);
-      delete refs.disposeId;
-
-      // If it took longer than 50ms to get to useEffect (a long browser paint), we might need
-      // to restart the computation. Alternatively, we might have a queued render from a
-      // reactive update which happened before useEffect.
-      if (!refs.computation || refs.doDeferredRender) {
-        // If we have deps, set up a new computation, otherwise it will be created on next render.
-        if (!refs.computation && Array.isArray(deps)) {
-          // This also runs runReactiveFn, so no need to set up deferred render
-          refs.computation = Tracker.nonreactive(() => Tracker.autorun(tracked));
-        }
-        // Do a render, to make sure we are up to date with the computation data
-        forceUpdate();
-        delete refs.doDeferredRender;
-      }
-    }
+  // We are using useEffectLayout here to run synchronously with render. We can use useEffect, but
+  // it substantially increases complexity, and we aren't doing anything particularly resource
+  // intensive here anyway.
+  useLayoutEffect(() => {
+    // Now that the render is committed, we can set the flag, and cancel the timeout.
+    refs.isCommitted = true;
+    clearTimeout(refs.disposeId);
+    delete refs.disposeId;
 
     // stop the computation on unmount
     return () => dispose(refs);
