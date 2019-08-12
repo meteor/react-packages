@@ -150,18 +150,16 @@ function useTracker(reactiveFn, deps, computationHandler) {
       clearTimeout(refs.disposeId);
       delete refs.disposeId;
 
-      // If it took longer than 50ms to get to useEffect, we might need to restart the computation.
-      if (!refs.computation) {
-        if (Array.isArray(deps)) {
+      // If it took longer than 50ms to get to useEffect (a long browser paint), we might need
+      // to restart the computation. Alternatively, we might have a queued render from a
+      // reactive update which happened before useEffect.
+      if (!refs.computation || refs.doDeferredRender) {
+        // If we have deps, set up a new computation, otherwise it will be created on next render.
+        if (!refs.computation && Array.isArray(deps)) {
+          // This also runs runReactiveFn, so no need to set up deferred render
           refs.computation = Tracker.nonreactive(() => Tracker.autorun(tracked));
         }
-        // Do a render, to make sure we are up to date with computation data
-        refs.doDeferredRender = true;
-      }
-
-      // We may have a queued render from a reactive update which happened before useEffect.
-      if (refs.doDeferredRender) {
-        runReactiveFn(refs, refs.computation);
+        // Do a render, to make sure we are up to date with the computation data
         forceUpdate();
         delete refs.doDeferredRender;
       }
