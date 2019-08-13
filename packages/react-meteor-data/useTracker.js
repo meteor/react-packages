@@ -126,13 +126,14 @@ function useTracker(reactiveFn, deps, computationHandler) {
     // possible memory/resource leaks by setting a time out to automatically clean everything up,
     // and watching a set of references to make sure everything is choreographed correctly.
     if (!refs.isMounted) {
-      // Functional components yield to allow the browser to paint before useEffect is run, so we
-      // set a 50ms timeout to allow for that.
+      // Components yield to allow the DOM to update and the browser to paint before useEffect
+      // is run. In concurrent mode this can take quite a long time, so we set a 1000ms timeout
+      // to allow for that.
       refs.disposeId = setTimeout(() => {
         if (!refs.isMounted) {
           dispose(refs);
         }
-      }, 50);
+      }, 1000);
     }
   }, deps);
 
@@ -143,9 +144,9 @@ function useTracker(reactiveFn, deps, computationHandler) {
     clearTimeout(refs.disposeId);
     delete refs.disposeId;
 
-    // If it took longer than 50ms to get to useEffect (a long browser paint), we might need
-    // to restart the computation. Alternatively, we might have a queued render from a
-    // reactive update which happened before useEffect.
+    // If it took longer than 1000ms to get to useEffect, we might need to restart the
+    // computation. Alternatively, we might have a queued render from a reactive update
+    // which happened before useEffect.
     if (!refs.computation || refs.doDeferredRender) {
       // If we have deps, set up a new computation, otherwise it will be created on next render.
       if (!refs.computation && Array.isArray(deps)) {
