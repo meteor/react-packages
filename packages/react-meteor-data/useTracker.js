@@ -57,74 +57,65 @@ const runReactiveFn = Meteor.isDevelopment
 
 function useTracker(reactiveFn, deps, computationHandler) {
   const { current: refs } = useRef({});
-
   const [, forceUpdate] = useReducer(fur, 0);
 
   refs.reactiveFn = reactiveFn;
 
-  const tracked = (c) => {
-    if (c === null || c.firstRun) {
-      // If there is a computationHandler, pass it the computation, and store the
-      // result, which may be a cleanup method.
-      if (computationHandler) {
-        const cleanupHandler = computationHandler(c);
-        if (cleanupHandler) {
-          if (Meteor.isDevelopment && typeof cleanupHandler !== 'function') {
-            warn(
-              'Warning: Computation handler should return a function '
-              + 'to be used for cleanup or return nothing.'
-            );
-          }
-          refs.computationCleanup = cleanupHandler;
-        }
-      }
-      // This will capture data synchronously on first run, after deps change
-      // or if deps are not an array (usually undefined).
-      runReactiveFn(refs, c);
-    } else {
-      // These null and undefined checks are optimizations to avoid
-      // calling Array.isArray in these cases.
-      if (deps === null || deps === undefined || !Array.isArray(deps)) {
-        // If deps are anything other than an array, stop computation and
-        // let next render handle reactiveFn.
-        dispose(refs);
-      } else {
-        // If deps is an array, run the reactiveFn now. It will not rerun
-        // in the next render.
-        runReactiveFn(refs, c);
-      }
-      forceUpdate();
-    }
-  };
-
-  // We are abusing useMemo a little bit, using it for it's deps
-  // compare, but not for it's memoization.
+  // We are abusing useMemo a little bit, using it for its deps
+  // compare, but not for its memoization.
   useMemo(() => {
     // if we are re-creating the computation, we need to stop the old one.
     dispose(refs);
 
-    // When rendering on the server, we don't want to use the Tracker.
-    if (Meteor.isServer) {
-      refs.computation = null;
-      tracked(null);
-    } else {
-      // Use Tracker.nonreactive in case we are inside a Tracker Computation.
-      // This can happen if someone calls `ReactDOM.render` inside a Computation.
-      // In that case, we want to opt out of the normal behavior of nested
-      // Computations, where if the outer one is invalidated or stopped,
-      // it stops the inner one.
-      refs.computation = Tracker.nonreactive(() => Tracker.autorun(tracked));
-
-      // We are creating a side effect in render, which can be problematic in some cases, such as
-      // Suspense or concurrent rendering or if an error is thrown and handled by an error boundary.
-      // We still want synchronous rendering for a number of reasons (see readme), so we work around
-      // possible memory/resource leaks by setting a timeout to automatically clean everything up,
-      // and immediately cancelling it in `useLayoutEffect` if the render is committed.
-      if (!refs.isCommitted) {
-        refs.disposeId = setTimeout(() => {
+    // Use Tracker.nonreactive in case we are inside a Tracker Computation.
+    // This can happen if someone calls `ReactDOM.render` inside a Computation.
+    // In that case, we want to opt out of the normal behavior of nested
+    // Computations, where if the outer one is invalidated or stopped,
+    // it stops the inner one.
+    refs.computation = Tracker.nonreactive(() => Tracker.autorun((c) => {
+      if (c === null || c.firstRun) {
+        // If there is a computationHandler, pass it the computation, and store the
+        // result, which may be a cleanup method.
+        if (computationHandler) {
+          const cleanupHandler = computationHandler(c);
+          if (cleanupHandler) {
+            if (Meteor.isDevelopment && typeof cleanupHandler !== 'function') {
+              warn(
+                'Warning: Computation handler should return a function '
+                + 'to be used for cleanup or return nothing.'
+              );
+            }
+            refs.computationCleanup = cleanupHandler;
+          }
+        }
+        // This will capture data synchronously on first run, after deps change
+        // or if deps are not an array (usually undefined).
+        runReactiveFn(refs, c);
+      } else {
+        // These null and undefined checks are optimizations to avoid
+        // calling Array.isArray in these cases.
+        if (deps === null || deps === undefined || !Array.isArray(deps)) {
+          // If deps are anything other than an array, stop computation and
+          // let next render handle reactiveFn.
           dispose(refs);
-        }, 0);
+        } else {
+          // If deps is an array, run the reactiveFn now. It will not rerun
+          // in the next render.
+          runReactiveFn(refs, c);
+        }
+        forceUpdate();
       }
+    }));
+
+    // We are creating a side effect in render, which can be problematic in some cases, such as
+    // Suspense or concurrent rendering or if an error is thrown and handled by an error boundary.
+    // We still want synchronous rendering for a number of reasons (see readme), so we work around
+    // possible memory/resource leaks by setting a timeout to automatically clean everything up,
+    // and immediately cancelling it in `useLayoutEffect` if the render is committed.
+    if (!refs.isCommitted) {
+      refs.disposeId = setTimeout(() => {
+        dispose(refs);
+      }, 0);
     }
   }, deps);
 
