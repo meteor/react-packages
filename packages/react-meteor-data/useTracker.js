@@ -98,6 +98,10 @@ function useTrackerClient(reactiveFn, deps, computationHandler) {
         runReactiveFn(refs, c);
         forceUpdate();
       } else {
+        // If we got here, then a reactive update happened before the render was
+        // committed - before useEffect has run. We don't want to run the reactiveFn
+        // while we are not sure this render will be committed, so we'll dispose of the
+        // computation, and set everything up to be restarted in useEffect if needed.
         // NOTE: If we don't run the user's reactiveFn when a computation updates, we'll
         // leave the computation in a non-reactive state - so we'll dispose here and let
         // the useEffect hook recreate the computation later.
