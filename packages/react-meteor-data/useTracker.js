@@ -142,10 +142,10 @@ function useTrackerClient(reactiveFn, deps, computationHandler) {
     // If it took longer than 1000ms to get to useEffect, or a reactive update happened
     // before useEffect, we will need to forceUpdate, and restart the computation.
     if (!refs.computation) {
-      // If we have deps, we need to set up a new computation.
+      // If we have deps, we need to set up a new computation before forcing update.
       // If we have NO deps, it'll be recreated and rerun on the next render.
       if (Array.isArray(deps)) {
-        // This also runs runReactiveFn, so no need to set up deferred render
+        // This also runs runReactiveFn
         refs.computation = Tracker.nonreactive(() => Tracker.autorun(tracked));
       }
       forceUpdate();
