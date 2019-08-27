@@ -66,14 +66,17 @@ function useTrackerClient(reactiveFn, deps, computationHandler) {
 
   const [, forceUpdate] = useReducer(fur, 0);
 
+  // Always have up to date deps and computations in all contexts
   refs.reactiveFn = reactiveFn;
+  refs.deps = deps;
+  refs.computationHandler = computationHandler;
 
   const tracked = (c) => {
     if (c.firstRun) {
       // If there is a computationHandler, pass it the computation, and store the
       // result, which may be a cleanup method.
-      if (computationHandler) {
-        const cleanupHandler = computationHandler(c);
+      if (refs.computationHandler) {
+        const cleanupHandler = refs.computationHandler(c);
         if (cleanupHandler) {
           if (Meteor.isDevelopment && typeof cleanupHandler !== 'function') {
             warn(
@@ -90,7 +93,7 @@ function useTrackerClient(reactiveFn, deps, computationHandler) {
       // If deps are anything other than an array, stop computation and let next render
       // handle reactiveFn. These null and undefined checks are optimizations to avoid
       // calling Array.isArray in these cases.
-      if (deps === null || deps === undefined || !Array.isArray(deps)) {
+      if (refs.deps === null || refs.deps === undefined || !Array.isArray(refs.deps)) {
         dispose(refs);
         forceUpdate();
       } else if (refs.isMounted) {
