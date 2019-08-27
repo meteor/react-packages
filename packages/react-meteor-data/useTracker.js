@@ -63,7 +63,7 @@ function useTrackerClient(reactiveFn, deps, computationHandler) {
   refs.reactiveFn = reactiveFn;
 
   const tracked = (c) => {
-    if (c === null || c.firstRun) {
+    if (c.firstRun) {
       // If there is a computationHandler, pass it the computation, and store the
       // result, which may be a cleanup method.
       if (computationHandler) {
