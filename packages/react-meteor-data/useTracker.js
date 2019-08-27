@@ -55,7 +55,7 @@ const runReactiveFn = Meteor.isDevelopment
   };
 /* eslint-enable no-param-reassign */
 
-function useTracker(reactiveFn, deps, computationHandler) {
+function useTrackerClient(reactiveFn, deps, computationHandler) {
   const { current: refs } = useRef({});
 
   const [, forceUpdate] = useReducer(fur, 0);
@@ -164,6 +164,12 @@ function useTracker(reactiveFn, deps, computationHandler) {
 
   return refs.trackerData;
 }
+
+// When rendering on the server, we don't want to use the Tracker.
+// We only do the first rendering on the server so we can get the data right away
+const useTracker = Meteor.isServer
+  ? (reactiveFn) => reactiveFn()
+  : useTrackerClient;
 
 export default Meteor.isDevelopment
   ? (reactiveFn, deps, computationHandler) => {

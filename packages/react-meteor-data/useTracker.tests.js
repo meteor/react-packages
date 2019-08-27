@@ -1,4 +1,4 @@
-/* global Tinytest */
+/* global Meteor, Tinytest */
 import React, { Suspense, useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 
@@ -34,8 +34,10 @@ Tinytest.add('useTracker - no deps', async function (test) {
 
   test.equal(result.current, 'initial', 'Expect initial value to be "initial"');
   test.equal(runCount, 1, 'Should have run 1 times');
-  test.equal(createdCount, 1, 'Should have been created 1 times');
-  test.equal(destroyedCount, 0, 'Should not have been destroyed yet');
+  if (Meteor.isClient) {
+    test.equal(createdCount, 1, 'Should have been created 1 times');
+    test.equal(destroyedCount, 0, 'Should not have been destroyed yet');
+  }
 
   act(() => {
     reactiveDict.set('key', 'changed');
@@ -45,29 +47,37 @@ Tinytest.add('useTracker - no deps', async function (test) {
 
   test.equal(result.current, 'changed', 'Expect new value to be "changed"');
   test.equal(runCount, 2, 'Should have run 2 times');
-  test.equal(createdCount, 2, 'Should have been created 2 times');
-  test.equal(destroyedCount, 1, 'Should have been destroyed 1 less than created');
+  if (Meteor.isClient) {
+    test.equal(createdCount, 2, 'Should have been created 2 times');
+    test.equal(destroyedCount, 1, 'Should have been destroyed 1 less than created');
+  }
 
   rerender();
   await waitForNextUpdate();
 
   test.equal(result.current, 'changed', 'Expect value of "changed" to persist after rerender');
   test.equal(runCount, 3, 'Should have run 3 times');
-  test.equal(createdCount, 3, 'Should have been created 3 times');
-  test.equal(destroyedCount, 2, 'Should have been destroyed 1 less than created');
+  if (Meteor.isClient) {
+    test.equal(createdCount, 3, 'Should have been created 3 times');
+    test.equal(destroyedCount, 2, 'Should have been destroyed 1 less than created');
+  }
 
   rerender({ name: 'different' });
   await waitForNextUpdate();
 
   test.equal(result.current, 'default', 'After deps change, the default value should have returned');
   test.equal(runCount, 4, 'Should have run 4 times');
-  test.equal(createdCount, 4, 'Should have been created 4 times');
-  test.equal(destroyedCount, 3, 'Should have been destroyed 1 less than created');
+  if (Meteor.isClient) {
+    test.equal(createdCount, 4, 'Should have been created 4 times');
+    test.equal(destroyedCount, 3, 'Should have been destroyed 1 less than created');
+  }
 
   unmount();
   test.equal(runCount, 4, 'Unmount should not cause a tracker run');
-  test.equal(createdCount, 4, 'Should have been created 4 times');
-  test.equal(destroyedCount, 4, 'Should have been destroyed the same number of times as created');
+  if (Meteor.isClient) {
+    test.equal(createdCount, 4, 'Should have been created 4 times');
+    test.equal(destroyedCount, 4, 'Should have been destroyed the same number of times as created');
+  }
 
   act(() => {
     reactiveDict.set('different', 'changed again');
@@ -77,8 +87,10 @@ Tinytest.add('useTracker - no deps', async function (test) {
 
   test.equal(result.current, 'default', 'After unmount, changes to the reactive source should not update the value.');
   test.equal(runCount, 4, 'After unmount, useTracker should no longer be tracking');
-  test.equal(createdCount, 4, 'Should have been created 4 times');
-  test.equal(destroyedCount, 4, 'Should have been destroyed the same number of times as created');
+  if (Meteor.isClient) {
+    test.equal(createdCount, 4, 'Should have been created 4 times');
+    test.equal(destroyedCount, 4, 'Should have been destroyed the same number of times as created');
+  }
 
   reactiveDict.destroy();
 });
@@ -108,8 +120,10 @@ Tinytest.add('useTracker - with deps', async function (test) {
 
   test.equal(result.current, 'default', 'Expect the default value for given name to be "default"');
   test.equal(runCount, 1, 'Should have run 1 times');
-  test.equal(createdCount, 1, 'Should have been created 1 times');
-  test.equal(destroyedCount, 0, 'Should not have been destroyed yet');
+  if (Meteor.isClient) {
+    test.equal(createdCount, 1, 'Should have been created 1 times');
+    test.equal(destroyedCount, 0, 'Should not have been destroyed yet');
+  }
 
   act(() => {
     reactiveDict.set('name', 'changed');
@@ -119,30 +133,38 @@ Tinytest.add('useTracker - with deps', async function (test) {
 
   test.equal(result.current, 'changed', 'Expect the new value for given name to be "changed"');
   test.equal(runCount, 2, 'Should have run 2 times');
-  test.equal(createdCount, 1, 'Should have been created 1 times');
-  test.equal(destroyedCount, 0, 'Should not have been destroyed yet');
+  if (Meteor.isClient) {
+    test.equal(createdCount, 1, 'Should have been created 1 times');
+    test.equal(destroyedCount, 0, 'Should not have been destroyed yet');
+  }
 
   rerender();
   await waitForNextUpdate();
 
   test.equal(result.current, 'changed', 'Expect the new value "changed" for given name to have persisted through render');
   test.equal(runCount, 3, 'Should have run 3 times');
-  test.equal(createdCount, 1, 'Should have been created 1 times');
-  test.equal(destroyedCount, 0, 'Should not have been destroyed yet');
+  if (Meteor.isClient) {
+    test.equal(createdCount, 1, 'Should have been created 1 times');
+    test.equal(destroyedCount, 0, 'Should not have been destroyed yet');
+  }
 
   rerender({ name: 'different' });
   await waitForNextUpdate();
 
   test.equal(result.current, 'default', 'After deps change, the default value should have returned');
   test.equal(runCount, 4, 'Should have run 4 times');
-  test.equal(createdCount, 2, 'Should have been created 2 times');
-  test.equal(destroyedCount, 1, 'Should have been destroyed 1 times');
+  if (Meteor.isClient) {
+    test.equal(createdCount, 2, 'Should have been created 2 times');
+    test.equal(destroyedCount, 1, 'Should have been destroyed 1 times');
+  }
 
   unmount();
   // we can't use await waitForNextUpdate() here because it doesn't trigger re-render - is there a way to test that?
   test.equal(runCount, 4, 'Unmount should not cause a tracker run');
-  test.equal(createdCount, 2, 'Should have been created 2 times');
-  test.equal(destroyedCount, 2, 'Should have been destroyed 2 times');
+  if (Meteor.isClient) {
+    test.equal(createdCount, 2, 'Should have been created 2 times');
+    test.equal(destroyedCount, 2, 'Should have been destroyed 2 times');
+  }
 
   act(() => {
     reactiveDict.set('different', 'changed again');
@@ -151,8 +173,10 @@ Tinytest.add('useTracker - with deps', async function (test) {
 
   test.equal(result.current, 'default', 'After unmount, changes to the reactive source should not update the value.');
   test.equal(runCount, 4, 'After unmount, useTracker should no longer be tracking');
-  test.equal(createdCount, 2, 'Should have been created 2 times');
-  test.equal(destroyedCount, 2, 'Should have been destroyed 2 times');
+  if (Meteor.isClient) {
+    test.equal(createdCount, 2, 'Should have been created 2 times');
+    test.equal(destroyedCount, 2, 'Should have been destroyed 2 times');
+  }
 
   reactiveDict.destroy();
 });

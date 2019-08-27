@@ -8,13 +8,5 @@ if (Meteor.isDevelopment) {
   }
 }
 
-// When rendering on the server, we don't want to use the Tracker.
-// We only do the first rendering on the server so we can get the data right away
-import useTrackerClient from './useTracker.js';
-const useTrackerServer = (reactiveFn) => reactiveFn();
-const useTracker = (Meteor.isServer)
-  ? useTrackerServer
-  : useTrackerClient;
-
-export { useTracker };
+export { default as useTracker } from './useTracker';
 export { default as withTracker } from './withTracker.jsx';
