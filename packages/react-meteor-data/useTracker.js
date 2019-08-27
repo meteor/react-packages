@@ -53,6 +53,12 @@ const runReactiveFn = Meteor.isDevelopment
   : (refs, c) => {
     refs.trackerData = refs.reactiveFn(c);
   };
+const clear = (refs) => {
+  if (refs.disposeId) {
+    clearTimeout(refs.disposeId);
+    delete refs.disposeId;
+  }
+};
 /* eslint-enable no-param-reassign */
 
 function useTrackerClient(reactiveFn, deps, computationHandler) {
@@ -97,7 +103,7 @@ function useTrackerClient(reactiveFn, deps, computationHandler) {
         // the useEffect hook recreate the computation later.
         dispose(refs);
         // Might as well clear the timeout!
-        clearTimeout(refs.disposeId);
+        clear(refs);
       }
     }
   };
@@ -136,8 +142,8 @@ function useTrackerClient(reactiveFn, deps, computationHandler) {
     // Now that we are mounted, we can set the flag, and cancel the timeout
     refs.isMounted = true;
 
-    clearTimeout(refs.disposeId);
-    delete refs.disposeId;
+    // We are committed, clear the dispose timeout
+    clear(refs);
 
     // If it took longer than 1000ms to get to useEffect, or a reactive update happened
     // before useEffect, we will need to forceUpdate, and restart the computation.
