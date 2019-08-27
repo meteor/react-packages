@@ -59,61 +59,59 @@ const clear = (refs) => {
     delete refs.disposeId;
   }
 };
+const tracked = (refs, c, forceUpdate) => {
+  if (c.firstRun) {
+    // If there is a computationHandler, pass it the computation, and store the
+    // result, which may be a cleanup method.
+    if (refs.computationHandler) {
+      const cleanupHandler = refs.computationHandler(c);
+      if (cleanupHandler) {
+        if (Meteor.isDevelopment && typeof cleanupHandler !== 'function') {
+          warn(
+            'Warning: Computation handler should return a function '
+            + 'to be used for cleanup or return nothing.'
+          );
+        }
+        refs.computationCleanup = cleanupHandler;
+      }
+    }
+    // Always run the reactiveFn on firstRun
+    runReactiveFn(refs, c);
+  } else {
+    // If deps are anything other than an array, stop computation and let next render
+    // handle reactiveFn. These null and undefined checks are optimizations to avoid
+    // calling Array.isArray in these cases.
+    if (refs.deps === null || refs.deps === undefined || !Array.isArray(refs.deps)) {
+      dispose(refs);
+      forceUpdate();
+    } else if (refs.isMounted) {
+      // Only run the reactiveFn if the component is mounted.
+      runReactiveFn(refs, c);
+      forceUpdate();
+    } else {
+      // If we got here, then a reactive update happened before the render was
+      // committed - before useEffect has run. We don't want to run the reactiveFn
+      // while we are not sure this render will be committed, so we'll dispose of the
+      // computation, and set everything up to be restarted in useEffect if needed.
+      // NOTE: If we don't run the user's reactiveFn when a computation updates, we'll
+      // leave the computation in a non-reactive state - so we'll dispose here and let
+      // the useEffect hook recreate the computation later.
+      dispose(refs);
+      // Might as well clear the timeout!
+      clear(refs);
+    }
+  }
+};
 /* eslint-enable no-param-reassign */
 
 function useTrackerClient(reactiveFn, deps, computationHandler) {
   const { current: refs } = useRef({});
-
   const [, forceUpdate] = useReducer(fur, 0);
 
   // Always have up to date deps and computations in all contexts
   refs.reactiveFn = reactiveFn;
   refs.deps = deps;
   refs.computationHandler = computationHandler;
-
-  const tracked = (c) => {
-    if (c.firstRun) {
-      // If there is a computationHandler, pass it the computation, and store the
-      // result, which may be a cleanup method.
-      if (refs.computationHandler) {
-        const cleanupHandler = refs.computationHandler(c);
-        if (cleanupHandler) {
-          if (Meteor.isDevelopment && typeof cleanupHandler !== 'function') {
-            warn(
-              'Warning: Computation handler should return a function '
-              + 'to be used for cleanup or return nothing.'
-            );
-          }
-          refs.computationCleanup = cleanupHandler;
-        }
-      }
-      // Always run the reactiveFn on firstRun
-      runReactiveFn(refs, c);
-    } else {
-      // If deps are anything other than an array, stop computation and let next render
-      // handle reactiveFn. These null and undefined checks are optimizations to avoid
-      // calling Array.isArray in these cases.
-      if (refs.deps === null || refs.deps === undefined || !Array.isArray(refs.deps)) {
-        dispose(refs);
-        forceUpdate();
-      } else if (refs.isMounted) {
-        // Only run the reactiveFn if the component is mounted.
-        runReactiveFn(refs, c);
-        forceUpdate();
-      } else {
-        // If we got here, then a reactive update happened before the render was
-        // committed - before useEffect has run. We don't want to run the reactiveFn
-        // while we are not sure this render will be committed, so we'll dispose of the
-        // computation, and set everything up to be restarted in useEffect if needed.
-        // NOTE: If we don't run the user's reactiveFn when a computation updates, we'll
-        // leave the computation in a non-reactive state - so we'll dispose here and let
-        // the useEffect hook recreate the computation later.
-        dispose(refs);
-        // Might as well clear the timeout!
-        clear(refs);
-      }
-    }
-  };
 
   // We are abusing useMemo a little bit, using it for it's deps
   // compare, but not for it's memoization.
@@ -126,7 +124,11 @@ function useTrackerClient(reactiveFn, deps, computationHandler) {
     // In that case, we want to opt out of the normal behavior of nested
     // Computations, where if the outer one is invalidated or stopped,
     // it stops the inner one.
-    refs.computation = Tracker.nonreactive(() => Tracker.autorun(tracked));
+    refs.computation = Tracker.nonreactive(() =>
+      Tracker.autorun((c) => {
+        tracked(refs, c, forceUpdate);
+      })
+    );
 
     // We are creating a side effect in render, which can be problematic in some cases, such as
     // Suspense or concurrent rendering or if an error is thrown and handled by an error boundary.
@@ -159,7 +161,11 @@ function useTrackerClient(reactiveFn, deps, computationHandler) {
       // If we have NO deps, it'll be recreated and rerun on the next render.
       if (Array.isArray(deps)) {
         // This also runs runReactiveFn
-        refs.computation = Tracker.nonreactive(() => Tracker.autorun(tracked));
+        refs.computation = Tracker.nonreactive(() =>
+          Tracker.autorun((c) => {
+            tracked(refs, c, forceUpdate);
+          })
+        );
       }
       forceUpdate();
     }
