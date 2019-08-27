@@ -78,16 +78,7 @@ function useTrackerClient(reactiveFn, deps, computationHandler) {
           refs.computationCleanup = cleanupHandler;
         }
       }
-      // This will capture data synchronously on first run (and after deps change).
-      // Don't run if refs.isMounted === false. Do run if === undefined, because
-      // that's the first render.
-      if (refs.isMounted === false) {
-        return;
-      }
-      // If isMounted is undefined, we set it to false, to indicate first run is finished.
-      if (refs.isMounted === undefined) {
-        refs.isMounted = false;
-      }
+      // Always run the reactiveFn on firstRun
       runReactiveFn(refs, c);
     } else {
       // If deps are anything other than an array, stop computation and let next render
@@ -101,8 +92,12 @@ function useTrackerClient(reactiveFn, deps, computationHandler) {
         runReactiveFn(refs, c);
         forceUpdate();
       } else {
-        // If not mounted, defer render until mounted.
-        refs.doDeferredRender = true;
+        // NOTE: If we don't run the user's reactiveFn when a computation updates, we'll
+        // leave the computation in a non-reactive state - so we'll dispose here and let
+        // the useEffect hook recreate the computation later.
+        dispose(refs);
+        // Might as well clear the timeout!
+        clearTimeout(refs.disposeId);
       }
     }
   };
@@ -144,18 +139,16 @@ function useTrackerClient(reactiveFn, deps, computationHandler) {
     clearTimeout(refs.disposeId);
     delete refs.disposeId;
 
-    // If it took longer than 1000ms to get to useEffect, we might need to restart the
-    // computation. Alternatively, we might have a queued render from a reactive update
-    // which happened before useEffect.
-    if (!refs.computation || refs.doDeferredRender) {
-      // If we have deps, set up a new computation, otherwise it will be created on next render.
-      if (!refs.computation && Array.isArray(deps)) {
+    // If it took longer than 1000ms to get to useEffect, or a reactive update happened
+    // before useEffect, we will need to forceUpdate, and restart the computation.
+    if (!refs.computation) {
+      // If we have deps, we need to set up a new computation.
+      // If we have NO deps, it'll be recreated and rerun on the next render.
+      if (Array.isArray(deps)) {
         // This also runs runReactiveFn, so no need to set up deferred render
         refs.computation = Tracker.nonreactive(() => Tracker.autorun(tracked));
       }
-      // Do a render, to make sure we are up to date with the computation data
       forceUpdate();
-      delete refs.doDeferredRender;
     }
 
     // stop the computation on unmount
