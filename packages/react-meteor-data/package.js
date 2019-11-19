@@ -1,3 +1,5 @@
+/* global Package */
+
 Package.describe({
   name: 'react-meteor-data',
   summary: 'React higher-order component for reactively tracking Meteor data',
@@ -10,9 +12,13 @@ Package.onUse(function (api) {
   api.versionsFrom('1.3');
   api.use('tracker');
   api.use('ecmascript');
-  api.use('tmeasday:check-npm-versions@0.3.2');
 
-  api.export(['ReactMeteorData']);
+  api.mainModule('index.js');
+});
 
-  api.mainModule('react-meteor-data.jsx');
+Package.onTest(function (api) {
+  api.use(['ecmascript', 'reactive-dict', 'reactive-var', 'tracker', 'tinytest', 'underscore', 'mongo']);
+  api.use('test-helpers');
+  api.use('react-meteor-data');
+  api.mainModule('tests.js');
 });
