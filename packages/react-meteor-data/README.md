@@ -16,6 +16,8 @@ You'll also need to install `react` if you have not already:
 npm install --save react
 ```
 
+[check recent changes here](./CHANGELOG.md)
+
 ### Usage
 
 This package provides two ways to use Tracker reactive data in your React components:
