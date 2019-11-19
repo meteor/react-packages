@@ -138,7 +138,7 @@ The important thing to understand is that your reactive function can be initiall
   - The `withTracker` HOC is strictly backwards-compatible with the one provided in v1.x, the major version number is only motivated by the bump of React version requirement. Provided a compatible React version, existing Meteor apps leveraging the `withTracker` HOC can freely upgrade from v1.x to v2.x, and gain compatibility with future React versions.
   - The previously deprecated `createContainer` has been removed.
 
-- `react-meteor-data` v1.x / v0.x :
+- `react-meteor-data` v0.x :
   - `withTracker` HOC (+ `createContainer`, kept for backwards compatibility with early v0.x releases)
   - Requires React `^15.3` or `^16.0`.
   - Implementation relies on React lifecycle methods (`componentWillMount` / `componentWillUpdate`) that are [marked for deprecation in future React versions](https://reactjs.org/blog/2018/03/29/react-v-16-3.html#component-lifecycle-changes) ("React Suspense").
