@@ -13,7 +13,7 @@ Package.onUse(function (api) {
   api.use('tracker');
   api.use('ecmascript');
 
-  api.mainModule('index.js', { lazy: true });
+  api.mainModule('index.js', ['client', 'server'], { lazy: true });
 });
 
 Package.onTest(function (api) {
