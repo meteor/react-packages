@@ -119,6 +119,8 @@ function useTrackerClient(reactiveFn, deps, computationHandler) {
     // if we are re-creating the computation, we need to stop the old one.
     dispose(refs);
 
+    let suspended = false;
+    
     // Use Tracker.nonreactive in case we are inside a Tracker Computation.
     // This can happen if someone calls `ReactDOM.render` inside a Computation.
     // In that case, we want to opt out of the normal behavior of nested
@@ -126,7 +128,20 @@ function useTrackerClient(reactiveFn, deps, computationHandler) {
     // it stops the inner one.
     refs.computation = Tracker.nonreactive(() =>
       Tracker.autorun((c) => {
-        tracked(refs, c, forceUpdate);
+        // For suspense, we want to catch the Promise, and when it resolves 
+        // dispose of it, so it can get recreated in the next render...
+        try {
+          tracked(refs, c, forceUpdate);
+        } catch (e) {
+          if (typeof e.then === 'function') {
+            suspended = true;
+            throw e.then(() => {
+              Meteor.defer(() => dispose(refs));
+            });
+          } else {
+            throw e;
+          }
+        }
       })
     );
 
@@ -135,7 +150,7 @@ function useTrackerClient(reactiveFn, deps, computationHandler) {
     // We still want synchronous rendering for a number of reason (see readme), so we work around
     // possible memory/resource leaks by setting a time out to automatically clean everything up,
     // and watching a set of references to make sure everything is choreographed correctly.
-    if (!refs.isMounted) {
+    if (!suspended && !refs.isMounted) {
       // Components yield to allow the DOM to update and the browser to paint before useEffect
       // is run. In concurrent mode this can take quite a long time, so we set a 1000ms timeout
       // to allow for that.
