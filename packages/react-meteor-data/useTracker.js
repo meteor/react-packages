@@ -86,8 +86,11 @@ const tracked = (refs, c, forceUpdate) => {
       forceUpdate();
     } else if (refs.isMounted) {
       // Only run the reactiveFn if the component is mounted.
+      const prevData = refs.computationData;
       runReactiveFn(refs, c);
-      forceUpdate();
+      if (!refs.shouldUpdate || refs.shouldUpdate(prevData, refs.computationData)) {
+        forceUpdate();
+      }
     } else {
       // If we got here, then a reactive update happened before the render was
       // committed - before useEffect has run. We don't want to run the reactiveFn
@@ -104,14 +107,18 @@ const tracked = (refs, c, forceUpdate) => {
 };
 /* eslint-enable no-param-reassign */
 
-function useTrackerClient(reactiveFn, deps, computationHandler) {
+function useTrackerClient(reactiveFn, deps, options: {
+  computationHandler?: function,
+  shouldUpdate?: function
+}) {
   const { current: refs } = useRef({});
   const [, forceUpdate] = useReducer(fur, 0);
 
   // Always have up to date deps and computations in all contexts
   refs.reactiveFn = reactiveFn;
   refs.deps = deps;
-  refs.computationHandler = computationHandler;
+  refs.computationHandler = options && options.computationHandler;
+  refs.shouldUpdate = options && options.shouldUpdate;
 
   // We are abusing useMemo a little bit, using it for it's deps
   // compare, but not for it's memoization.
