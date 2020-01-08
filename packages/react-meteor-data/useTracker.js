@@ -132,18 +132,24 @@ function useTrackerClient(reactiveFn, deps, computationHandler) {
 
     // We are creating a side effect in render, which can be problematic in some cases, such as
     // Suspense or concurrent rendering or if an error is thrown and handled by an error boundary.
-    // We still want synchronous rendering for a number of reason (see readme), so we work around
+    // We still want synchronous rendering for a number of reasons (see readme), so we work around
     // possible memory/resource leaks by setting a time out to automatically clean everything up,
     // and watching a set of references to make sure everything is choreographed correctly.
     if (!refs.isMounted) {
-      // Components yield to allow the DOM to update and the browser to paint before useEffect
-      // is run. In concurrent mode this can take quite a long time, so we set a 1000ms timeout
-      // to allow for that.
-      refs.disposeId = setTimeout(() => {
-        if (!refs.isMounted) {
-          dispose(refs);
-        }
-      }, 1000);
+      if (Array.isArray(deps)) {
+        // Components yield to allow the DOM to update and the browser to paint before useEffect
+        // is run. In concurrent mode this can take quite a long time, so we set a 1000ms timeout
+        // to allow for that.
+        refs.disposeId = setTimeout(() => {
+          if (!refs.isMounted) {
+            dispose(refs);
+          }
+        }, 1000);
+      } else {
+        // If we have no deps, we want to forceUpdate in useEffect to support StrictMode.
+        // See: https://github.com/meteor/react-packages/issues/278
+        dispose(refs);
+      }
     }
   }, deps);
 
