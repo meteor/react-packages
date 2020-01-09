@@ -1,8 +1,8 @@
 /* global Tinytest */
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-
 import { renderHook, act } from '@testing-library/react-hooks';
+import { render, cleanup, waitForDomChange } from '@testing-library/react';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { ReactiveVar } from 'meteor/reactive-var';
 
@@ -14,7 +14,7 @@ const getInnerHtml = function (elem) {
 };
 
 if (Meteor.isClient) {
-  Tinytest.add('withTracker - basic track', function (test) {
+  Tinytest.add('withTracker - basic track', async function (test) {
     var div = document.createElement("DIV");
 
     var x = new ReactiveVar('aaa');
@@ -32,6 +32,7 @@ if (Meteor.isClient) {
 
     x.set('bbb');
     Tracker.flush({_throwFirstError: true});
+    await waitForDomChange({ div, timeout: 250 });
     test.equal(getInnerHtml(div), '<span>bbb</span>');
 
     test.equal(x._numListeners(), 1);
@@ -46,7 +47,7 @@ if (Meteor.isClient) {
   // nested, invalidating the outer one stops the inner one, unless
   // Tracker.nonreactive is used.  This test tests for the use of
   // Tracker.nonreactive around the mixin's autorun.
-  Tinytest.add('withTracker - render in autorun', function (test) {
+  Tinytest.add('withTracker - render in autorun', async function (test) {
     var div = document.createElement("DIV");
 
     var x = new ReactiveVar('aaa');
@@ -68,12 +69,13 @@ if (Meteor.isClient) {
 
     x.set('bbb');
     Tracker.flush({_throwFirstError: true});
+    await waitForDomChange({ div, timeout: 250 });
     test.equal(getInnerHtml(div), '<span>bbb</span>');
 
     ReactDOM.unmountComponentAtNode(div);
   });
 
-  Tinytest.add('withTracker - track based on props and state', function (test) {
+  Tinytest.add('withTracker - track based on props and state', async function (test) {
     var div = document.createElement("DIV");
 
     var xs = [new ReactiveVar('aaa'),
@@ -100,6 +102,7 @@ if (Meteor.isClient) {
     xs[0].set('AAA');
     test.equal(getInnerHtml(div), '<span>aaa</span>');
     Tracker.flush({_throwFirstError: true});
+    await waitForDomChange({ div, timeout: 250 });
     test.equal(getInnerHtml(div), '<span>AAA</span>');
 
     {
@@ -110,12 +113,14 @@ if (Meteor.isClient) {
     test.equal(getInnerHtml(div), '<span>bbb</span>');
     xs[1].set('BBB');
     Tracker.flush({_throwFirstError: true});
+    await waitForDomChange({ div, timeout: 250 });
     test.equal(getInnerHtml(div), '<span>BBB</span>');
 
     setState({m: 1});
     test.equal(getInnerHtml(div), '<span>ccc</span>');
     xs[2].set('CCC');
     Tracker.flush({_throwFirstError: true});
+    await waitForDomChange({ div, timeout: 250 });
     test.equal(getInnerHtml(div), '<span>CCC</span>');
 
     ReactDOM.render(<Foo n={0}/>, div);
@@ -125,7 +130,7 @@ if (Meteor.isClient) {
     ReactDOM.unmountComponentAtNode(div);
   });
 
-  Tinytest.add('withTracker - track based on props and state (with deps)', function (test) {
+  Tinytest.add('withTracker - track based on props and state (with deps)', async function (test) {
     var div = document.createElement("DIV");
 
     var xs = [new ReactiveVar('aaa'),
@@ -155,6 +160,7 @@ if (Meteor.isClient) {
     xs[0].set('AAA');
     test.equal(getInnerHtml(div), '<span>aaa</span>');
     Tracker.flush({_throwFirstError: true});
+    await waitForDomChange({ div, timeout: 250 });
     test.equal(getInnerHtml(div), '<span>AAA</span>');
 
     {
@@ -165,12 +171,14 @@ if (Meteor.isClient) {
     test.equal(getInnerHtml(div), '<span>bbb</span>');
     xs[1].set('BBB');
     Tracker.flush({_throwFirstError: true});
+    await waitForDomChange({ div, timeout: 250 });
     test.equal(getInnerHtml(div), '<span>BBB</span>');
 
     setState({m: 1});
     test.equal(getInnerHtml(div), '<span>ccc</span>');
     xs[2].set('CCC');
     Tracker.flush({_throwFirstError: true});
+    await waitForDomChange({ div, timeout: 250 });
     test.equal(getInnerHtml(div), '<span>CCC</span>');
 
     ReactDOM.render(<Foo n={0}/>, div);

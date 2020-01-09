@@ -3,7 +3,7 @@ import React, { Suspense, useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 
 import { renderHook, act } from '@testing-library/react-hooks';
-import { render, cleanup, waitForDomChange } from '@testing-library/react'
+import { render, cleanup, waitForDomChange } from '@testing-library/react';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { ReactiveVar } from 'meteor/reactive-var';
 
@@ -31,12 +31,13 @@ Tinytest.add('useTracker - no deps', async function (test) {
     }),
     { initialProps: { name: 'key' } }
   );
+  await waitForNextUpdate();
 
   test.equal(result.current, 'initial', 'Expect initial value to be "initial"');
-  test.equal(runCount, 1, 'Should have run 1 times');
+  test.equal(runCount, 2, 'Should have run 2 times');
   if (Meteor.isClient) {
-    test.equal(createdCount, 1, 'Should have been created 1 times');
-    test.equal(destroyedCount, 0, 'Should not have been destroyed yet');
+    test.equal(createdCount, 2, 'Should have been created 2 times');
+    test.equal(destroyedCount, 1, 'Should have been destroyed 1 time');
   }
 
   act(() => {
@@ -46,30 +47,30 @@ Tinytest.add('useTracker - no deps', async function (test) {
   await waitForNextUpdate();
 
   test.equal(result.current, 'changed', 'Expect new value to be "changed"');
-  test.equal(runCount, 2, 'Should have run 2 times');
-  if (Meteor.isClient) {
-    test.equal(createdCount, 2, 'Should have been created 2 times');
-    test.equal(destroyedCount, 1, 'Should have been destroyed 1 less than created');
-  }
-
-  rerender();
-  await waitForNextUpdate();
-
-  test.equal(result.current, 'changed', 'Expect value of "changed" to persist after rerender');
   test.equal(runCount, 3, 'Should have run 3 times');
   if (Meteor.isClient) {
     test.equal(createdCount, 3, 'Should have been created 3 times');
     test.equal(destroyedCount, 2, 'Should have been destroyed 1 less than created');
   }
 
-  rerender({ name: 'different' });
+  rerender();
   await waitForNextUpdate();
 
-  test.equal(result.current, 'default', 'After deps change, the default value should have returned');
+  test.equal(result.current, 'changed', 'Expect value of "changed" to persist after rerender');
   test.equal(runCount, 4, 'Should have run 4 times');
   if (Meteor.isClient) {
     test.equal(createdCount, 4, 'Should have been created 4 times');
     test.equal(destroyedCount, 3, 'Should have been destroyed 1 less than created');
+  }
+
+  rerender({ name: 'different' });
+  await waitForNextUpdate();
+
+  test.equal(result.current, 'default', 'After deps change, the default value should have returned');
+  test.equal(runCount, 5, 'Should have run 5 times');
+  if (Meteor.isClient) {
+    test.equal(createdCount, 5, 'Should have been created 5 times');
+    test.equal(destroyedCount, 4, 'Should have been destroyed 1 less than created');
   }
 
   unmount();
@@ -117,6 +118,7 @@ Tinytest.add('useTracker - with deps', async function (test) {
     }),
     { initialProps: { name: 'name' } }
   );
+  await waitForNextUpdate();
 
   test.equal(result.current, 'default', 'Expect the default value for given name to be "default"');
   test.equal(runCount, 1, 'Should have run 1 times');
@@ -237,7 +239,7 @@ if (Meteor.isClient) {
     cleanup();
   });
 
-  Tinytest.add('useTracker - basic track', function (test) {
+  Tinytest.add('useTracker - basic track', async function (test) {
     var div = document.createElement("DIV");
 
     var x = new ReactiveVar('aaa');
@@ -247,7 +249,7 @@ if (Meteor.isClient) {
         return {
           x: x.get()
         };
-      })
+      });
       return <span>{data.x}</span>;
     };
 
@@ -256,11 +258,14 @@ if (Meteor.isClient) {
 
     x.set('bbb');
     Tracker.flush({_throwFirstError: true});
+    await waitForDomChange({ div, timeout: 250 });
+
     test.equal(getInnerHtml(div), '<span>bbb</span>');
 
     test.equal(x._numListeners(), 1);
 
     ReactDOM.unmountComponentAtNode(div);
+    await waitForDomChange({ div, timeout: 250 });
 
     test.equal(x._numListeners(), 0);
   });
@@ -270,7 +275,7 @@ if (Meteor.isClient) {
   // nested, invalidating the outer one stops the inner one, unless
   // Tracker.nonreactive is used.  This test tests for the use of
   // Tracker.nonreactive around the mixin's autorun.
-  Tinytest.add('useTracker - render in autorun', function (test) {
+  Tinytest.add('useTracker - render in autorun', async function (test) {
     var div = document.createElement("DIV");
 
     var x = new ReactiveVar('aaa');
@@ -293,6 +298,7 @@ if (Meteor.isClient) {
 
     x.set('bbb');
     Tracker.flush({_throwFirstError: true});
+    await waitForDomChange({ div, timeout: 250 });
     test.equal(getInnerHtml(div), '<span>bbb</span>');
 
     ReactDOM.unmountComponentAtNode(div);
@@ -331,7 +337,7 @@ if (Meteor.isClient) {
     act(() => Tracker.flush({_throwFirstError: true}));
     test.isTrue(getByText('BBB'));
 
-    setState({m: 1});
+    act(() => setState({m: 1}));
 
     test.isTrue(getByText('ccc'));
     xs[2].set('CCC');
