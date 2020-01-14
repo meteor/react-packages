@@ -9,4 +9,4 @@ if (Meteor.isDevelopment) {
 }
 
 export { default as useTracker } from './useTracker';
-export { default as withTracker } from './withTracker.jsx';
+export { default as withTracker } from './withTracker.tsx';
