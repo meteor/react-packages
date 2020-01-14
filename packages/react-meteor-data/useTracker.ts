@@ -30,15 +30,17 @@ function checkCursor(data: any): void {
 // incrementing a number whenever the dispatch method is invoked.
 const fur = (x: number): number => x + 1;
 
+type ReactiveFn = (c?: Tracker.Computation) => any;
+type ComputationHandler = (c: Tracker.Computation) => () => void | void;
 type TrackerRefs = {
-  reactiveFn: Function;
-  computationHandler?: Function;
+  reactiveFn: ReactiveFn;
+  computationHandler?: ComputationHandler;
   deps?: Array<any>;
   computation?: Tracker.Computation;
   isMounted: boolean;
   disposeId?: number; // TimeoutID
   trackerData: any;
-  computationCleanup?: Function;
+  computationCleanup?: () => void;
   trackerCount?: number
 }
 
@@ -126,7 +128,7 @@ const tracked = (c: Tracker.Computation, refs: TrackerRefs, forceUpdate: Functio
   }
 };
 
-function useTrackerNoDeps (reactiveFn: Function, deps?: null | Array<any>, computationHandler?: Function): any {
+function useTrackerNoDeps (reactiveFn: ReactiveFn, deps?: null | Array<any>, computationHandler?: ComputationHandler): any {
   const { current: refs } = useRef<TrackerRefs>({
     reactiveFn,
     isMounted: false,
@@ -173,7 +175,7 @@ function useTrackerNoDeps (reactiveFn: Function, deps?: null | Array<any>, compu
   return refs.trackerData;
 }
 
-function useTrackerWithDeps (reactiveFn: Function, deps: Array<any>, computationHandler?: Function): any {
+function useTrackerWithDeps (reactiveFn: ReactiveFn, deps: Array<any>, computationHandler?: ComputationHandler): any {
   const { current: refs } = useRef<TrackerRefs>({
     reactiveFn,
     isMounted: false,
@@ -234,7 +236,7 @@ function useTrackerWithDeps (reactiveFn: Function, deps: Array<any>, computation
   return refs.trackerData;
 }
 
-function useTrackerClient (reactiveFn: Function, deps?: Array<any> | null, computationHandler?: Function): any {
+function useTrackerClient (reactiveFn: ReactiveFn, deps?: Array<any> | null, computationHandler?: ComputationHandler): any {
   if (deps === null || deps === undefined || !Array.isArray(deps)) {
     return useTrackerNoDeps(reactiveFn, deps, computationHandler);
   } else {
@@ -242,7 +244,7 @@ function useTrackerClient (reactiveFn: Function, deps?: Array<any> | null, compu
   }
 }
 
-const useTrackerServer = (reactiveFn: Function, deps?: Array<any> | null, computationHandler?: Function): any =>
+const useTrackerServer = (reactiveFn: ReactiveFn, deps?: Array<any> | null, computationHandler?: ComputationHandler): any =>
   Tracker.nonreactive(reactiveFn);
 
 // When rendering on the server, we don't want to use the Tracker.
@@ -252,7 +254,7 @@ const useTracker = Meteor.isServer
   : useTrackerClient;
 
 export default Meteor.isDevelopment
-  ? (reactiveFn: Function, deps?: Array<any> | null, computationHandler?: Function): any => {
+  ? (reactiveFn: ReactiveFn, deps?: Array<any> | null, computationHandler?: ComputationHandler): any => {
     if (typeof reactiveFn !== 'function') {
       console.warn(
         'Warning: useTracker expected a function in it\'s first argument '
