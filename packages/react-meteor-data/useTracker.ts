@@ -29,6 +29,10 @@ function checkCursor(data: any): void {
 // Used to create a forceUpdate from useReducer. Forces update by
 // incrementing a number whenever the dispatch method is invoked.
 const fur = (x: number): number => x + 1;
+const useForceUpdate = (): CallableFunction => {
+  const [, forceUpdate] = useReducer(fur, 0);
+  return forceUpdate;
+}
 
 type ReactiveFn = (c?: Tracker.Computation) => any;
 type ComputationHandler = (c: Tracker.Computation) => () => void | void;
@@ -128,13 +132,17 @@ const tracked = (c: Tracker.Computation, refs: TrackerRefs, forceUpdate: Functio
   }
 };
 
-function useTrackerNoDeps (reactiveFn: ReactiveFn, deps?: null | Array<any>, computationHandler?: ComputationHandler): any {
+interface useTrackerSignature {
+  (reactiveFn: ReactiveFn, deps?: null | Array<any>, computationHandler?: ComputationHandler): any
+}
+
+const useTrackerNoDeps: useTrackerSignature = (reactiveFn, deps = null, computationHandler) => {
   const { current: refs } = useRef<TrackerRefs>({
     reactiveFn,
     isMounted: false,
     trackerData: null
   });
-  const [, forceUpdate] = useReducer(fur, 0);
+  const forceUpdate = useForceUpdate();
 
   refs.reactiveFn = reactiveFn;
   if (computationHandler) {
@@ -175,13 +183,13 @@ function useTrackerNoDeps (reactiveFn: ReactiveFn, deps?: null | Array<any>, com
   return refs.trackerData;
 }
 
-function useTrackerWithDeps (reactiveFn: ReactiveFn, deps: Array<any>, computationHandler?: ComputationHandler): any {
+const useTrackerWithDeps: useTrackerSignature = (reactiveFn, deps: Array<any>, computationHandler) => {
   const { current: refs } = useRef<TrackerRefs>({
     reactiveFn,
     isMounted: false,
     trackerData: null
   });
-  const [, forceUpdate] = useReducer(fur, 0);
+  const forceUpdate = useForceUpdate();
 
   // Always have up to date deps and computations in all contexts
   refs.reactiveFn = reactiveFn;
@@ -193,7 +201,7 @@ function useTrackerWithDeps (reactiveFn: ReactiveFn, deps: Array<any>, computati
   // We are abusing useMemo a little bit, using it for it's deps
   // compare, but not for it's memoization.
   useMemo(() => {
-    // if we are re-creating the computation, we need to stop the old one.
+    // stop the old one.
     dispose(refs);
 
     track(refs, forceUpdate, tracked)
@@ -236,15 +244,12 @@ function useTrackerWithDeps (reactiveFn: ReactiveFn, deps: Array<any>, computati
   return refs.trackerData;
 }
 
-function useTrackerClient (reactiveFn: ReactiveFn, deps?: Array<any> | null, computationHandler?: ComputationHandler): any {
-  if (deps === null || deps === undefined || !Array.isArray(deps)) {
-    return useTrackerNoDeps(reactiveFn, deps, computationHandler);
-  } else {
-    return useTrackerWithDeps(reactiveFn, deps, computationHandler);
-  }
-}
+const useTrackerClient: useTrackerSignature = (reactiveFn, deps = null, computationHandler) =>
+  (deps === null || deps === undefined || !Array.isArray(deps))
+    ? useTrackerNoDeps(reactiveFn, deps, computationHandler)
+    : useTrackerWithDeps(reactiveFn, deps, computationHandler);
 
-const useTrackerServer = (reactiveFn: ReactiveFn, deps?: Array<any> | null, computationHandler?: ComputationHandler): any =>
+const useTrackerServer: useTrackerSignature = (reactiveFn, deps = null, computationHandler) =>
   Tracker.nonreactive(reactiveFn);
 
 // When rendering on the server, we don't want to use the Tracker.
@@ -253,26 +258,28 @@ const useTracker = Meteor.isServer
   ? useTrackerServer
   : useTrackerClient;
 
-export default Meteor.isDevelopment
-  ? (reactiveFn: ReactiveFn, deps?: Array<any> | null, computationHandler?: ComputationHandler): any => {
-    if (typeof reactiveFn !== 'function') {
-      console.warn(
-        'Warning: useTracker expected a function in it\'s first argument '
-        + `(reactiveFn), but got type of ${typeof reactiveFn}.`
-      );
-    }
-    if (deps && !Array.isArray(deps)) {
-      console.warn(
-        'Warning: useTracker expected an array in it\'s second argument '
-        + `(dependency), but got type of ${typeof deps}.`
-      );
-    }
-    if (computationHandler && typeof computationHandler !== 'function') {
-      console.warn(
-        'Warning: useTracker expected a function in it\'s third argument'
-        + `(computationHandler), but got type of ${typeof computationHandler}.`
-      );
-    }
-    return useTracker(reactiveFn, deps, computationHandler);
+const useTrackerDev: useTrackerSignature = (reactiveFn, deps = null, computationHandler) => {
+  if (typeof reactiveFn !== 'function') {
+    console.warn(
+      'Warning: useTracker expected a function in it\'s first argument '
+      + `(reactiveFn), but got type of ${typeof reactiveFn}.`
+    );
   }
+  if (deps && !Array.isArray(deps)) {
+    console.warn(
+      'Warning: useTracker expected an array in it\'s second argument '
+      + `(dependency), but got type of ${typeof deps}.`
+    );
+  }
+  if (computationHandler && typeof computationHandler !== 'function') {
+    console.warn(
+      'Warning: useTracker expected a function in it\'s third argument'
+      + `(computationHandler), but got type of ${typeof computationHandler}.`
+    );
+  }
+  return useTracker(reactiveFn, deps, computationHandler);
+}
+
+export default Meteor.isDevelopment
+  ? useTrackerDev
   : useTracker;
