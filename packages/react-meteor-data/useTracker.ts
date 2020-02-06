@@ -42,7 +42,7 @@ type TrackerRefs = {
   deps?: Array<any>;
   computation?: Tracker.Computation;
   isMounted: boolean;
-  disposeId?: number; // TimeoutID
+  disposeId?: ReturnType<typeof setTimeout>;
   trackerData: any;
   computationCleanup?: () => void;
   trackerCount?: number
