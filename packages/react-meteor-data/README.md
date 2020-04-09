@@ -65,12 +65,18 @@ function Foo({ listId }) {
 
   return (
     <h1>Hello {currentUser.username}</h1>
-    {listLoading ?
-      <div>Loading</div> :
-      <div>
-        Here is the Todo list {listId}:
-        <ul>{tasks.map(task => <li key={task._id}>{task.label}</li>)}</ul>
-      </div}
+    {listLoading ? (
+        <div>Loading</div>
+      ) : (
+        <div>
+          Here is the Todo list {listId}:
+          <ul>
+            {tasks.map(task => (
+              <li key={task._id}>{task.label}</li>
+            ))}
+          </ul>
+        </div>
+      )}
   );
 }
 ```
