@@ -149,6 +149,7 @@ const useTrackerNoDeps: useTrackerSignature = (reactiveFn, deps = null, computat
     refs.computationHandler = computationHandler;
   }
 
+  // Without deps, always dispose and recreate the computation with every render.
   dispose(refs);
   track(refs, forceUpdate, (c: Tracker.Computation) => {
     if (c.firstRun) {
@@ -159,9 +160,9 @@ const useTrackerNoDeps: useTrackerSignature = (reactiveFn, deps = null, computat
     }
   });
 
-  // The strategy to work around creating side effects in render with Tracker when not using deps
-  // is to create the computation, run the user's reactive function in a computation synchronously,
-  // and immediately dispose of it. It'll be recreated again after the render is committed.
+  // To avoid creating side effects in render with Tracker when not using deps
+  // create the computation, run the user's reactive function in a computation synchronously,
+  // then immediately dispose of it. It'll be recreated again after the render is committed.
   if (!refs.isMounted) {
     // We want to forceUpdate in useEffect to support StrictMode.
     // See: https://github.com/meteor/react-packages/issues/278
@@ -169,7 +170,7 @@ const useTrackerNoDeps: useTrackerSignature = (reactiveFn, deps = null, computat
   }
 
   useEffect(() => {
-    // Now that we are mounted, we can set the flag, and cancel the timeout
+    // Let subsequent renders know we are mounted (render is comitted).
     refs.isMounted = true;
 
     // Render is committed. Since useTracker without deps always runs synchronously,
