@@ -1,244 +1,253 @@
 /* global Meteor, Tinytest */
-import React, { Suspense, useState, useEffect } from 'react';
+import React, { useState, useReducer, StrictMode } from 'react';
 import ReactDOM from 'react-dom';
-
-import { renderHook, act } from '@testing-library/react-hooks';
-import { render, cleanup, waitForDomChange } from '@testing-library/react'
+import { cleanup, waitFor } from '@testing-library/react';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import useTracker from './useTracker';
 
-Tinytest.add('useTracker - no deps', async function (test) {
-  const reactiveDict = new ReactiveDict();
-  let runCount = 0;
-  let computation;
-  let createdCount = 0;
-  let destroyedCount = 0;
-
-  const { result, rerender, unmount, waitForNextUpdate } = renderHook(
-    ({ name }) => useTracker(() => {
-      runCount++;
-      reactiveDict.setDefault(name, 'initial');
-      return reactiveDict.get(name);
-    }, null, (c) => {
-      test.isFalse(c === computation, 'The new computation should always be a new instance');
-      computation = c;
-      createdCount++;
-      return () => {
-        destroyedCount++;
-      }
-    }),
-    { initialProps: { name: 'key' } }
-  );
-
-  test.equal(result.current, 'initial', 'Expect initial value to be "initial"');
-  test.equal(runCount, 1, 'Should have run 1 times');
-  if (Meteor.isClient) {
-    test.equal(createdCount, 1, 'Should have been created 1 times');
-    test.equal(destroyedCount, 0, 'Should not have been destroyed yet');
-  }
-
-  act(() => {
-    reactiveDict.set('key', 'changed');
-    Tracker.flush({_throwFirstError: true});
-  });
-  await waitForNextUpdate();
-
-  test.equal(result.current, 'changed', 'Expect new value to be "changed"');
-  test.equal(runCount, 2, 'Should have run 2 times');
-  if (Meteor.isClient) {
-    test.equal(createdCount, 2, 'Should have been created 2 times');
-    test.equal(destroyedCount, 1, 'Should have been destroyed 1 less than created');
-  }
-
-  rerender();
-  await waitForNextUpdate();
-
-  test.equal(result.current, 'changed', 'Expect value of "changed" to persist after rerender');
-  test.equal(runCount, 3, 'Should have run 3 times');
-  if (Meteor.isClient) {
-    test.equal(createdCount, 3, 'Should have been created 3 times');
-    test.equal(destroyedCount, 2, 'Should have been destroyed 1 less than created');
-  }
-
-  rerender({ name: 'different' });
-  await waitForNextUpdate();
-
-  test.equal(result.current, 'default', 'After deps change, the default value should have returned');
-  test.equal(runCount, 4, 'Should have run 4 times');
-  if (Meteor.isClient) {
-    test.equal(createdCount, 4, 'Should have been created 4 times');
-    test.equal(destroyedCount, 3, 'Should have been destroyed 1 less than created');
-  }
-
-  unmount();
-  test.equal(runCount, 4, 'Unmount should not cause a tracker run');
-  if (Meteor.isClient) {
-    test.equal(createdCount, 4, 'Should have been created 4 times');
-    test.equal(destroyedCount, 4, 'Should have been destroyed the same number of times as created');
-  }
-
-  act(() => {
-    reactiveDict.set('different', 'changed again');
-    Tracker.flush({_throwFirstError: true});
-  });
-  // we can't use await waitForNextUpdate() here because it doesn't trigger re-render - is there a way to test that?
-
-  test.equal(result.current, 'default', 'After unmount, changes to the reactive source should not update the value.');
-  test.equal(runCount, 4, 'After unmount, useTracker should no longer be tracking');
-  if (Meteor.isClient) {
-    test.equal(createdCount, 4, 'Should have been created 4 times');
-    test.equal(destroyedCount, 4, 'Should have been destroyed the same number of times as created');
-  }
-
-  reactiveDict.destroy();
-});
-
-Tinytest.add('useTracker - with deps', async function (test) {
-  const reactiveDict = new ReactiveDict();
-  let runCount = 0;
-  let computation;
-  let createdCount = 0;
-  let destroyedCount = 0;
-
-  const { result, rerender, unmount, waitForNextUpdate } = renderHook(
-    ({ name }) => useTracker(() => {
-      runCount++;
-      reactiveDict.setDefault(name, 'default');
-      return reactiveDict.get(name);
-    }, [name], (c) => {
-      test.isFalse(c === computation, 'The new computation should always be a new instance');
-      computation = c;
-      createdCount++;
-      return () => {
-        destroyedCount++;
-      }
-    }),
-    { initialProps: { name: 'name' } }
-  );
-
-  test.equal(result.current, 'default', 'Expect the default value for given name to be "default"');
-  test.equal(runCount, 1, 'Should have run 1 times');
-  if (Meteor.isClient) {
-    test.equal(createdCount, 1, 'Should have been created 1 times');
-    test.equal(destroyedCount, 0, 'Should not have been destroyed yet');
-  }
-
-  act(() => {
-    reactiveDict.set('name', 'changed');
-    Tracker.flush({_throwFirstError: true});
-  });
-  await waitForNextUpdate();
-
-  test.equal(result.current, 'changed', 'Expect the new value for given name to be "changed"');
-  test.equal(runCount, 2, 'Should have run 2 times');
-  if (Meteor.isClient) {
-    test.equal(createdCount, 1, 'Should have been created 1 times');
-    test.equal(destroyedCount, 0, 'Should not have been destroyed yet');
-  }
-
-  rerender();
-  await waitForNextUpdate();
-
-  test.equal(result.current, 'changed', 'Expect the new value "changed" for given name to have persisted through render');
-  test.equal(runCount, 3, 'Should have run 3 times');
-  if (Meteor.isClient) {
-    test.equal(createdCount, 1, 'Should have been created 1 times');
-    test.equal(destroyedCount, 0, 'Should not have been destroyed yet');
-  }
-
-  rerender({ name: 'different' });
-  await waitForNextUpdate();
-
-  test.equal(result.current, 'default', 'After deps change, the default value should have returned');
-  test.equal(runCount, 4, 'Should have run 4 times');
-  if (Meteor.isClient) {
-    test.equal(createdCount, 2, 'Should have been created 2 times');
-    test.equal(destroyedCount, 1, 'Should have been destroyed 1 times');
-  }
-
-  unmount();
-  // we can't use await waitForNextUpdate() here because it doesn't trigger re-render - is there a way to test that?
-  test.equal(runCount, 4, 'Unmount should not cause a tracker run');
-  if (Meteor.isClient) {
-    test.equal(createdCount, 2, 'Should have been created 2 times');
-    test.equal(destroyedCount, 2, 'Should have been destroyed 2 times');
-  }
-
-  act(() => {
-    reactiveDict.set('different', 'changed again');
-    Tracker.flush({_throwFirstError: true});
-  });
-
-  test.equal(result.current, 'default', 'After unmount, changes to the reactive source should not update the value.');
-  test.equal(runCount, 4, 'After unmount, useTracker should no longer be tracking');
-  if (Meteor.isClient) {
-    test.equal(createdCount, 2, 'Should have been created 2 times');
-    test.equal(destroyedCount, 2, 'Should have been destroyed 2 times');
-  }
-
-  reactiveDict.destroy();
-});
-
-const getInnerHtml = function (elem) {
-  // clean up elem.innerHTML and strip data-reactid attributes too
-  return canonicalizeHtml(elem.innerHTML).replace(/ data-reactroot=".*?"/g, '');
-};
-
 if (Meteor.isClient) {
-  Tinytest.addAsync('useTracker - suspense, no deps', async function (test) {
-    const x = new ReactiveVar(0);
+  const getInnerHtml = function (elem) {
+    // clean up elem.innerHTML and strip data-reactid attributes too
+    return canonicalizeHtml(elem.innerHTML).replace(/ data-reactroot=".*?"/g, '');
+  };
 
-    const cache = { value: 0 };
-    const timeout = time => new Promise(resolve => setTimeout(resolve, time));
-    const wait = async () => {
-      await timeout(100);
-      cache.value = 1;
-      return cache.value;
-    };
+  // :TODO: Write tests to confirm internal assumptions when ErrorBoundaries or Suspense are used.
+  // :NOTE: Suspense is only for loading modules, not data - at the time of writing.
+  // :TODO: Write tests for ConcurrentMode
 
-    // this simulates a bunch of outside reactive activity
-    let i = 0;
-    const iId = setInterval(() => {
-      x.set(++i);
-    }, 2);
-    setTimeout(() => {
-      clearInterval(iId);
-    }, 200);
+  const noDepsTester = async (test, mode = 'normal') => {
+    const container = document.createElement("DIV");
 
-    let reactiveCount = 0;
-    let renderCount = 0;
-    const Loading = () => <span>loading</span>
-    const Foo = () => {
-      const data = useTracker(() => {
-        return {
-          x: x.get()
-        };
+    const reactiveDict = new ReactiveDict();
+    let runCount = 0;
+    let computation;
+    let createdCount = 0;
+    let destroyedCount = 0;
+    let value;
+    const Test = () => {
+      value = useTracker(() => {
+        runCount++;
+        reactiveDict.setDefault('key', 'initial');
+        return reactiveDict.get('key');
+      }, null, (c) => {
+        test.isFalse(c === computation, 'The new computation should always be a new instance');
+        computation = c;
+        createdCount++;
+        return () => {
+          destroyedCount++;
+        }
       });
-
-      const { value } = cache;
-
-      if (!value) {
-        throw wait();
-      }
-
-      return <span>complete</span>;
+      return <span>{value}</span>;
     };
 
-    var { getByText, container } = render(<Suspense fallback={<Loading />}><Foo/></Suspense>);
-    test.isTrue(getByText('loading'));
+    let rerender, unmount;
+    const TestContainer = () => {
+      [, rerender] = useReducer((x) => x + 1, 0);
+      const [mounted, setMounted] = useState(true);
+      unmount = () => setMounted(false);
+      return mode === 'normal'
+        ? mounted ? <Test /> : null
+        : <StrictMode>{mounted ? <Test /> : null}</StrictMode>
+    };
 
-    test.equal(getInnerHtml(container), '<span>loading</span>', 'When suspended on first render, loading text should be displayed.');
-    await waitForDomChange({ container, timeout: 250 });
+    // StrictMode runs everything twice, so adjust the values with a multiplier
+    const strictMul = mode === 'strict-mode' ? 2 : 1;
 
-    test.equal(getInnerHtml(container), '<span>complete</span>', 'Once the thrown promise resoles, we should have the complete content.');
+    ReactDOM.render(<TestContainer />, container);
+    test.equal(runCount, 1 * strictMul, 'Should have run 1 times - only the sync invocation');
 
-    cleanup();
+    // wait for useEffect
+    await waitFor(() => {}, { container, timeout: 250 });
+
+    test.equal(value, 'initial', 'Expect initial value to be "initial"');
+    test.equal(runCount, 2 * strictMul, 'Should have run 2 times - first, and in useEffect');
+    if (Meteor.isClient) {
+      test.equal(createdCount, 2 * strictMul, 'Should have been created 2 times');
+      test.equal(destroyedCount, 2 * strictMul - 1, 'Should have been destroyed 1 time');
+    }
+
+    await waitFor(() => {
+      reactiveDict.set('key', 'changed');
+      Tracker.flush({_throwFirstError: true});
+    }, { container, timeout: 250 });
+
+    test.equal(value, 'changed', 'Expect new value to be "changed"');
+    test.equal(runCount, 3 * strictMul, 'Should have run 3 times');
+    if (Meteor.isClient) {
+      test.equal(createdCount, 3 * strictMul, 'Should have been created 3 times');
+      test.equal(destroyedCount, 3 * strictMul - 1, 'Should have been destroyed 1 less than created');
+    }
+
+    await waitFor(() => {
+      rerender();
+    }, { container, timeout: 250 });
+
+    test.equal(value, 'changed', 'Expect value of "changed" to persist after rerender');
+    test.equal(runCount, 4 * strictMul, 'Should have run 4 times');
+    if (Meteor.isClient) {
+      test.equal(createdCount, 4 * strictMul, 'Should have been created 4 times');
+      test.equal(destroyedCount, 4 * strictMul -1, 'Should have been destroyed 1 less than created');
+    }
+
+    await waitFor(() => {
+      unmount();
+    }, { container, timeout: 250 });
+
+    test.equal(runCount, 4 * strictMul, 'Unmount should not cause a tracker run');
+    if (Meteor.isClient) {
+      test.equal(createdCount, 4 * strictMul, 'Should have been created 4 times');
+      test.equal(destroyedCount, 4 * strictMul, 'Should have been destroyed the same number of times as created');
+    }
+
+    await waitFor(() => {
+      reactiveDict.set('different', 'changed again');
+      Tracker.flush({_throwFirstError: true});
+    }, { container, timeout: 250 });
+
+    test.equal(value, 'changed', 'After unmount, changes to the reactive source should not update the value.');
+    test.equal(runCount, 4 * strictMul, 'After unmount, useTracker should no longer be tracking');
+    if (Meteor.isClient) {
+      test.equal(createdCount, 4 * strictMul, 'Should have been created 4 times');
+      test.equal(destroyedCount, 4 * strictMul, 'Should have been destroyed the same number of times as created');
+    }
+
+    reactiveDict.destroy();
+  };
+
+  Tinytest.addAsync('useTracker - no deps', async function (test, completed) {
+    await noDepsTester(test);
+    completed();
   });
 
-  Tinytest.add('useTracker - basic track', function (test) {
-    var div = document.createElement("DIV");
+  Tinytest.addAsync('useTracker - no deps in StrictMode', async function (test, completed) {
+    await noDepsTester(test, 'strict-mode');
+    completed();
+  });
+
+  const depsTester = async (test, mode = 'normal') => {
+    const container = document.createElement("DIV");
+
+    const reactiveDict = new ReactiveDict();
+    let runCount = 0;
+    let computation;
+    let createdCount = 0;
+    let destroyedCount = 0;
+    let value;
+    const Test = ({ name }) => {
+      value = useTracker(() => {
+        runCount++;
+        reactiveDict.setDefault(name, 'initial');
+        return reactiveDict.get(name);
+      }, [name], (c) => {
+        test.isFalse(c === computation, 'The new computation should always be a new instance');
+        computation = c;
+        createdCount++;
+        return () => {
+          destroyedCount++;
+        }
+      });
+      return <span>{value}</span>;
+    };
+
+    let rerender, unmount;
+    const TestContainer = () => {
+      [, forceRender] = useReducer((x) => x + 1, 0);
+      const [mounted, setMounted] = useState(true);
+      const [name, setName] = useState('name');
+      rerender = (name = null) =>
+        name ? setName(name) : forceRender();
+      unmount = () => setMounted(false);
+      return mode === 'normal'
+        ? mounted ? <Test name={name} /> : null
+        : <StrictMode>{mounted ? <Test name={name} /> : null}</StrictMode>
+    };
+
+    // StrictMode runs everything twice, so we have to be clever about counting.
+
+    // In its first run, StrictMode runs fully twice, throwing one of them away.
+    // So everything is counted twice, except destroy, which is called after the
+    // timeout on the dead end render (this is test at the very end).
+
+    // Committed renders run twice, but the hooks is only run twice when deps
+    // change.
+
+    let strictAdd = mode === 'strict-mode' ? 1 : 0;
+
+    ReactDOM.render(<TestContainer />, container);
+    test.equal(runCount, 1 + strictAdd, 'Should have run 1 times - only the sync invocation');
+
+    // wait for useEffect
+    await waitFor(() => {}, { container, timeout: 250 });
+
+    test.equal(value, 'initial', 'Expect the initial value for given name to be "initial"');
+    test.equal(runCount, 1 + strictAdd, 'Should have run 1 times - still only the sync invocation (unlike without deps)');
+    if (Meteor.isClient) {
+      test.equal(createdCount, 1 + strictAdd, 'Should have been created 1 times');
+      test.equal(destroyedCount, 0, 'Should not have been destroyed yet');
+    }
+
+    await waitFor(() => {
+      reactiveDict.set('name', 'changed');
+      Tracker.flush({_throwFirstError: true});
+    }, { container, timeout: 250 });
+
+    test.equal(value, 'changed', 'Expect the new value for given name to be "changed"');
+    test.equal(runCount, 2 + strictAdd, 'Should have run 2 times after reactive change');
+    if (Meteor.isClient) {
+      test.equal(createdCount, 1 + strictAdd, 'Should have been created 1 times');
+      test.equal(destroyedCount, 1  + strictAdd - 1, 'Should not have been destroyed yet');
+    }
+
+    await waitFor(() => {
+      rerender();
+    }, { container, timeout: 250 });
+
+    test.equal(value, 'changed', 'Expect the new value "changed" for given name to have persisted through render');
+    test.equal(runCount, 2 + strictAdd, 'Should still have run only 2 times');
+    if (Meteor.isClient) {
+      test.equal(createdCount, 1 + strictAdd, 'Should have been created 1 times');
+      test.equal(destroyedCount, 1  + strictAdd - 1, 'Should not have been destroyed yet');
+    }
+
+    await waitFor(() => {
+      rerender('different');
+    }, { container, timeout: 250 });
+    if (mode === 'strict-mode') strictAdd++;
+
+    test.equal(value, 'initial', 'After deps change, the initial value should have returned');
+    test.equal(runCount, 3 + strictAdd, 'Should have run 3 times');
+    if (Meteor.isClient) {
+      test.equal(createdCount, 2 + strictAdd, 'Should have been created 2 times');
+      test.equal(destroyedCount, 2 + strictAdd - 1, 'Should have been destroyed 1 times');
+    }
+
+    await waitFor(() => {
+      unmount();
+    }, { container, timeout: 250 });
+
+    test.equal(runCount, 3 + strictAdd, 'Unmount should not cause a tracker run');
+    if (Meteor.isClient) {
+      test.equal(createdCount, 2 + strictAdd, 'Should have been created 2 times');
+      test.equal(destroyedCount, 2 + strictAdd, 'Should have been destroyed 2 times');
+    }
+
+    reactiveDict.destroy();
+  };
+
+  Tinytest.addAsync('useTracker - with deps', async function (test, completed) {
+    await depsTester(test);
+    completed();
+  });
+
+  Tinytest.addAsync('useTracker - with deps in StrictMode', async function (test, completed) {
+    await depsTester(test, 'strict-mode');
+    completed();
+  });
+
+  Tinytest.addAsync('useTracker - basic track', async function (test, completed) {
+    var container = document.createElement("DIV");
 
     var x = new ReactiveVar('aaa');
 
@@ -247,22 +256,29 @@ if (Meteor.isClient) {
         return {
           x: x.get()
         };
-      })
+      });
       return <span>{data.x}</span>;
     };
 
-    ReactDOM.render(<Foo/>, div);
-    test.equal(getInnerHtml(div), '<span>aaa</span>');
+    ReactDOM.render(<Foo/>, container);
+    test.equal(getInnerHtml(container), '<span>aaa</span>');
 
     x.set('bbb');
-    Tracker.flush({_throwFirstError: true});
-    test.equal(getInnerHtml(div), '<span>bbb</span>');
+    await waitFor(() => {
+      Tracker.flush({_throwFirstError: true});
+    }, { container, timeout: 250 });
+
+    test.equal(getInnerHtml(container), '<span>bbb</span>');
 
     test.equal(x._numListeners(), 1);
 
-    ReactDOM.unmountComponentAtNode(div);
+    await waitFor(() => {
+      ReactDOM.unmountComponentAtNode(container);
+    }, { container, timeout: 250 });
 
     test.equal(x._numListeners(), 0);
+
+    completed();
   });
 
   // Make sure that calling ReactDOM.render() from an autorun doesn't
@@ -270,8 +286,8 @@ if (Meteor.isClient) {
   // nested, invalidating the outer one stops the inner one, unless
   // Tracker.nonreactive is used.  This test tests for the use of
   // Tracker.nonreactive around the mixin's autorun.
-  Tinytest.add('useTracker - render in autorun', function (test) {
-    var div = document.createElement("DIV");
+  Tinytest.addAsync('useTracker - render in autorun', async function (test, completed) {
+    var container = document.createElement("DIV");
 
     var x = new ReactiveVar('aaa');
 
@@ -285,20 +301,26 @@ if (Meteor.isClient) {
     };
 
     Tracker.autorun(function (c) {
-      ReactDOM.render(<Foo/>, div);
+      ReactDOM.render(<Foo/>, container);
       // Stopping this autorun should not affect the mixin's autorun.
       c.stop();
     });
-    test.equal(getInnerHtml(div), '<span>aaa</span>');
+    test.equal(getInnerHtml(container), '<span>aaa</span>');
 
     x.set('bbb');
-    Tracker.flush({_throwFirstError: true});
-    test.equal(getInnerHtml(div), '<span>bbb</span>');
+    await waitFor(() => {
+      Tracker.flush({_throwFirstError: true});
+    }, { container, timeout: 250 });
+    test.equal(getInnerHtml(container), '<span>bbb</span>');
 
-    ReactDOM.unmountComponentAtNode(div);
+    ReactDOM.unmountComponentAtNode(container);
+
+    completed();
   });
 
-  Tinytest.add('useTracker - track based on props and state', function (test) {
+  Tinytest.addAsync('useTracker - track based on props and state', async function (test, completed) {
+    var container = document.createElement("DIV");
+
     var xs = [new ReactiveVar('aaa'),
               new ReactiveVar('bbb'),
               new ReactiveVar('ccc')];
@@ -315,39 +337,59 @@ if (Meteor.isClient) {
       return <span>{data.x}</span>;
     };
 
-    var { getByText } = render(<Foo n={0}/>);
+    ReactDOM.render(<Foo n={0}/>, container);
 
-    test.isTrue(getByText('aaa'), 'Content should still be “aaa” in initial render');
+    test.equal(getInnerHtml(container), '<span>aaa</span>', 'Content should still be “aaa” in initial render');
+
     xs[0].set('AAA');
-    test.isTrue(getByText('aaa'), 'Content should still be “aaa” in the dom, since we haven’t flushed yet');
-    act(() => Tracker.flush({_throwFirstError: true}));
-    test.isTrue(getByText('AAA'), 'Content should still be “AAA” in the dom after Tracker flush');
+    test.equal(getInnerHtml(container), '<span>aaa</span>', 'Content should still be “aaa” in the dom, since we haven’t flushed yet');
+    await waitFor(() => {
+      Tracker.flush({_throwFirstError: true});
+    }, { container, timeout: 250 });
+    test.equal(getInnerHtml(container), '<span>AAA</span>', 'Content should still be “AAA” in the dom after Tracker flush');
 
-    cleanup();
-    var { getByText } = render(<Foo n={1}/>);
+    ReactDOM.unmountComponentAtNode(container);
 
-    test.isTrue(getByText('bbb'));
+    ReactDOM.render(<Foo n={1}/>, container);
+
+    test.equal(getInnerHtml(container), '<span>bbb</span>', 'Content should still be “bbb”');
+
     xs[1].set('BBB');
-    act(() => Tracker.flush({_throwFirstError: true}));
-    test.isTrue(getByText('BBB'));
+    await waitFor(() => {
+      Tracker.flush({_throwFirstError: true});
+    }, { container, timeout: 250 });
+    test.equal(getInnerHtml(container), '<span>BBB</span>', 'Content should still be “BBB” in the dom after Tracker flush');
 
     setState({m: 1});
+    await waitFor(() => {
+      Tracker.flush({_throwFirstError: true});
+    }, { container, timeout: 250 });
+    test.equal(getInnerHtml(container), '<span>ccc</span>', 'Content should still be “ccc” in the dom after Tracker flush');
 
-    test.isTrue(getByText('ccc'));
     xs[2].set('CCC');
-    act(() => Tracker.flush({_throwFirstError: true}));
-    test.isTrue(getByText('CCC'));
+    await waitFor(() => {
+      Tracker.flush({_throwFirstError: true});
+    }, { container, timeout: 250 });
+    test.equal(getInnerHtml(container), '<span>CCC</span>', 'Content should still be “CCC” in the dom after Tracker flush');
 
-    cleanup();
-    var { getByText } = render(<Foo n={0}/>);
+    ReactDOM.unmountComponentAtNode(container);
+
+    ReactDOM.render(<Foo n={0}/>, container);
 
     setState({m: 0});
-    test.isTrue(getByText('AAA'));
+    await waitFor(() => {
+      Tracker.flush({_throwFirstError: true});
+    }, { container, timeout: 250 });
+    test.equal(getInnerHtml(container), '<span>AAA</span>', 'Content should still be “AAA” in the dom after Tracker flush');
 
-    cleanup();
+    ReactDOM.unmountComponentAtNode(container);
+
+    completed();
   });
 
-  Tinytest.add('useTracker - track based on props and state (with deps)', function (test) {
+  Tinytest.addAsync('useTracker - track based on props and state (with deps)', async function (test, completed) {
+    var container = document.createElement("DIV");
+
     var xs = [new ReactiveVar('aaa'),
               new ReactiveVar('bbb'),
               new ReactiveVar('ccc')];
@@ -364,38 +406,49 @@ if (Meteor.isClient) {
       return <span>{data.x}</span>;
     };
 
-    var { getByText } = render(<Foo n={0}/>);
+    ReactDOM.render(<Foo n={0}/>, container);
 
-    test.isTrue(getByText('aaa'), 'Content should still be “aaa” in initial render');
+    test.equal(getInnerHtml(container), '<span>aaa</span>', 'Content should still be “aaa” in initial render');
     xs[0].set('AAA');
-    test.isTrue(getByText('aaa'), 'Content should still be “aaa” in the dom, since we haven’t flushed yet');
-    act(() => Tracker.flush({_throwFirstError: true}));
-    test.isTrue(getByText('AAA'), 'Content should still be “AAA” in the dom after Tracker flush');
+    test.equal(getInnerHtml(container), '<span>aaa</span>', 'Content should still be “aaa” in the dom, since we haven’t flushed yet');
+    await waitFor(() => {
+      Tracker.flush({_throwFirstError: true});
+    }, { container, timeout: 250 });
+    test.equal(getInnerHtml(container), '<span>AAA</span>', 'Content should still be “AAA” in the dom after Tracker flush');
 
-    cleanup();
-    var { getByText } = render(<Foo n={1}/>);
+    ReactDOM.unmountComponentAtNode(container);
 
-    test.isTrue(getByText('bbb'));
+    ReactDOM.render(<Foo n={1}/>, container);
+
+    test.equal(getInnerHtml(container), '<span>bbb</span>');
+
     xs[1].set('BBB');
-    act(() => Tracker.flush({_throwFirstError: true}));
-    test.isTrue(getByText('BBB'));
+    await waitFor(() => {
+      Tracker.flush({_throwFirstError: true});
+    }, { container, timeout: 250 });
+    test.equal(getInnerHtml(container), '<span>BBB</span>');
 
     setState({m: 1});
-    test.isTrue(getByText('ccc'));
+    test.equal(getInnerHtml(container), '<span>ccc</span>');
     xs[2].set('CCC');
-    act(() => Tracker.flush({_throwFirstError: true}));
-    test.isTrue(getByText('CCC'));
+    await waitFor(() => {
+      Tracker.flush({_throwFirstError: true});
+    }, { container, timeout: 250 });
+    test.equal(getInnerHtml(container), '<span>CCC</span>');
 
-    cleanup();
-    var { getByText } = render(<Foo n={0}/>);
+    ReactDOM.unmountComponentAtNode(container);
+
+    ReactDOM.render(<Foo n={0}/>, container);
 
     setState({m: 0});
-    test.isTrue(getByText('AAA'));
+    test.equal(getInnerHtml(container), '<span>AAA</span>');
 
     cleanup();
+
+    completed();
   });
 
-  function waitFor(func, callback) {
+  function waitForTracker(func, callback) {
     Tracker.autorun(function (c) {
       if (func()) {
         c.stop();
@@ -434,7 +487,7 @@ if (Meteor.isClient) {
       var handle = self.handle;
       test.isFalse(handle.ready());
 
-      waitFor(() => handle.ready(),
+      waitForTracker(() => handle.ready(),
               expect());
     },
     function (test, expect) {
@@ -475,7 +528,7 @@ if (Meteor.isClient) {
       test.isTrue(handle.subscriptionId);
       test.notEqual(handle.subscriptionId, self.oldHandle2.subscriptionId);
 
-      waitFor(() => handle.ready(),
+      waitForTracker(() => handle.ready(),
               expect());
     },
     function (test, expect) {

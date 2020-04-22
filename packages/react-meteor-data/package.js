@@ -12,12 +12,13 @@ Package.onUse(function (api) {
   api.versionsFrom('1.3');
   api.use('tracker');
   api.use('ecmascript');
+  api.use('typescript');
 
   api.mainModule('index.js', ['client', 'server'], { lazy: true });
 });
 
 Package.onTest(function (api) {
-  api.use(['ecmascript', 'reactive-dict', 'reactive-var', 'tracker', 'tinytest', 'underscore', 'mongo']);
+  api.use(['ecmascript', 'typescript', 'reactive-dict', 'reactive-var', 'tracker', 'tinytest', 'underscore', 'mongo']);
   api.use('test-helpers');
   api.use('react-meteor-data');
   api.mainModule('tests.js');
