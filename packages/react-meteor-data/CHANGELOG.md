@@ -1,8 +1,9 @@
 # CHANGELOG
 
+## v2.1.0, 2020-04-22
 * Update and fix tests.
 * Convert to TypeScript.
-* Seporate deps and no-deps implementation for easier to read implementation.
+* Separate deps and no-deps implementation for easier to read implementation.
 * Fix a problem in StrictMode when using no-deps (and withTracker) where
   updates get lost after first render.
   https://github.com/meteor/react-packages/issues/278
