@@ -20,6 +20,8 @@ export default function withTracker(options: ReactiveFn | ReactiveOptions) {
       );
     });
 
-    return options.pure ? memo(WithTracker) : WithTracker;
-  };
+    // @ts-ignore
+    const { pure = true } = options;
+    return pure ? memo(WithTracker) : WithTracker;
+  }
 };
