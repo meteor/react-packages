@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## v2.1.1, 2020-05-21
+* Make pure default to true like it used to https://github.com/meteor/react-packages/issues/287
+
 ## v2.1.0, 2020-04-22
 * Update and fix tests.
 * Convert to TypeScript.
