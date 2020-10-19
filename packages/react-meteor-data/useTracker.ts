@@ -39,13 +39,12 @@ type ComputationHandler = (c: Tracker.Computation) => () => void | void;
 type TrackerRefs = {
   reactiveFn: ReactiveFn;
   computationHandler?: ComputationHandler;
-  deps?: Array<any>;
+  deps?: React.DependencyList;
   computation?: Tracker.Computation;
   isMounted: boolean;
   disposeId?: ReturnType<typeof setTimeout>;
   trackerData: any;
   computationCleanup?: () => void;
-  trackerCount?: number
 }
 
 // The follow functions were hoisted out of the closure to reduce allocations.
@@ -133,7 +132,7 @@ const tracked = (c: Tracker.Computation, refs: TrackerRefs, forceUpdate: Functio
 };
 
 interface useTrackerSignature {
-  (reactiveFn: ReactiveFn, deps?: null | Array<any>, computationHandler?: ComputationHandler): any
+  (reactiveFn: ReactiveFn, deps?: null | React.DependencyList, computationHandler?: ComputationHandler): any
 }
 
 const useTrackerNoDeps: useTrackerSignature = (reactiveFn, deps = null, computationHandler) => {
@@ -184,7 +183,7 @@ const useTrackerNoDeps: useTrackerSignature = (reactiveFn, deps = null, computat
   return refs.trackerData;
 }
 
-const useTrackerWithDeps: useTrackerSignature = (reactiveFn, deps: Array<any>, computationHandler) => {
+const useTrackerWithDeps: useTrackerSignature = (reactiveFn, deps: React.DependencyList, computationHandler) => {
   const { current: refs } = useRef<TrackerRefs>({
     reactiveFn,
     isMounted: false,
