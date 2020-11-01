@@ -41,16 +41,22 @@ export const useSubscription = (factory: () => Meteor.SubscriptionHandle, deps: 
 const useCursorClient = <T = any>(factory: () => Mongo.Cursor<T>, deps: DependencyList = []) => {
   const cursor = useMemo<Mongo.Cursor<T>>(() => Tracker.nonreactive(factory), deps)
   const forceUpdate = useForceUpdate()
+
   useEffect(() => {
     const observer = cursor.observeChanges({
       added: forceUpdate,
       changed: forceUpdate,
       removed: forceUpdate
     })
+
+    // an update may have happened between first render and commit
+    forceUpdate()
+
     return () => {
       observer.stop()
     }
-  }, [cursor, ...deps])
+  }, [cursor])
+
   return cursor
 }
 
