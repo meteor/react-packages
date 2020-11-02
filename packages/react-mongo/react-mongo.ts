@@ -14,8 +14,8 @@ const useSubscriptionClient = (factory: () => Meteor.SubscriptionHandle, deps: D
   })
 
   useEffect(() => {
-    subscription.current = factory()
     const computation = Tracker.autorun(() => {
+      subscription.current = factory()
       if (subscription.current.ready()) forceUpdate()
     })
 
