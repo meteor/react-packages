@@ -33,6 +33,8 @@ const useSubscriptionClient = (
     const computation = Tracker.nonreactive(() => (
       Tracker.autorun(() => {
         subscription.current = Meteor.subscribe( name, ...args )
+        // @ts-ignore this is just an internal thing
+        subscription.current.deps = { name, args }
       })
     ))
 
@@ -41,7 +43,17 @@ const useSubscriptionClient = (
 
   return useCallback(
     () => {
-      return subscription.current?.ready()
+      if (subscription.current) {
+        // @ts-ignore
+        const { deps } = subscription.current
+        if (deps.name === name && deps.args === args) {
+          return subscription.current.ready()
+        } else {
+          // Prevented returning the previous subscription's status
+        }
+      }
+
+      return false
     },
     [name, ...args]
   )
