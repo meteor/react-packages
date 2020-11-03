@@ -1,7 +1,14 @@
 import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import { Tracker } from 'meteor/tracker'
-import { useEffect, useMemo, useReducer, useState, DependencyList } from 'react'
+import {
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useCallback,
+  DependencyList,
+} from 'react'
 
 const fur = (x: number): number => x + 1
 const useForceUpdate = () => useReducer(fur, 0)[1]
@@ -9,12 +16,13 @@ const useForceUpdate = () => useReducer(fur, 0)[1]
 const useSubscriptionClient = (
   name: string | false,
   args: any[]
-): void | Meteor.SubscriptionHandle => {
-  const [subscription, setSubscription] = useState<Meteor.SubscriptionHandle>()
+) => {
+  const subscription = useRef<Meteor.SubscriptionHandle>()
 
   useEffect(() => {
     if (!name) {
-      return setSubscription( null )
+      subscription.current = null
+      return
     }
 
     // Use Tracker.nonreactive in case we are inside a Tracker Computation.
@@ -24,14 +32,19 @@ const useSubscriptionClient = (
     // it stops the inner one.
     const computation = Tracker.nonreactive(() => (
       Tracker.autorun(() => {
-        setSubscription( Meteor.subscribe( name, ...args ) )
+        subscription.current = Meteor.subscribe( name, ...args )
       })
     ))
 
     return () => computation.stop()
   }, [name, ...args])
 
-  return subscription
+  return useCallback(
+    () => {
+      return subscription.current?.ready()
+    },
+    [name, ...args]
+  )
 }
 
 const useSubscriptionServer = (): Meteor.SubscriptionHandle => ({
