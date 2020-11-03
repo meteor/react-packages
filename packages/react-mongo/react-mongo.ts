@@ -6,23 +6,16 @@ import { useEffect, useMemo, useReducer, useRef, DependencyList } from 'react'
 const fur = (x: number): number => x + 1
 const useForceUpdate = () => useReducer(fur, 0)[1]
 
-const useSubscriptionClient = (factory: () => Meteor.SubscriptionHandle | void, deps: DependencyList= []) => {
+const useSubscriptionClient = (
+  factory: () => Meteor.SubscriptionHandle | void,
+  deps: DependencyList = []
+): Meteor.SubscriptionHandle => {
   const forceUpdate = useForceUpdate()
   const { current: refs } = useRef<{
-    handle?: Meteor.SubscriptionHandle,
+    /** Automatically triggered if the user called handle.ready() */
     updateOnReady: boolean
-  }>({
-    handle: {
-      stop () {
-        refs.handle?.stop()
-      },
-      ready () {
-        refs.updateOnReady = true
-        return refs.handle?.ready()
-      }
-    },
-    updateOnReady: false
-  })
+    subscription?: Meteor.SubscriptionHandle | void
+  }>({ updateOnReady: false })
 
   useEffect(() => {
     // Use Tracker.nonreactive in case we are inside a Tracker Computation.
@@ -32,9 +25,9 @@ const useSubscriptionClient = (factory: () => Meteor.SubscriptionHandle | void, 
     // it stops the inner one.
     const computation = Tracker.nonreactive(() => (
       Tracker.autorun(() => {
-        refs.handle = factory()
-        if (!refs.handle) return
-        if (refs.updateOnReady && refs.handle.ready()) {
+        refs.subscription = factory()
+        if (!refs.subscription) return
+        if (refs.updateOnReady && refs.subscription.ready()) {
           forceUpdate()
         }
       })
@@ -45,7 +38,15 @@ const useSubscriptionClient = (factory: () => Meteor.SubscriptionHandle | void, 
     }
   }, deps)
 
-  return refs.handle
+  return {
+    stop() {
+      refs.subscription && refs.subscription.stop()
+    },
+    ready() {
+      refs.updateOnReady = true
+      return refs.subscription ? refs.subscription.ready() : false
+    },
+  }
 }
 
 const useSubscriptionServer = (): Meteor.SubscriptionHandle => ({
