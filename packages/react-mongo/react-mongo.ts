@@ -6,25 +6,46 @@ import { useEffect, useMemo, useReducer, useRef, DependencyList } from 'react'
 const fur = (x: number): number => x + 1
 const useForceUpdate = () => useReducer(fur, 0)[1]
 
-const useSubscriptionClient = (factory: () => Meteor.SubscriptionHandle, deps: DependencyList = []) => {
+const useSubscriptionClient = (factory: () => Meteor.SubscriptionHandle | void, deps: DependencyList= []) => {
   const forceUpdate = useForceUpdate()
-  const subscription = useRef<Meteor.SubscriptionHandle>({
-    stop() {},
-    ready: () => false
+  const { current: refs } = useRef<{
+    handle?: Meteor.SubscriptionHandle,
+    updateOnReady: boolean
+  }>({
+    handle: {
+      stop () {
+        refs.handle?.stop()
+      },
+      ready () {
+        refs.updateOnReady = true
+        return refs.handle?.ready()
+      }
+    },
+    updateOnReady: false
   })
 
   useEffect(() => {
-    const computation = Tracker.autorun(() => {
-      subscription.current = factory()
-      if (subscription.current.ready()) forceUpdate()
-    })
+    // Use Tracker.nonreactive in case we are inside a Tracker Computation.
+    // This can happen if someone calls `ReactDOM.render` inside a Computation.
+    // In that case, we want to opt out of the normal behavior of nested
+    // Computations, where if the outer one is invalidated or stopped,
+    // it stops the inner one.
+    const computation = Tracker.nonreactive(() => (
+      Tracker.autorun(() => {
+        refs.handle = factory()
+        if (!refs.handle) return
+        if (refs.updateOnReady && refs.handle.ready()) {
+          forceUpdate()
+        }
+      })
+    ))
 
     return () => {
       computation.stop()
     }
   }, deps)
 
-  return subscription.current
+  return refs.handle
 }
 
 const useSubscriptionServer = (): Meteor.SubscriptionHandle => ({
@@ -32,7 +53,7 @@ const useSubscriptionServer = (): Meteor.SubscriptionHandle => ({
   ready() { return true }
 })
 
-export const useSubscription = (factory: () => Meteor.SubscriptionHandle, deps: DependencyList = []) => (
+export const useSubscription = (factory: () => Meteor.SubscriptionHandle | void, deps: DependencyList = []) => (
   Meteor.isServer
     ? useSubscriptionServer()
     : useSubscriptionClient(factory, deps)
