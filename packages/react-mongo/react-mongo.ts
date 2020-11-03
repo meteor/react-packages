@@ -1,30 +1,22 @@
 import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import { Tracker } from 'meteor/tracker'
-import { useEffect, useMemo, useReducer, useRef, DependencyList } from 'react'
+import { useEffect, useMemo, useReducer, useState, DependencyList } from 'react'
 
 const fur = (x: number): number => x + 1
 const useForceUpdate = () => useReducer(fur, 0)[1]
 
-const useSubscriptionClient = (factory: () => Meteor.SubscriptionHandle | void, deps: DependencyList= []) => {
-  const forceUpdate = useForceUpdate()
-  const { current: refs } = useRef<{
-    handle?: Meteor.SubscriptionHandle,
-    updateOnReady: boolean
-  }>({
-    handle: {
-      stop () {
-        refs.handle?.stop()
-      },
-      ready () {
-        refs.updateOnReady = true
-        return refs.handle?.ready()
-      }
-    },
-    updateOnReady: false
-  })
+const useSubscriptionClient = (
+  name: string | false,
+  args: any[]
+): void | Meteor.SubscriptionHandle => {
+  const [subscription, setSubscription] = useState<Meteor.SubscriptionHandle>()
 
   useEffect(() => {
+    if (!name) {
+      return setSubscription( null )
+    }
+
     // Use Tracker.nonreactive in case we are inside a Tracker Computation.
     // This can happen if someone calls `ReactDOM.render` inside a Computation.
     // In that case, we want to opt out of the normal behavior of nested
@@ -32,20 +24,14 @@ const useSubscriptionClient = (factory: () => Meteor.SubscriptionHandle | void, 
     // it stops the inner one.
     const computation = Tracker.nonreactive(() => (
       Tracker.autorun(() => {
-        refs.handle = factory()
-        if (!refs.handle) return
-        if (refs.updateOnReady && refs.handle.ready()) {
-          forceUpdate()
-        }
+        setSubscription( Meteor.subscribe( name, ...args ) )
       })
     ))
 
-    return () => {
-      computation.stop()
-    }
-  }, deps)
+    return () => computation.stop()
+  }, [name, ...args])
 
-  return refs.handle
+  return subscription
 }
 
 const useSubscriptionServer = (): Meteor.SubscriptionHandle => ({
@@ -53,10 +39,10 @@ const useSubscriptionServer = (): Meteor.SubscriptionHandle => ({
   ready() { return true }
 })
 
-export const useSubscription = (factory: () => Meteor.SubscriptionHandle | void, deps: DependencyList = []) => (
+export const useSubscription = (name: string | false, ...args: any[]) => (
   Meteor.isServer
     ? useSubscriptionServer()
-    : useSubscriptionClient(factory, deps)
+    : useSubscriptionClient(name, args)
 )
 
 const useCursorClient = <T = any>(factory: () => Mongo.Cursor<T>, deps: DependencyList = []) => {
