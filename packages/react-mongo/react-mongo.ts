@@ -6,7 +6,7 @@ import { useEffect, useMemo, useReducer, useRef, DependencyList } from 'react'
 const fur = (x: number): number => x + 1
 const useForceUpdate = () => useReducer(fur, 0)[1]
 
-const useSubscriptionClient = (factory: () => Meteor.SubscriptionHandle | void, deps: DependencyList= []) => {
+const useSubscriptionClient = (factory: () => Meteor.SubscriptionHandle | void | false, deps: DependencyList= []) => {
   const forceUpdate = useForceUpdate()
   const { current: refs } = useRef<{
     handle?: Meteor.SubscriptionHandle,
@@ -53,7 +53,7 @@ const useSubscriptionServer = (): Meteor.SubscriptionHandle => ({
   ready() { return true }
 })
 
-export const useSubscription = (factory: () => Meteor.SubscriptionHandle | void, deps: DependencyList = []) => (
+export const useSubscription = (factory: () => Meteor.SubscriptionHandle | void | false, deps: DependencyList = []) => (
   Meteor.isServer
     ? useSubscriptionServer()
     : useSubscriptionClient(factory, deps)

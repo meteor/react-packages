@@ -18,7 +18,7 @@ Both methods accept a factory method, and deps.
 
 ## useSubscription(factory, deps)
 
-`useSubscription` takes a factory method, which should return a subscription handle, and a deps array. It can also return `void` to conditionally set up no subscription. The hook returns a subscription handle with a reactive `ready` method.
+`useSubscription` takes a factory method, which should return a subscription handle, and a deps array. It can also return `void` or `false` to conditionally set up no subscription. The hook returns a subscription handle with a reactive `ready` method.
 
 Invoking the `ready()` handle method will cause the hook to update react when the subscription becomes available.
 
