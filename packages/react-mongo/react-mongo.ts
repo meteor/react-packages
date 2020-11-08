@@ -1,51 +1,76 @@
 import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import { Tracker } from 'meteor/tracker'
+import { EJSON } from 'meteor/ejson'
 import { useEffect, useMemo, useReducer, useRef, DependencyList } from 'react'
 
 const fur = (x: number): number => x + 1
 const useForceUpdate = () => useReducer(fur, 0)[1]
 
-const useSubscriptionClient = (factory: () => Meteor.SubscriptionHandle | void, deps: DependencyList= []) => {
+const useSubscriptionClient = (name?: string, ...args: any[]) => {
   const forceUpdate = useForceUpdate()
+
   const { current: refs } = useRef<{
-    handle?: Meteor.SubscriptionHandle,
-    updateOnReady: boolean
+    facade: Meteor.SubscriptionHandle,
+    subscription?: Meteor.SubscriptionHandle,
+    computation?: Tracker.Computation,
+    updateOnReady: boolean,
+    isReady: boolean,
+    params: {
+      name: string,
+      args: any[]
+    }
   }>({
-    handle: {
+    facade: {
       stop () {
-        refs.handle?.stop()
+        refs.subscription?.stop()
       },
       ready () {
+        // Ready runs synchronously with render, and should not
+        // create side effects.
         refs.updateOnReady = true
-        return refs.handle?.ready()
+
+        return (refs.subscription && EJSON.equals(refs.params, { name, args }))
+          ? refs.isReady
+          : false
       }
     },
-    updateOnReady: false
+    updateOnReady: false,
+    isReady: false,
+    params: {
+      name,
+      args
+    }
   })
 
+  if (!EJSON.equals(refs.params, { name, args })) {
+    refs.updateOnReady = false
+    refs.isReady = false
+  }
+
   useEffect(() => {
-    // Use Tracker.nonreactive in case we are inside a Tracker Computation.
-    // This can happen if someone calls `ReactDOM.render` inside a Computation.
-    // In that case, we want to opt out of the normal behavior of nested
-    // Computations, where if the outer one is invalidated or stopped,
-    // it stops the inner one.
-    const computation = Tracker.nonreactive(() => (
+    refs.computation = Tracker.nonreactive(() => (
       Tracker.autorun(() => {
-        refs.handle = factory()
-        if (!refs.handle) return
-        if (refs.updateOnReady && refs.handle.ready()) {
-          forceUpdate()
+        refs.subscription = name && Meteor.subscribe(name, ...args)
+        if (!refs.subscription) return
+
+        const isReady = refs.subscription.ready()
+        if (isReady !== refs.isReady) {
+          refs.isReady = isReady
+          if (refs.updateOnReady) forceUpdate()
         }
       })
     ))
 
-    return () => {
-      computation.stop()
-    }
-  }, deps)
+    refs.params = { name, args }
 
-  return refs.handle
+    return () => {
+      refs.computation.stop()
+      refs.subscription = null
+    }
+  }, [name, ...args])
+
+  return refs.facade
 }
 
 const useSubscriptionServer = (): Meteor.SubscriptionHandle => ({
@@ -53,10 +78,10 @@ const useSubscriptionServer = (): Meteor.SubscriptionHandle => ({
   ready() { return true }
 })
 
-export const useSubscription = (factory: () => Meteor.SubscriptionHandle | void, deps: DependencyList = []) => (
+export const useSubscription = (name?: string, ...args: any[]) => (
   Meteor.isServer
     ? useSubscriptionServer()
-    : useSubscriptionClient(factory, deps)
+    : useSubscriptionClient(name, ...args)
 )
 
 const useCursorClient = <T = any>(factory: () => Mongo.Cursor<T>, deps: DependencyList = []) => {
