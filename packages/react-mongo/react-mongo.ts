@@ -7,20 +7,22 @@ import { useEffect, useMemo, useReducer, useRef, DependencyList } from 'react'
 const fur = (x: number): number => x + 1
 const useForceUpdate = () => useReducer(fur, 0)[1]
 
+type useSubscriptionRefs = {
+  facade: Meteor.SubscriptionHandle,
+  subscription?: Meteor.SubscriptionHandle,
+  computation?: Tracker.Computation,
+  updateOnReady: boolean,
+  isReady: boolean,
+  params: {
+    name?: string,
+    args: any[]
+  }
+}
+
 const useSubscriptionClient = (name?: string, ...args: any[]) => {
   const forceUpdate = useForceUpdate()
 
-  const { current: refs } = useRef<{
-    facade: Meteor.SubscriptionHandle,
-    subscription?: Meteor.SubscriptionHandle,
-    computation?: Tracker.Computation,
-    updateOnReady: boolean,
-    isReady: boolean,
-    params: {
-      name: string,
-      args: any[]
-    }
-  }>({
+  const ref = useRef<useSubscriptionRefs>({
     facade: {
       stop () {
         refs.subscription?.stop()
@@ -42,6 +44,7 @@ const useSubscriptionClient = (name?: string, ...args: any[]) => {
       args
     }
   })
+  const refs: useSubscriptionRefs = ref.current
 
   if (!EJSON.equals(refs.params, { name, args })) {
     refs.updateOnReady = false
