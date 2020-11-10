@@ -8,7 +8,6 @@ const fur = (x: number): number => x + 1
 const useForceUpdate = () => useReducer(fur, 0)[1]
 
 type useSubscriptionRefs = {
-  facade: Meteor.SubscriptionHandle,
   subscription?: Meteor.SubscriptionHandle,
   computation?: Tracker.Computation,
   updateOnReady: boolean,
@@ -19,61 +18,64 @@ type useSubscriptionRefs = {
   }
 }
 
-const useSubscriptionClient = (name?: string, ...args: any[]) => {
+const useSubscriptionClient = (name?: string, ...args: any[]): Meteor.SubscriptionHandle => {
   const forceUpdate = useForceUpdate()
 
-  const ref = useRef<useSubscriptionRefs>({
-    facade: {
-      stop () {
-        refs.subscription?.stop()
-      },
-      ready () {
-        // Ready runs synchronously with render, and should not
-        // create side effects.
-        refs.updateOnReady = true
-
-        return (refs.subscription && EJSON.equals(refs.params, { name, args }))
-          ? refs.isReady
-          : false
-      }
-    },
+  const refs: useSubscriptionRefs = useRef({
     updateOnReady: false,
     isReady: false,
     params: {
       name,
       args
     }
-  })
-  const refs: useSubscriptionRefs = ref.current
+  }).current
 
   if (!EJSON.equals(refs.params, { name, args })) {
     refs.updateOnReady = false
     refs.isReady = false
+    refs.params = { name, args }
   }
 
   useEffect(() => {
-    refs.computation = Tracker.nonreactive(() => (
+    const computation = Tracker.nonreactive(() => (
       Tracker.autorun(() => {
-        refs.subscription = name && Meteor.subscribe(name, ...args)
-        if (!refs.subscription) return
+        if (!name) {
+          refs.subscription = null
+          return
+        }
+
+        refs.subscription = Meteor.subscribe(name, ...args)
 
         const isReady = refs.subscription.ready()
         if (isReady !== refs.isReady) {
           refs.isReady = isReady
-          if (refs.updateOnReady) forceUpdate()
+          if (refs.updateOnReady) {
+            forceUpdate()
+          }
         }
       })
     ))
 
-    refs.params = { name, args }
+    refs.computation = computation
 
     return () => {
-      refs.computation.stop()
+      computation.stop()
       refs.subscription = null
     }
   }, [name, ...args])
 
-  return refs.facade
+  return {
+    stop () {
+      refs.subscription?.stop()
+    },
+    ready () {
+      // Ready runs synchronously with render, should not create side effects.
+      refs.updateOnReady = true
+      return (refs.subscription && EJSON.equals(refs.params, { name, args }))
+        ? refs.isReady
+        : false
+    }
+  }
 }
 
 const useSubscriptionServer = (): Meteor.SubscriptionHandle => ({
