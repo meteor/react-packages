@@ -9,7 +9,6 @@ const useForceUpdate = () => useReducer(fur, 0)[1]
 
 type useSubscriptionRefs = {
   subscription?: Meteor.SubscriptionHandle,
-  computation?: Tracker.Computation,
   updateOnReady: boolean,
   isReady: boolean,
   params: {
@@ -39,10 +38,7 @@ const useSubscriptionClient = (name?: string, ...args: any[]): Meteor.Subscripti
   useEffect(() => {
     const computation = Tracker.nonreactive(() => (
       Tracker.autorun(() => {
-        if (!name) {
-          refs.subscription = null
-          return
-        }
+        if (!name) return
 
         refs.subscription = Meteor.subscribe(name, ...args)
 
@@ -55,8 +51,6 @@ const useSubscriptionClient = (name?: string, ...args: any[]): Meteor.Subscripti
         }
       })
     ))
-
-    refs.computation = computation
 
     return () => {
       computation.stop()
@@ -71,9 +65,7 @@ const useSubscriptionClient = (name?: string, ...args: any[]): Meteor.Subscripti
     ready () {
       // Ready runs synchronously with render, should not create side effects.
       refs.updateOnReady = true
-      return (refs.subscription && EJSON.equals(refs.params, { name, args }))
-        ? refs.isReady
-        : false
+      return refs.isReady
     }
   }
 }
