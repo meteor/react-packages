@@ -1,7 +1,7 @@
 import { checkNpmVersions } from 'meteor/tmeasday:check-npm-versions';
 checkNpmVersions({
-  'react': '15.3 - 16',
-  'react-dom': '15.3 - 16'
+  'react': '15.3 - 17',
+  'react-dom': '15.3 - 17'
 }, 'react-template-helper');
 
 const React = require('react');
