@@ -38,6 +38,7 @@ const useSubscriptionClient = (name?: string, ...args: any[]): Meteor.Subscripti
   useEffect(() => {
     const computation = Tracker.nonreactive(() => (
       Tracker.autorun(() => {
+        const { name, args } = refs.params
         if (!name) return
 
         refs.subscription = Meteor.subscribe(name, ...args)
@@ -56,7 +57,7 @@ const useSubscriptionClient = (name?: string, ...args: any[]): Meteor.Subscripti
       computation.stop()
       refs.subscription = null
     }
-  }, [name, ...args])
+  }, [refs.params])
 
   return {
     stop () {
