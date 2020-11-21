@@ -122,8 +122,25 @@ const useCursorReducer = <T>(data: T[], action: useCursorActions<T>):T[] => {
 }
 
 const useCursorClient = <T = any>(factory: () => Mongo.Cursor<T>, deps: DependencyList = []) => {
-  const cursor = useMemo<Mongo.Cursor<T>>(() => Tracker.nonreactive(factory), deps)
-  const [data, dispatch] = useReducer<Reducer<T[], useCursorActions<T>>, T[]>(useCursorReducer, [], () => cursor.fetch())
+  // used to prevent double fetch on first run
+  let dataFilled = false
+
+  // On first render only, this will fetch the cursor data
+  let [data, dispatch] = useReducer<Reducer<T[], useCursorActions<T>>, T[]>(useCursorReducer, [], () => {
+    dataFilled = true
+    return Tracker.nonreactive(() => cursor.fetch())
+  })
+
+  // On later renders due to deps change, this will fetch the cursor data
+  const cursor = useMemo<Mongo.Cursor<T>>(() => {
+    const c = Tracker.nonreactive(factory)
+    if (!dataFilled) {
+      // override data to update immediately after deps change
+      // useEffect will update reducer data before the next render
+      data = Tracker.nonreactive(() => c.fetch())
+    }
+    return c
+  }, deps)
 
   useEffect(() => {
     const observer = cursor.observe({
@@ -144,7 +161,8 @@ const useCursorClient = <T = any>(factory: () => Mongo.Cursor<T>, deps: Dependen
     })
 
     // an update may have happened between first render and commit
-    dispatch({ type: 'refresh', data: cursor.fetch() })
+    // also might need to update in response to deps change
+    dispatch({ type: 'refresh', data: Tracker.nonreactive(() => cursor.fetch()) })
 
     return () => {
       observer.stop()
@@ -154,7 +172,7 @@ const useCursorClient = <T = any>(factory: () => Mongo.Cursor<T>, deps: Dependen
   return data
 }
 
-const useCursorServer = <T = any>(factory: () => Mongo.Cursor<T>) => Tracker.nonreactive(factory).fetch()
+const useCursorServer = <T = any>(factory: () => Mongo.Cursor<T>) => Tracker.nonreactive(() => factory().fetch())
 
 export const useCursor = <T = any>(factory: () => Mongo.Cursor<T>, deps: DependencyList = []) => (
   Meteor.isServer
