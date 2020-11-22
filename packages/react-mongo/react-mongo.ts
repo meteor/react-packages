@@ -55,7 +55,7 @@ const useSubscriptionClient = (name?: string, ...args: any[]): Meteor.Subscripti
 
     return () => {
       computation.stop()
-      refs.subscription = null
+      delete refs.subscription
     }
   }, [refs.params])
 
@@ -123,24 +123,18 @@ const useCursorReducer = <T>(data: T[], action: useCursorActions<T>):T[] => {
 
 const useCursorClient = <T = any>(factory: () => Mongo.Cursor<T>, deps: DependencyList = []) => {
   // used to prevent double fetch on first run
-  let dataFilled = false
-
-  // On first render only, this will fetch the cursor data
-  let [data, dispatch] = useReducer<Reducer<T[], useCursorActions<T>>, T[]>(useCursorReducer, [], () => {
-    dataFilled = true
-    return Tracker.nonreactive(() => cursor.fetch())
-  })
+  let initialData: T[]
 
   // On later renders due to deps change, this will fetch the cursor data
   const cursor = useMemo<Mongo.Cursor<T>>(() => {
     const c = Tracker.nonreactive(factory)
-    if (!dataFilled) {
-      // override data to update immediately after deps change
-      // useEffect will update reducer data before the next render
-      data = Tracker.nonreactive(() => c.fetch())
-    }
+    // initialData will only be not falsy on first render, and right after deps change
+    initialData = Tracker.nonreactive(() => c.fetch())
     return c
   }, deps)
+
+  // On first render only, this will fetch the cursor data
+  const [data, dispatch] = useReducer<Reducer<T[], useCursorActions<T>>, T[]>(useCursorReducer, undefined, () => initialData)
 
   useEffect(() => {
     const observer = cursor.observe({
@@ -169,7 +163,9 @@ const useCursorClient = <T = any>(factory: () => Mongo.Cursor<T>, deps: Dependen
     }
   }, [cursor])
 
-  return data
+  // Prefer initialData on init, and right after deps change
+  // useEffect will update reducer data before the next render
+  return initialData || data
 }
 
 const useCursorServer = <T = any>(factory: () => Mongo.Cursor<T>) => Tracker.nonreactive(() => factory().fetch())
