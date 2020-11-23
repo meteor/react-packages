@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import { Tracker } from 'meteor/tracker'
 import { EJSON } from 'meteor/ejson'
-import { useEffect, useMemo, useReducer, useRef, DependencyList, Reducer } from 'react'
+import { useState, useEffect, useReducer, useRef, DependencyList, Reducer } from 'react'
 
 const fur = (x: number): number => x + 1
 const useForceUpdate = () => useReducer(fur, 0)[1]
@@ -89,7 +89,7 @@ type useCursorActions<T> =
   | { type: 'removedAt', atIndex: number }
   | { type: 'movedTo', fromIndex: number, toIndex: number }
 
-const useCursorReducer = <T>(data: T[], action: useCursorActions<T>):T[] => {
+const useCursorReducer = <T>(data: T[], action: useCursorActions<T>): T[] => {
   switch (action.type) {
     case 'refresh':
       return action.data
@@ -122,21 +122,28 @@ const useCursorReducer = <T>(data: T[], action: useCursorActions<T>):T[] => {
 }
 
 const useCursorClient = <T = any>(factory: () => Mongo.Cursor<T>, deps: DependencyList = []) => {
-  // used to prevent double fetch on first run
-  let initialData: T[]
-
-  // On later renders due to deps change, this will fetch the cursor data
-  const cursor = useMemo<Mongo.Cursor<T>>(() => {
-    const c = Tracker.nonreactive(factory)
-    // initialData will only be not falsy on first render, and right after deps change
-    initialData = Tracker.nonreactive(() => c.fetch())
-    return c
-  }, deps)
-
-  // On first render only, this will fetch the cursor data
-  const [data, dispatch] = useReducer<Reducer<T[], useCursorActions<T>>, T[]>(useCursorReducer, undefined, () => initialData)
+  const [data, dispatch] = useReducer<Reducer<T[], useCursorActions<T>>, T[]>(
+    useCursorReducer,
+    undefined,
+    () => Tracker.nonreactive(() => {
+      const cursor = factory()
+      return cursor.fetch()
+    })
+  )
 
   useEffect(() => {
+    // Rebuild the cursor and data in case an update may have
+    // happened between first render and commit. Alternatively,
+    // update in response to deps change.
+    const [cursor, data] = Tracker.nonreactive(() => {
+      const cursor = factory()
+      return [ cursor, cursor.fetch() ]
+    })
+    dispatch({
+      type: 'refresh',
+      data: data
+    })
+
     const observer = cursor.observe({
       addedAt (document, atIndex, before) {
         dispatch({ type: 'addedAt', document, atIndex })
@@ -154,18 +161,12 @@ const useCursorClient = <T = any>(factory: () => Mongo.Cursor<T>, deps: Dependen
       _suppress_initial: true
     })
 
-    // an update may have happened between first render and commit
-    // also might need to update in response to deps change
-    dispatch({ type: 'refresh', data: Tracker.nonreactive(() => cursor.fetch()) })
-
     return () => {
       observer.stop()
     }
-  }, [cursor])
+  }, deps)
 
-  // Prefer initialData on init, and right after deps change
-  // useEffect will update reducer data before the next render
-  return initialData || data
+  return data
 }
 
 const useCursorServer = <T = any>(factory: () => Mongo.Cursor<T>) => Tracker.nonreactive(() => factory().fetch())
@@ -175,3 +176,51 @@ export const useCursor = <T = any>(factory: () => Mongo.Cursor<T>, deps: Depende
     ? useCursorServer(factory)
     : useCursorClient(factory, deps)
 )
+
+function useFind <T = any>(collection: Mongo.Collection<T>, query: any, deps: DependencyList): T[]
+function useFind <T = any>(collection: Mongo.Collection<T>, query: any, options: any, deps: DependencyList): T[]
+function useFind <T = any>(collection: Mongo.Collection<T>, query: any, ...rest): T[] {
+  const deps: DependencyList = rest.pop()
+  return useCursor(() => collection.find(query, rest[0]), [collection, ...deps])
+}
+
+function useFindOne <T = any>(collection: Mongo.Collection<T>, query: any, deps: DependencyList): T
+function useFindOne <T = any>(collection: Mongo.Collection<T>, query: any, options: any, deps: DependencyList): T
+function useFindOne <T = any>(collection: Mongo.Collection<T>, query: any, ...rest: any[]): T {
+  const deps: DependencyList = rest.pop()
+  const options = rest[0]
+    ? { ...rest[0], limit: 1 }
+    : { limit: 1 }
+  return useCursor(() => collection.find(query, options), [collection, ...deps])[0]
+}
+
+function useCount <T = any>(collection: Mongo.Collection<T>, query: any, deps: DependencyList): number
+function useCount <T = any>(collection: Mongo.Collection<T>, query: any, options: any, deps: DependencyList): number
+function useCount <T = any>(collection: Mongo.Collection<T>, query: any, ...rest: any[]): number {
+  const deps: DependencyList = rest.pop()
+
+  const [count, setCount] = useState(() =>
+    Tracker.nonreactive(() =>
+      collection.find(query, rest[0]).count()
+    )
+  )
+
+  useEffect(() => {
+    const computation = Tracker.nonreactive(() => (
+      Tracker.autorun(() => {
+        setCount(collection.find(query, rest[0]).count())
+      })
+    ))
+    return () => {
+      computation.stop()
+    }
+  })
+
+  return count
+}
+
+export {
+  useFind,
+  useFindOne,
+  useCount
+}
