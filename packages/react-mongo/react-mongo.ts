@@ -71,25 +71,23 @@ const useSubscriptionClient = (name?: string, ...args: any[]): Meteor.Subscripti
   }
 }
 
-const useSubscriptionServer = (): Meteor.SubscriptionHandle => ({
+const useSubscriptionServer = (name?: string, ...args: any[]): Meteor.SubscriptionHandle => ({
   stop() {},
   ready() { return true }
 })
 
-export const useSubscription = (name?: string, ...args: any[]) => (
-  Meteor.isServer
-    ? useSubscriptionServer()
-    : useSubscriptionClient(name, ...args)
-)
+export const useSubscription = Meteor.isServer
+  ? useSubscriptionServer
+  : useSubscriptionClient
 
-type useCursorActions<T> =
+type useFindActions<T> =
   | { type: 'refresh', data: T[] }
   | { type: 'addedAt', document: T, atIndex: number }
   | { type: 'changedAt', document: T, atIndex: number }
   | { type: 'removedAt', atIndex: number }
   | { type: 'movedTo', fromIndex: number, toIndex: number }
 
-const useCursorReducer = <T>(data: T[], action: useCursorActions<T>): T[] => {
+const useFindReducer = <T>(data: T[], action: useFindActions<T>): T[] => {
   switch (action.type) {
     case 'refresh':
       return action.data
@@ -121,9 +119,9 @@ const useCursorReducer = <T>(data: T[], action: useCursorActions<T>): T[] => {
   }
 }
 
-const useCursorClient = <T = any>(factory: () => Mongo.Cursor<T>, deps: DependencyList = []) => {
-  const [data, dispatch] = useReducer<Reducer<T[], useCursorActions<T>>, T[]>(
-    useCursorReducer,
+const useFindClient = <T = any>(factory: () => Mongo.Cursor<T>, deps: DependencyList) => {
+  const [data, dispatch] = useReducer<Reducer<T[], useFindActions<T>>, T[]>(
+    useFindReducer,
     undefined,
     () => Tracker.nonreactive(() => {
       const cursor = factory()
@@ -169,58 +167,40 @@ const useCursorClient = <T = any>(factory: () => Mongo.Cursor<T>, deps: Dependen
   return data
 }
 
-const useCursorServer = <T = any>(factory: () => Mongo.Cursor<T>) => Tracker.nonreactive(() => factory().fetch())
+const useFindServer = <T = any>(factory: () => Mongo.Cursor<T>, deps: DependencyList) => Tracker.nonreactive(() => factory().fetch())
 
-export const useCursor = <T = any>(factory: () => Mongo.Cursor<T>, deps: DependencyList = []) => (
-  Meteor.isServer
-    ? useCursorServer(factory)
-    : useCursorClient(factory, deps)
-)
+export const useFind = Meteor.isServer
+  ? useFindServer
+  : useFindClient
 
-function useFind <T = any>(collection: Mongo.Collection<T>, query: any, deps: DependencyList): T[]
-function useFind <T = any>(collection: Mongo.Collection<T>, query: any, options: any, deps: DependencyList): T[]
-function useFind <T = any>(collection: Mongo.Collection<T>, query: any, ...rest): T[] {
-  const deps: DependencyList = rest.pop()
-  return useCursor(() => collection.find(query, rest[0]), [collection, ...deps])
-}
-
-function useFindOne <T = any>(collection: Mongo.Collection<T>, query: any, deps: DependencyList): T
-function useFindOne <T = any>(collection: Mongo.Collection<T>, query: any, options: any, deps: DependencyList): T
-function useFindOne <T = any>(collection: Mongo.Collection<T>, query: any, ...rest: any[]): T {
-  const deps: DependencyList = rest.pop()
-  const options = rest[0]
-    ? { ...rest[0], limit: 1 }
-    : { limit: 1 }
-  return useCursor(() => collection.find(query, options), [collection, ...deps])[0]
-}
-
-function useCount <T = any>(collection: Mongo.Collection<T>, query: any, deps: DependencyList): number
-function useCount <T = any>(collection: Mongo.Collection<T>, query: any, options: any, deps: DependencyList): number
-function useCount <T = any>(collection: Mongo.Collection<T>, query: any, ...rest: any[]): number {
-  const deps: DependencyList = rest.pop()
-
-  const [count, setCount] = useState(() =>
-    Tracker.nonreactive(() =>
-      collection.find(query, rest[0]).count()
-    )
-  )
+const useTrackerClient = <T = unknown>(reactiveFn: () => T, deps: DependencyList): T => {
+  const [data, setData] = useState(() => Tracker.nonreactive(reactiveFn))
 
   useEffect(() => {
     const computation = Tracker.nonreactive(() => (
       Tracker.autorun(() => {
-        setCount(collection.find(query, rest[0]).count())
+        setData(reactiveFn())
       })
     ))
     return () => {
       computation.stop()
     }
-  })
+  }, deps)
 
-  return count
+  return data
 }
 
-export {
-  useFind,
-  useFindOne,
-  useCount
+const useTrackerServer = <T = unknown>(reactiveFn: () => T, deps: DependencyList): T =>
+  Tracker.nonreactive(reactiveFn)
+
+const useTracker = Meteor.isServer
+  ? useTrackerServer
+  : useTrackerClient
+
+export const useFindOne = <T = unknown>(factory: () => T, deps: DependencyList): T => {
+  return useTracker(factory, deps)
+}
+
+export const useCount = (factory: () => number, deps: DependencyList): number => {
+  return useTracker(factory, deps)
 }
