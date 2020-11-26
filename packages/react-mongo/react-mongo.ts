@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import { Tracker } from 'meteor/tracker'
 import { EJSON } from 'meteor/ejson'
-import { useState, useEffect, useReducer, useRef, DependencyList, Reducer } from 'react'
+import { useEffect, useReducer, useRef, DependencyList, Reducer, useMemo } from 'react'
 
 const fur = (x: number): number => x + 1
 const useForceUpdate = () => useReducer(fur, 0)[1]
@@ -17,7 +17,7 @@ type useSubscriptionRefs = {
   }
 }
 
-const useSubscriptionClient = (name?: string, ...args: any[]): Meteor.SubscriptionHandle => {
+const useSubscriptionClient = (name?: string, ...args: any[]): [() => boolean, Meteor.SubscriptionHandle | undefined] => {
   const forceUpdate = useForceUpdate()
 
   const refs: useSubscriptionRefs = useRef({
@@ -59,22 +59,19 @@ const useSubscriptionClient = (name?: string, ...args: any[]): Meteor.Subscripti
     }
   }, [refs.params])
 
-  return {
-    stop () {
-      refs.subscription?.stop()
-    },
-    ready () {
-      // Ready runs synchronously with render, should not create side effects.
+  return [
+    () => {
       refs.updateOnReady = true
-      return refs.isReady
-    }
-  }
+      return !refs.isReady
+    },
+    refs.subscription
+  ]
 }
 
-const useSubscriptionServer = (name?: string, ...args: any[]): Meteor.SubscriptionHandle => ({
-  stop() {},
-  ready() { return true }
-})
+const useSubscriptionServer = (name?: string, ...args: any[]): [() => boolean, Meteor.SubscriptionHandle | undefined] => ([
+  () => false,
+  undefined
+])
 
 export const useSubscription = Meteor.isServer
   ? useSubscriptionServer
@@ -120,23 +117,31 @@ const useFindReducer = <T>(data: T[], action: useFindActions<T>): T[] => {
 }
 
 const useFindClient = <T = any>(factory: () => Mongo.Cursor<T>, deps: DependencyList) => {
-  const [data, dispatch] = useReducer<Reducer<T[], useFindActions<T>>, T[]>(
+  let [data, dispatch] = useReducer<Reducer<T[], useFindActions<T>>>(
     useFindReducer,
-    undefined,
-    () => Tracker.nonreactive(() => {
-      const cursor = factory()
-      return cursor.fetch()
-    })
+    []
   )
 
+  const cursor = useMemo(() => {
+    // To avoid creating side effects in render, opt out
+    // of Tracker integration altogether.
+    const c = Tracker.nonreactive(() => factory())
+    if (Meteor.isDevelopment && !(c instanceof Mongo.Cursor)) {
+      console.warn(
+        'Warning: useFindClient requires an instance of Mongo.Cursor. '
+        + 'Make sure you do NOT call fetch() on your cursor.'
+      );
+    }
+    data = c.fetch()
+    return c
+  }, deps)
+
   useEffect(() => {
-    // Rebuild the cursor and data in case an update may have
-    // happened between first render and commit. Alternatively,
+    // Refetch the data in case an update happened
+    // between first render and commit. Additionally,
     // update in response to deps change.
-    const [cursor, data] = Tracker.nonreactive(() => {
-      const cursor = factory()
-      return [ cursor, cursor.fetch() ]
-    })
+    const data = Tracker.nonreactive(() => cursor.fetch())
+
     dispatch({
       type: 'refresh',
       data: data
@@ -162,7 +167,7 @@ const useFindClient = <T = any>(factory: () => Mongo.Cursor<T>, deps: Dependency
     return () => {
       observer.stop()
     }
-  }, deps)
+  }, [cursor])
 
   return data
 }
@@ -172,35 +177,3 @@ const useFindServer = <T = any>(factory: () => Mongo.Cursor<T>, deps: Dependency
 export const useFind = Meteor.isServer
   ? useFindServer
   : useFindClient
-
-const useTrackerClient = <T = unknown>(reactiveFn: () => T, deps: DependencyList): T => {
-  const [data, setData] = useState(() => Tracker.nonreactive(reactiveFn))
-
-  useEffect(() => {
-    const computation = Tracker.nonreactive(() => (
-      Tracker.autorun(() => {
-        setData(reactiveFn())
-      })
-    ))
-    return () => {
-      computation.stop()
-    }
-  }, deps)
-
-  return data
-}
-
-const useTrackerServer = <T = unknown>(reactiveFn: () => T, deps: DependencyList): T =>
-  Tracker.nonreactive(reactiveFn)
-
-const useTracker = Meteor.isServer
-  ? useTrackerServer
-  : useTrackerClient
-
-export const useFindOne = <T = unknown>(factory: () => T, deps: DependencyList): T => {
-  return useTracker(factory, deps)
-}
-
-export const useCount = (factory: () => number, deps: DependencyList): number => {
-  return useTracker(factory, deps)
-}
