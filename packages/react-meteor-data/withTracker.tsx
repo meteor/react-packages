@@ -1,5 +1,5 @@
 import React, { forwardRef, memo } from 'react';
-import useTracker from './useTracker';
+import { useTrackerLegacy } from './useTracker';
 
 type ReactiveFn = (props: object) => any;
 type ReactiveOptions = {
@@ -14,7 +14,7 @@ export default function withTracker(options: ReactiveFn | ReactiveOptions) {
       : options.getMeteorData;
 
     const WithTracker = forwardRef((props, ref) => {
-      const data = useTracker(() => getMeteorData(props) || {});
+      const data = useTrackerLegacy(() => getMeteorData(props) || {});
       return (
         <Component ref={ref} {...props} {...data} />
       );
