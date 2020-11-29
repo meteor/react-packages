@@ -101,7 +101,7 @@ const useTrackerNoDeps = (reactiveFn: ReactiveFn) => {
   return refs.trackerData;
 }
 
-const useTrackerClient = <T = any>(reactiveFn: () => T, deps: DependencyList): T => {
+const useTrackerClient = <T = any>(reactiveFn: (c?: Tracker.Computation) => T, deps: DependencyList): T => {
   let [data, setData] = useState<T>();
 
   useMemo(() => {
@@ -114,8 +114,8 @@ const useTrackerClient = <T = any>(reactiveFn: () => T, deps: DependencyList): T
   }, deps);
 
   useEffect(() => {
-    const computation = Tracker.autorun(() => {
-      setData(reactiveFn());
+    const computation = Tracker.autorun((c) => {
+      setData(reactiveFn(c));
     });
     return () => {
       computation.stop();
@@ -125,7 +125,7 @@ const useTrackerClient = <T = any>(reactiveFn: () => T, deps: DependencyList): T
   return data as T;
 }
 
-const useTrackerServer = <T = any>(reactiveFn: () => T): T =>
+const useTrackerServer = <T = any>(reactiveFn: () => T, deps: DependencyList): T =>
   Tracker.nonreactive(reactiveFn);
 
 // When rendering on the server, we don't want to use the Tracker.
