@@ -116,25 +116,33 @@ const useFindReducer = <T>(data: T[], action: useFindActions<T>): T[] => {
   }
 }
 
+const checkCursor = <T>(cursor: Mongo.Cursor<T>) => {
+  if (!(cursor instanceof Mongo.Cursor)) {
+    console.warn(
+      'Warning: useFind requires an instance of Mongo.Cursor. '
+      + 'Make sure you do NOT call fetch() on your cursor.'
+    );
+  }
+}
+
 const useFindClient = <T = any>(factory: () => Mongo.Cursor<T>, deps: DependencyList) => {
   let [data, dispatch] = useReducer<Reducer<T[], useFindActions<T>>>(
     useFindReducer,
     []
   )
 
-  const cursor = useMemo(() => {
+  const cursor = useMemo(() => (
     // To avoid creating side effects in render, opt out
     // of Tracker integration altogether.
-    const c = Tracker.nonreactive(() => factory())
-    if (Meteor.isDevelopment && !(c instanceof Mongo.Cursor)) {
-      console.warn(
-        'Warning: useFindClient requires an instance of Mongo.Cursor. '
-        + 'Make sure you do NOT call fetch() on your cursor.'
-      );
-    }
-    data = c.fetch()
-    return c
-  }, deps)
+    Tracker.nonreactive(() => {
+      const c = factory()
+      if (Meteor.isDevelopment) {
+        checkCursor(c)
+      }
+      data = c.fetch()
+      return c
+    })
+  ), deps)
 
   useEffect(() => {
     // Refetch the data in case an update happened
@@ -172,7 +180,13 @@ const useFindClient = <T = any>(factory: () => Mongo.Cursor<T>, deps: Dependency
   return data
 }
 
-const useFindServer = <T = any>(factory: () => Mongo.Cursor<T>, deps: DependencyList) => Tracker.nonreactive(() => factory().fetch())
+const useFindServer = <T = any>(factory: () => Mongo.Cursor<T>, deps: DependencyList) => (
+  Tracker.nonreactive(() => {
+    const cursor = factory()
+    if (Meteor.isDevelopment) checkCursor(cursor)
+    return cursor.fetch()
+  })
+)
 
 export const useFind = Meteor.isServer
   ? useFindServer
