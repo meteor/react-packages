@@ -494,18 +494,18 @@ if (Meteor.isClient) {
       };
 
       self.component = ReactDOM.render(<self.Foo/>, self.div);
-      test.equal(getInnerHtml(self.div), '<div></div>');
+      test.equal(getInnerHtml(self.div), '<div></div>', 'div should be empty');
 
       var handle = self.handle;
-      test.isFalse(handle.ready());
+      test.isFalse(handle.ready(), 'handle.ready() should be false');
 
       waitForTracker(() => handle.ready(),
               expect());
     },
     function (test, expect) {
       var self = this;
-      test.isTrue(self.handle.ready());
-      test.equal(getInnerHtml(self.div), '<div><span>id1</span></div>');
+      test.isTrue(self.handle.ready(), 'self.handle.ready() should be true');
+      test.equal(getInnerHtml(self.div), '<div><span>id1</span></div>', 'div should contain id1');
 
       self.someOtherVar.set('bar');
       self.oldHandle1 = self.handle;
@@ -517,11 +517,11 @@ if (Meteor.isClient) {
       var self = this;
       var oldHandle = self.oldHandle1;
       var newHandle = self.handle;
-      test.notEqual(oldHandle, newHandle); // new handle
-      test.equal(newHandle.subscriptionId, oldHandle.subscriptionId); // same sub
-      test.isTrue(newHandle.ready()); // doesn't become unready
+      test.notEqual(oldHandle, newHandle, 'handles should be different instances'); // new handle
+      test.equal(newHandle.subscriptionId, oldHandle.subscriptionId, 'subscriptionId should be different'); // same sub
+      test.isTrue(newHandle.ready(), 'newHandle.ready() should be true'); // doesn't become unready
       // no change to the content
-      test.equal(getInnerHtml(self.div), '<div><span>id1</span></div>');
+      test.equal(getInnerHtml(self.div), '<div><span>id1</span></div>', 'div should contain id1');
 
       // ok, now change the `num` argument to the subscription
       self.num.set(2);
@@ -531,14 +531,14 @@ if (Meteor.isClient) {
     function (test, expect) {
       var self = this;
       // data is still there
-      test.equal(getInnerHtml(self.div), '<div><span>id1</span></div>');
+      test.equal(getInnerHtml(self.div), '<div><span>id1</span></div>', 'div shold contain id1');
       // handle is no longer ready
       var handle = self.handle;
-      test.isFalse(handle.ready());
+      test.isFalse(handle.ready(), 'handle.ready() should be false');
       // different sub ID
-      test.isTrue(self.oldHandle2.subscriptionId);
-      test.isTrue(handle.subscriptionId);
-      test.notEqual(handle.subscriptionId, self.oldHandle2.subscriptionId);
+      test.isTrue(self.oldHandle2.subscriptionId, 'self.oldHandle2.subscriptionId should be truthy');
+      test.isTrue(handle.subscriptionId, 'handle.subscriptionId should be truthy');
+      test.notEqual(handle.subscriptionId, self.oldHandle2.subscriptionId, 'subscriptionId should match');
 
       waitForTracker(() => handle.ready(),
               expect());
@@ -560,11 +560,11 @@ if (Meteor.isClient) {
     },
     function (test, expect) {
       var self = this;
-      test.equal(self.data.v, 'baz');
-      test.notEqual(self.oldHandle3, self.handle);
+      test.equal(self.data.v, 'baz', 'self.data.v should be "baz"');
+      test.notEqual(self.oldHandle3, self.handle, 'oldHandle3 shold match self.handle');
       test.equal(self.oldHandle3.subscriptionId,
-                 self.handle.subscriptionId);
-      test.isTrue(self.handle.ready());
+                 self.handle.subscriptionId, 'same for subscriptionId');
+      test.isTrue(self.handle.ready(), 'self.handle.ready() should be true');
     },
     function (test, expect) {
       ReactDOM.unmountComponentAtNode(this.div);
@@ -599,18 +599,18 @@ if (Meteor.isClient) {
       };
 
       self.component = ReactDOM.render(<self.Foo/>, self.div);
-      test.equal(getInnerHtml(self.div), '<div></div>');
+      test.equal(getInnerHtml(self.div), '<div></div>', 'div should be empty');
 
       var handle = self.handle;
-      test.isFalse(handle.ready());
+      test.isFalse(handle.ready(), 'handle.ready() should be false');
 
       waitForTracker(() => handle.ready(),
               expect());
     },
     function (test, expect) {
       var self = this;
-      test.isTrue(self.handle.ready());
-      test.equal(getInnerHtml(self.div), '<div><span>id1</span></div>');
+      test.isTrue(self.handle.ready(), 'self.handle.ready() should be true');
+      test.equal(getInnerHtml(self.div), '<div><span>id1</span></div>', 'div should contain id1');
 
       self.someOtherVar.set('bar');
       self.oldHandle1 = self.handle;
@@ -622,11 +622,11 @@ if (Meteor.isClient) {
       var self = this;
       var oldHandle = self.oldHandle1;
       var newHandle = self.handle;
-      test.notEqual(oldHandle, newHandle); // new handle
-      test.equal(newHandle.subscriptionId, oldHandle.subscriptionId); // same sub
-      test.isTrue(newHandle.ready()); // doesn't become unready
+      test.notEqual(oldHandle, newHandle, 'handles should be different instances'); // new handle
+      test.equal(newHandle.subscriptionId, oldHandle.subscriptionId, 'subscriptionId should be different'); // same sub
+      test.isTrue(newHandle.ready(), 'newHandle.ready() should be true'); // doesn't become unready
       // no change to the content
-      test.equal(getInnerHtml(self.div), '<div><span>id1</span></div>');
+      test.equal(getInnerHtml(self.div), '<div><span>id1</span></div>', 'div should contain id1');
 
       // ok, now change the `num` argument to the subscription
       self.num.set(2);
@@ -636,14 +636,14 @@ if (Meteor.isClient) {
     function (test, expect) {
       var self = this;
       // data is still there
-      test.equal(getInnerHtml(self.div), '<div><span>id1</span></div>');
+      test.equal(getInnerHtml(self.div), '<div><span>id1</span></div>', 'div shold contain id1');
       // handle is no longer ready
       var handle = self.handle;
-      test.isFalse(handle.ready());
+      test.isFalse(handle.ready(), 'handle.ready() should be false');
       // different sub ID
-      test.isTrue(self.oldHandle2.subscriptionId);
-      test.isTrue(handle.subscriptionId);
-      test.notEqual(handle.subscriptionId, self.oldHandle2.subscriptionId);
+      test.isTrue(self.oldHandle2.subscriptionId, 'self.oldHandle2.subscriptionId should be truthy');
+      test.isTrue(handle.subscriptionId, 'handle.subscriptionId should be truthy');
+      test.notEqual(handle.subscriptionId, self.oldHandle2.subscriptionId, 'subscriptionId should match');
 
       waitForTracker(() => handle.ready(),
               expect());
@@ -665,11 +665,11 @@ if (Meteor.isClient) {
     },
     function (test, expect) {
       var self = this;
-      test.equal(self.data.v, 'baz');
-      test.notEqual(self.oldHandle3, self.handle);
+      test.equal(self.data.v, 'baz', 'self.data.v should be "baz"');
+      test.notEqual(self.oldHandle3, self.handle, 'oldHandle3 shold match self.handle');
       test.equal(self.oldHandle3.subscriptionId,
-                 self.handle.subscriptionId);
-      test.isTrue(self.handle.ready());
+                 self.handle.subscriptionId, 'same for subscriptionId');
+      test.isTrue(self.handle.ready(), 'self.handle.ready() should be true');
     },
     function (test, expect) {
       ReactDOM.unmountComponentAtNode(this.div);

@@ -109,7 +109,7 @@ const useTrackerClient = <T = any>(reactiveFn: (c?: Tracker.Computation) => T, d
     // reactive function in a computation, then stop it, to force flush cycle.
     const comp = Tracker.nonreactive(
       () => Tracker.autorun((c: Tracker.Computation) => {
-        data = reactiveFn();
+        if (c.firstRun) data = reactiveFn();
       })
     );
     // To avoid creating side effects in render, stop the computation immediately
