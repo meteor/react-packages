@@ -105,9 +105,15 @@ const useTrackerClient = <T = any>(reactiveFn: (c?: Tracker.Computation) => T, d
   let [data, setData] = useState<T>();
 
   useMemo(() => {
-    // To avoid creating side effects in render, opt out
-    // of Tracker integration altogether.
-    data = Tracker.nonreactive(reactiveFn)
+    // To jive with the lifecycle interplay between Tracker/Subscribe, run the
+    // reactive function in a computation, then stop it, to force flush cycle.
+    const comp = Tracker.nonreactive(
+      () => Tracker.autorun((c: Tracker.Computation) => {
+        data = reactiveFn();
+      })
+    );
+    // To avoid creating side effects in render, stop the computation immediately
+    Meteor.defer(() => { comp.stop() });
     if (Meteor.isDevelopment) {
       checkCursor(data);
     }
