@@ -9,10 +9,10 @@ Package.describe({
 });
 
 Package.onUse(function (api) {
-  api.versionsFrom('1.12');
+  api.versionsFrom(['1.8.2', '1.12.0']);
   api.use('tracker');
   api.use('ecmascript');
-  api.use('typescript@4.1.2');
+  api.use('typescript');
 
   api.mainModule('index.js', ['client', 'server'], { lazy: true });
 });
