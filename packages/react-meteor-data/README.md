@@ -13,7 +13,7 @@ meteor add react-meteor-data
 You'll also need to install `react` if you have not already:
 
 ```bash
-npm install --save react
+meteor npm install react
 ```
 
 [check recent changes here](./CHANGELOG.md)

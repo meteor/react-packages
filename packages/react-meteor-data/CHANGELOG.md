@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v2.2.0, 2021-01-20
+* Fix issue with useTracker and Subscriptions when using deps https://github.com/meteor/react-packages/pull/306
+* Remove version constraint on core TypeScript package https://github.com/meteor/react-packages/pull/308
+
 ## v2.1.1, 2020-05-21
 * Make pure default to true like it used to https://github.com/meteor/react-packages/issues/287
 
