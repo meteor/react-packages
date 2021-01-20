@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## v2.2.1, 2021-01-20
+* Fix warning that was procuded when useTracker was used without any deps. https://github.com/meteor/react-packages/pull/312
+
 ## v2.2.0, 2021-01-20
 * Fix issue with useTracker and Subscriptions when using deps https://github.com/meteor/react-packages/pull/306
 * Remove version constraint on core TypeScript package https://github.com/meteor/react-packages/pull/308
