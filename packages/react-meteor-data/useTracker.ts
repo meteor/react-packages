@@ -154,7 +154,7 @@ const useTrackerDev = <T = any>(reactiveFn: IReactiveFn<T>, deps: DependencyList
       + `(reactiveFn), but got type of ${typeof reactiveFn}.`
     );
   }
-  if (!Array.isArray(deps)) {
+  if (deps && !Array.isArray(deps)) {
     console.warn(
       'Warning: useTracker expected an array in it\'s second argument '
       + `(dependency), but got type of ${typeof deps}.`
