@@ -2,8 +2,7 @@
   "name": "react-packages",
   "description": "Meteor packages for a great React developer experience",
   "scripts": {
-    "lint": "eslint . || true",
-    "test": "scripts/test.sh"
+    "lint": "eslint . || true"
   },
   "repository": {
     "type": "git",
