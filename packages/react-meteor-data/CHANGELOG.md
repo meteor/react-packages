@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## v2.2.2, 2021-01-28
+* Fix lost reactivity when using deps. https://github.com/meteor/react-packages/pull/314
+
 ## v2.2.1, 2021-01-20
 * Fix warning that was produced when useTracker was used without any deps. https://github.com/meteor/react-packages/pull/312
 
