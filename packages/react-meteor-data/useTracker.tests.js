@@ -220,41 +220,6 @@ if (Meteor.isClient) {
     completed();
   });
 
-  Tinytest.addAsync('useTracker - basic track', async function (test, completed) {
-    var container = document.createElement("DIV");
-
-    var x = new ReactiveVar('aaa');
-
-    var Foo = () => {
-      const data = useTracker(() => {
-        return {
-          x: x.get()
-        };
-      }, []);
-      return <span>{data.x}</span>;
-    };
-
-    ReactDOM.render(<Foo/>, container);
-    test.equal(getInnerHtml(container), '<span>aaa</span>');
-
-    x.set('bbb');
-    await waitFor(() => {
-      Tracker.flush({_throwFirstError: true});
-    }, { container, timeout: 250 });
-
-    test.equal(getInnerHtml(container), '<span>bbb</span>');
-
-    test.equal(x._numListeners(), 1);
-
-    await waitFor(() => {
-      ReactDOM.unmountComponentAtNode(container);
-    }, { container, timeout: 250 });
-
-    test.equal(x._numListeners(), 0);
-
-    completed();
-  });
-
   // Make sure that calling ReactDOM.render() from an autorun doesn't
   // associate that autorun with the mixin's autorun.  When autoruns are
   // nested, invalidating the outer one stops the inner one, unless

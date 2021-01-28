@@ -106,12 +106,15 @@ const useTrackerNoDeps = <T = any>(reactiveFn: IReactiveFn<T>) => {
 const useTrackerWithDeps = <T = any>(reactiveFn: IReactiveFn<T>, deps: DependencyList): T => {
   let [data, setData] = useState<T>();
 
+  const { current: refs } = useRef({ reactiveFn });
+  refs.reactiveFn = reactiveFn;
+
   useMemo(() => {
     // To jive with the lifecycle interplay between Tracker/Subscribe, run the
     // reactive function in a computation, then stop it, to force flush cycle.
     const comp = Tracker.nonreactive(
       () => Tracker.autorun((c: Tracker.Computation) => {
-        if (c.firstRun) data = reactiveFn();
+        if (c.firstRun) data = refs.reactiveFn();
       })
     );
     // To avoid creating side effects in render, stop the computation immediately
@@ -122,9 +125,11 @@ const useTrackerWithDeps = <T = any>(reactiveFn: IReactiveFn<T>, deps: Dependenc
   }, deps);
 
   useEffect(() => {
-    const computation = Tracker.autorun((c) => {
-      setData(reactiveFn(c));
-    });
+    const computation =  Tracker.nonreactive(
+      () => Tracker.autorun((c) => {
+        setData(refs.reactiveFn(c));
+      })
+    );
     return () => {
       computation.stop();
     }
