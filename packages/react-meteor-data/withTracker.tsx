@@ -5,6 +5,7 @@ type ReactiveFn = (props: object) => any;
 type ReactiveOptions = {
   getMeteorData: ReactiveFn;
   pure?: boolean;
+  skipUpdate?: (prev: any, next: any) => boolean;
 }
 
 export default function withTracker(options: ReactiveFn | ReactiveOptions) {
@@ -14,14 +15,16 @@ export default function withTracker(options: ReactiveFn | ReactiveOptions) {
       : options.getMeteorData;
 
     const WithTracker = forwardRef((props, ref) => {
-      const data = useTracker(() => getMeteorData(props) || {});
+      const data = useTracker(
+        () => getMeteorData(props) || {},
+        (options as ReactiveOptions).skipUpdate
+      );
       return (
         <Component ref={ref} {...props} {...data} />
       );
     });
 
-    // @ts-ignore
-    const { pure = true } = options;
+    const { pure = true } = options as ReactiveOptions;
     return pure ? memo(WithTracker) : WithTracker;
-  }
-};
+  };
+}

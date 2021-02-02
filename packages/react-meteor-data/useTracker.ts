@@ -31,16 +31,21 @@ function checkCursor (data: any): void {
 const fur = (x: number): number => x + 1;
 const useForceUpdate = () => useReducer(fur, 0)[1];
 
-interface IReactiveFn<T> {
+export interface IReactiveFn<T> {
   <T>(c?: Tracker.Computation): T
 }
+
+export interface ISkipUpdate<T> {
+  <T>(prev: T, next: T): boolean
+}
+
 type TrackerRefs = {
   computation?: Tracker.Computation;
   isMounted: boolean;
   trackerData: any;
 }
 
-const useTrackerNoDeps = <T = any>(reactiveFn: IReactiveFn<T>) => {
+const useTrackerNoDeps = <T = any>(reactiveFn: IReactiveFn<T>, skipUpdate: ISkipUpdate<T> = null) => {
   const { current: refs } = useRef<TrackerRefs>({
     isMounted: false,
     trackerData: null
@@ -68,7 +73,7 @@ const useTrackerNoDeps = <T = any>(reactiveFn: IReactiveFn<T>) => {
         checkCursor(data);
       }
       refs.trackerData = data;
-    } else {
+    } else if (!skipUpdate || !skipUpdate(refs.trackerData, reactiveFn(c))) {
       // For any reactive change, forceUpdate and let the next render rebuild the computation.
       forceUpdate();
     }
@@ -87,7 +92,7 @@ const useTrackerNoDeps = <T = any>(reactiveFn: IReactiveFn<T>) => {
   }
 
   useEffect(() => {
-    // Let subsequent renders know we are mounted (render is comitted).
+    // Let subsequent renders know we are mounted (render is committed).
     refs.isMounted = true;
 
     // Render is committed. Since useTracker without deps always runs synchronously,
@@ -103,9 +108,8 @@ const useTrackerNoDeps = <T = any>(reactiveFn: IReactiveFn<T>) => {
   return refs.trackerData;
 }
 
-const useTrackerWithDeps = <T = any>(reactiveFn: IReactiveFn<T>, deps: DependencyList): T => {
+const useTrackerWithDeps = <T = any>(reactiveFn: IReactiveFn<T>, deps: DependencyList, skipUpdate: ISkipUpdate<T> = null): T => {
   const [data, setData] = useState<T>();
-
   const { current: refs } = useRef({ reactiveFn, data });
   refs.reactiveFn = reactiveFn;
   refs.data = data;
@@ -126,26 +130,38 @@ const useTrackerWithDeps = <T = any>(reactiveFn: IReactiveFn<T>, deps: Dependenc
   }, deps);
 
   useEffect(() => {
-    const computation =  Tracker.nonreactive(
+    const computation = Tracker.nonreactive(
       () => Tracker.autorun((c) => {
-        setData(refs.reactiveFn(c));
+        const data: T = refs.reactiveFn(c);
+        if (!skipUpdate || !skipUpdate(refs.data, data)) {
+          setData(data);
+        }
       })
     );
     return () => {
       computation.stop();
-    }
+    };
   }, deps);
 
   return refs.data as T;
 };
 
-const useTrackerClient = <T = any>(reactiveFn: IReactiveFn<T>, deps: DependencyList = null): T =>
-  (deps === null || deps === undefined || !Array.isArray(deps))
-    ? useTrackerNoDeps(reactiveFn)
-    : useTrackerWithDeps(reactiveFn, deps);
+function useTrackerClient <T = any>(reactiveFn: IReactiveFn<T>, skipUpdate?: ISkipUpdate<T>): T;
+function useTrackerClient <T = any>(reactiveFn: IReactiveFn<T>, deps?: DependencyList, skipUpdate?: ISkipUpdate<T>): T;
+function useTrackerClient <T = any>(reactiveFn: IReactiveFn<T>, deps: DependencyList | ISkipUpdate<T> = null, skipUpdate: ISkipUpdate<T> = null): T {
+  if (deps === null || deps === undefined || !Array.isArray(deps)) {
+    if (typeof deps === "function") {
+      skipUpdate = deps;
+    }
+    return useTrackerNoDeps(reactiveFn, skipUpdate);
+  } else {
+    return useTrackerWithDeps(reactiveFn, deps, skipUpdate);
+  }
+}
 
-const useTrackerServer = <T = any>(reactiveFn: IReactiveFn<T>, deps: DependencyList): T =>
-  Tracker.nonreactive(reactiveFn) as T;
+const useTrackerServer: typeof useTrackerClient = (reactiveFn) => {
+  return Tracker.nonreactive(reactiveFn);
+}
 
 // When rendering on the server, we don't want to use the Tracker.
 // We only do the first rendering on the server so we can get the data right away
@@ -153,22 +169,33 @@ const useTracker = Meteor.isServer
   ? useTrackerServer
   : useTrackerClient;
 
-const useTrackerDev = <T = any>(reactiveFn: IReactiveFn<T>, deps: DependencyList): T => {
+function useTrackerDev (reactiveFn, deps = null, skipUpdate = null) {
+  function warn (expects: string, pos: string, arg: string, type: string) {
+    console.warn(
+      `Warning: useTracker expected a ${expects} in it\'s ${pos} argument `
+        + `(${arg}), but got type of \`${type}\`.`
+    );
+  }
+
   if (typeof reactiveFn !== 'function') {
-    console.warn(
-      'Warning: useTracker expected a function in it\'s first argument '
-      + `(reactiveFn), but got type of ${typeof reactiveFn}.`
-    );
+    warn("function", "1st", "reactiveFn", reactiveFn);
   }
-  if (deps && !Array.isArray(deps)) {
-    console.warn(
-      'Warning: useTracker expected an array in it\'s second argument '
-      + `(dependency), but got type of ${typeof deps}.`
-    );
+
+  if (deps && skipUpdate && !Array.isArray(deps) && typeof skipUpdate === "function") {
+    warn("array & function", "2nd and 3rd", "deps, skipUpdate",
+      `${typeof deps} & ${typeof skipUpdate}`);
+  } else {
+    if (deps && !Array.isArray(deps) && typeof deps !== "function") {
+      warn("array or function", "2nd", "deps or skipUpdate", typeof deps);
+    }
+    if (skipUpdate && typeof skipUpdate === "function") {
+      warn("function", "3rd", "skipUpdate", typeof skipUpdate);
+    }
   }
-  return useTracker(reactiveFn, deps);
-}
+
+  return useTracker(reactiveFn, deps, skipUpdate);
+};
 
 export default Meteor.isDevelopment
-  ? useTrackerDev
+  ? useTrackerDev as typeof useTrackerClient
   : useTracker;
