@@ -104,23 +104,24 @@ const useTrackerNoDeps = <T = any>(reactiveFn: IReactiveFn<T>) => {
 }
 
 const useTrackerWithDeps = <T = any>(reactiveFn: IReactiveFn<T>, deps: DependencyList): T => {
-  let [data, setData] = useState<T>();
+  const [data, setData] = useState<T>();
 
-  const { current: refs } = useRef({ reactiveFn });
+  const { current: refs } = useRef({ reactiveFn, data });
   refs.reactiveFn = reactiveFn;
+  refs.data = data;
 
   useMemo(() => {
     // To jive with the lifecycle interplay between Tracker/Subscribe, run the
     // reactive function in a computation, then stop it, to force flush cycle.
     const comp = Tracker.nonreactive(
       () => Tracker.autorun((c: Tracker.Computation) => {
-        if (c.firstRun) data = refs.reactiveFn();
+        if (c.firstRun) refs.data = refs.reactiveFn();
       })
     );
     // To avoid creating side effects in render, stop the computation immediately
     Meteor.defer(() => { comp.stop() });
     if (Meteor.isDevelopment) {
-      checkCursor(data);
+      checkCursor(refs.data);
     }
   }, deps);
 
@@ -135,8 +136,8 @@ const useTrackerWithDeps = <T = any>(reactiveFn: IReactiveFn<T>, deps: Dependenc
     }
   }, deps);
 
-  return data as T;
-}
+  return refs.data as T;
+};
 
 const useTrackerClient = <T = any>(reactiveFn: IReactiveFn<T>, deps: DependencyList = null): T =>
   (deps === null || deps === undefined || !Array.isArray(deps))
