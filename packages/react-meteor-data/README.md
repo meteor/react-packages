@@ -87,6 +87,8 @@ function Foo({ listId }) {
 "react-hooks/exhaustive-deps": ["warn", { "additionalHooks": "useTracker|useSomeOtherHook|..." }]
 ```
 
+**Warning:** It's best not to call React functions that may cause rerenders, such as the `setState` half of a `useState` hook, within `reactiveFn` (or other functions run with `Tracker.autorun`). Doing so can have unintended interactions, where a rerender (including effects in `useEffect`) may execute within a `Tracker`, causing them to invalidate when the original `useTracker` does.
+
 #### `withTracker(reactiveFn)` higher-order component
 
 You can use the `withTracker` HOC to wrap your components and pass them additional props values from a Tracker reactive function. The reactive function will get re-run whenever its reactive inputs change, and the wrapped component will re-render with the new values for the additional props.
