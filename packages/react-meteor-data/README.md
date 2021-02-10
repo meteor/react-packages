@@ -87,7 +87,7 @@ function Foo({ listId }) {
 "react-hooks/exhaustive-deps": ["warn", { "additionalHooks": "useTracker|useSomeOtherHook|..." }]
 ```
 
-**Warning:** It's best not to call React functions that may cause rerenders, such as the `setState` half of a `useState` hook, within `reactiveFn` (or other functions run with `Tracker.autorun`). Doing so can have unintended interactions, where a rerender (including effects in `useEffect`) may execute within a `Tracker`, causing them to invalidate when the original `useTracker` does.
+**Warning:** It's best not to call React functions that may cause rerenders, such as the `setState` half of a `useState` hook, within `reactiveFn` (or other functions run with `Tracker.autorun`). Doing so can have unintended interactions, where a rerender (including effects in `useEffect`) may execute within a `Tracker`, causing them to invalidate when the original `useTracker` does. Instead, return the relevant state from `useTracker` and apply React state changes within a `useLayoutEffect` or `useEffect` hook.
 
 #### `withTracker(reactiveFn)` higher-order component
 
