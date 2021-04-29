@@ -1,5 +1,7 @@
 # CHANGELOG
 
+* Fix data was not correct saved between renders.
+
 ## v2.2.2, 2021-01-28
 * Fix lost reactivity when using deps. https://github.com/meteor/react-packages/pull/314
 
