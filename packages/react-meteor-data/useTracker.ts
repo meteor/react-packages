@@ -68,11 +68,7 @@ const useTrackerNoDeps = <T = any>(reactiveFn: IReactiveFn<T>, skipUpdate: ISkip
     refs.computation = c;
     if (c.firstRun) {
       // Always run the reactiveFn on firstRun
-      const data = reactiveFn(c);
-      if (Meteor.isDevelopment) {
-        checkCursor(data);
-      }
-      refs.trackerData = data;
+      refs.trackerData = reactiveFn(c);
     } else if (!skipUpdate || !skipUpdate(refs.trackerData, reactiveFn(c))) {
       // For any reactive change, forceUpdate and let the next render rebuild the computation.
       forceUpdate();
@@ -139,9 +135,6 @@ const useTrackerWithDeps = <T = any>(reactiveFn: IReactiveFn<T>, deps: Dependenc
     );
     // To avoid creating side effects in render, stop the computation immediately
     Meteor.defer(() => { comp.stop() });
-    if (Meteor.isDevelopment) {
-      checkCursor(refs.data);
-    }
   }, deps);
 
   useEffect(() => {
@@ -209,7 +202,9 @@ function useTrackerDev (reactiveFn, deps = null, skipUpdate = null) {
     }
   }
 
-  return useTracker(reactiveFn, deps, skipUpdate);
+  const data = useTracker(reactiveFn, deps, skipUpdate);
+  checkCursor(data);
+  return data;
 };
 
 export default Meteor.isDevelopment
