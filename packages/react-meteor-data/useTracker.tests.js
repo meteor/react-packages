@@ -96,48 +96,6 @@ if (Meteor.isClient) {
     completed();
   });
 
-  Tinytest.addAsync('useTracker - immediate rerender does not result in `undefined`', async function (test, completed) {
-    /**
-     * In cases where a state change causes rerender before the render is
-     * committed, useMemo will only run on the first render. This can cause the
-     * value to get lost (unexpected undefined), if we aren't careful.
-     */
-    const container = document.createElement("DIV");
-    const reactiveDict = new ReactiveDict();
-    let value;
-    let renders = 0;
-    const Test = () => {
-      renders++;
-      const [num, setNum] = useState(0);
-      value = useTracker(() => {
-        reactiveDict.setDefault('key', 'initial');
-        return reactiveDict.get('key');
-      }, []);
-      if (num === 0) {
-        setNum(1);
-      }
-      return <span>{value}</span>;
-    };
-
-    let rerender, unmount;
-    const TestContainer = () => {
-      [, rerender] = useReducer((x) => x + 1, 0);
-      const [mounted, setMounted] = useState(true);
-      unmount = () => setMounted(false);
-      return <StrictMode>{mounted ? <Test /> : null}</StrictMode>;
-    };
-
-    ReactDOM.render(<TestContainer />, container);
-    test.equal(value, 'initial', 'values should be "initial" and not undefined');
-
-    // wait for useEffect
-    await waitFor(() => {}, { container, timeout: 250 });
-
-    test.equal(value, 'initial', 'values should still be "initial" after mount');
-
-    completed();
-  });
-
   const depsTester = async (test, mode = 'normal') => {
     const container = document.createElement("DIV");
 
@@ -224,6 +182,61 @@ if (Meteor.isClient) {
 
   Tinytest.addAsync('useTracker - in StrictMode', async function (test, completed) {
     await depsTester(test, 'strict-mode');
+    completed();
+  });
+
+  async function testSkipUpdate (test, deps) {
+    /**
+     * In cases where a state change causes rerender before the render is
+     * committed, useMemo will only run on the first render. This can cause the
+     * value to get lost (unexpected undefined), if we aren't careful.
+     */
+    const container = document.createElement("DIV");
+    const reactiveDict = new ReactiveDict();
+    let value;
+    let renders = 0;
+    const skipUpdate = (prev, next) => {
+      // only update when second changes, not first
+      return prev.second === next.second;
+    };
+    const Test = () => {
+      renders++;
+      value = useTracker(
+        () => {
+          reactiveDict.setDefault('key', { first: 0, second: 0 });
+          return reactiveDict.get('key');
+        },
+        deps || skipUpdate,
+        deps ? skipUpdate : undefined
+      );
+      return <span>{JSON.stringify(value)}</span>;
+    };
+
+    ReactDOM.render(<Test />, container);
+    test.equal(renders, 1, 'Should have rendered only once');
+
+    // wait for useEffect
+    await waitFor(() => {}, { container, timeout: 250 });
+    test.equal(renders, 1, 'Should have rendered only once after mount');
+
+    reactiveDict.set('key', { first: 1, second: 0 });
+    await waitFor(() => {}, { container, timeout: 250 });
+
+    test.equal(renders, 1, "Should still have rendered only once");
+
+    reactiveDict.set('key', { first: 1, second: 1 });
+    await waitFor(() => {}, { container, timeout: 250 });
+
+    test.equal(renders, 2, "Should have rendered a second time");
+  }
+
+  Tinytest.addAsync('useTracker - skipUpdate prevents rerenders', async function (test, completed) {
+    await testSkipUpdate(test, []);
+    completed();
+  });
+
+  Tinytest.addAsync('useTracker (no deps) - skipUpdate prevents rerenders', async function (test, completed) {
+    await testSkipUpdate(test);
     completed();
   });
 
@@ -720,6 +733,46 @@ if (Meteor.isClient) {
       Meteor.defer(expect());
     }
   ]);
+
+  Tinytest.addAsync('useTracker - immediate rerender does not result in `undefined`', async function (test, completed) {
+    /**
+     * In cases where a state change causes rerender before the render is
+     * committed, useMemo will only run on the first render. This can cause the
+     * value to get lost (unexpected undefined), if we aren't careful.
+     */
+    const container = document.createElement("DIV");
+    const reactiveDict = new ReactiveDict();
+    let value;
+    const Test = () => {
+      const [num, setNum] = useState(0);
+      value = useTracker(() => {
+        reactiveDict.setDefault('key', 'initial');
+        return reactiveDict.get('key');
+      }, []);
+      if (num === 0) {
+        setNum(1);
+      }
+      return <span>{value}</span>;
+    };
+
+    let rerender, unmount;
+    const TestContainer = () => {
+      [, rerender] = useReducer((x) => x + 1, 0);
+      const [mounted, setMounted] = useState(true);
+      unmount = () => setMounted(false);
+      return <StrictMode>{mounted ? <Test /> : null}</StrictMode>;
+    };
+
+    ReactDOM.render(<TestContainer />, container);
+    test.equal(value, 'initial', 'values should be "initial" and not undefined');
+
+    // wait for useEffect
+    await waitFor(() => {}, { container, timeout: 250 });
+
+    test.equal(value, 'initial', 'values should still be "initial" after mount');
+
+    completed();
+  });
 
   // Tinytest.add(
   //   "useTracker - print warning if return cursor from useTracker",

@@ -97,7 +97,17 @@ const useTrackerNoDeps = <T = any>(reactiveFn: IReactiveFn<T>, skipUpdate: ISkip
 
     // Render is committed. Since useTracker without deps always runs synchronously,
     // forceUpdate and let the next render recreate the computation.
-    forceUpdate();
+    if (!skipUpdate) {
+      forceUpdate();
+    } else {
+      Tracker.nonreactive(() => Tracker.autorun((c: Tracker.Computation) => {
+        refs.computation = c;
+        if (!skipUpdate(refs.trackerData, reactiveFn(c))) {
+          // For any reactive change, forceUpdate and let the next render rebuild the computation.
+          forceUpdate();
+        }
+      }));
+    }
 
     // stop the computation on unmount
     return () =>{
@@ -194,7 +204,7 @@ function useTrackerDev (reactiveFn, deps = null, skipUpdate = null) {
     if (deps && !Array.isArray(deps) && typeof deps !== "function") {
       warn("array or function", "2nd", "deps or skipUpdate", typeof deps);
     }
-    if (skipUpdate && typeof skipUpdate === "function") {
+    if (skipUpdate && typeof skipUpdate !== "function") {
       warn("function", "3rd", "skipUpdate", typeof skipUpdate);
     }
   }
