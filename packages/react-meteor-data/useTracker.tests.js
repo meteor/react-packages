@@ -96,6 +96,48 @@ if (Meteor.isClient) {
     completed();
   });
 
+  Tinytest.addAsync('useTracker - immediate rerender does not result in `undefined`', async function (test, completed) {
+    /**
+     * In cases where a state change causes rerender before the render is
+     * committed, useMemo will only run on the first render. This can cause the
+     * value to get lost (unexpected undefined), if we aren't careful.
+     */
+    const container = document.createElement("DIV");
+    const reactiveDict = new ReactiveDict();
+    let value;
+    let renders = 0;
+    const Test = () => {
+      renders++;
+      const [num, setNum] = useState(0);
+      value = useTracker(() => {
+        reactiveDict.setDefault('key', 'initial');
+        return reactiveDict.get('key');
+      }, []);
+      if (num === 0) {
+        setNum(1);
+      }
+      return <span>{value}</span>;
+    };
+
+    let rerender, unmount;
+    const TestContainer = () => {
+      [, rerender] = useReducer((x) => x + 1, 0);
+      const [mounted, setMounted] = useState(true);
+      unmount = () => setMounted(false);
+      return <StrictMode>{mounted ? <Test /> : null}</StrictMode>;
+    };
+
+    ReactDOM.render(<TestContainer />, container);
+    test.equal(value, 'initial', 'values should be "initial" and not undefined');
+
+    // wait for useEffect
+    await waitFor(() => {}, { container, timeout: 250 });
+
+    test.equal(value, 'initial', 'values should still be "initial" after mount');
+
+    completed();
+  });
+
   const depsTester = async (test, mode = 'normal') => {
     const container = document.createElement("DIV");
 

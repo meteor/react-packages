@@ -110,9 +110,14 @@ const useTrackerNoDeps = <T = any>(reactiveFn: IReactiveFn<T>, skipUpdate: ISkip
 
 const useTrackerWithDeps = <T = any>(reactiveFn: IReactiveFn<T>, deps: DependencyList, skipUpdate: ISkipUpdate<T> = null): T => {
   const [data, setData] = useState<T>();
-  const { current: refs } = useRef({ reactiveFn, data });
+  const { current: refs } = useRef({ reactiveFn, data, isMounted: false });
   refs.reactiveFn = reactiveFn;
-  refs.data = data;
+
+  // Only update refs.data when deps change, or the component is mounted.
+  // This prevents an unexpected value of `undefined` on immediate rerenders.
+  if (refs.isMounted) {
+    refs.data = data;
+  }
 
   useMemo(() => {
     // To jive with the lifecycle interplay between Tracker/Subscribe, run the
@@ -130,6 +135,7 @@ const useTrackerWithDeps = <T = any>(reactiveFn: IReactiveFn<T>, deps: Dependenc
   }, deps);
 
   useEffect(() => {
+    refs.isMounted = true;
     const computation = Tracker.nonreactive(
       () => Tracker.autorun((c) => {
         const data: T = refs.reactiveFn(c);
