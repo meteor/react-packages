@@ -743,33 +743,50 @@ if (Meteor.isClient) {
     const container = document.createElement("DIV");
     const reactiveDict = new ReactiveDict();
     let value;
-    const Test = () => {
+    let renderCount = 0;
+    const Test = ({ afterMountInc = false }) => {
+      renderCount++;
       const [num, setNum] = useState(0);
       value = useTracker(() => {
         reactiveDict.setDefault('key', 'initial');
         return reactiveDict.get('key');
       }, []);
       if (num === 0) {
+        reactiveDict.set('key', 'secondary');
         setNum(1);
+      }
+      if (afterMountInc && num !== 2) {
+        reactiveDict.set('key', 'third');
+        setNum(2);
       }
       return <span>{value}</span>;
     };
 
-    let rerender, unmount;
+    const strict = 2;
+    let afterMountInc, setAfterMountInc;
     const TestContainer = () => {
-      [, rerender] = useReducer((x) => x + 1, 0);
-      const [mounted, setMounted] = useState(true);
-      unmount = () => setMounted(false);
-      return <StrictMode>{mounted ? <Test /> : null}</StrictMode>;
+      [afterMountInc, setAfterMountInc] = useState(false);
+      return <StrictMode><Test afterMountInc={afterMountInc} /></StrictMode>;
     };
 
     ReactDOM.render(<TestContainer />, container);
-    test.equal(value, 'initial', 'values should be "initial" and not undefined');
+    test.equal(value, 'secondary', 'value should be "secondary" and not undefined');
+    test.equal(renderCount, 2 * strict, "Should have rendered twice before mount");
 
     // wait for useEffect
     await waitFor(() => {}, { container, timeout: 250 });
 
-    test.equal(value, 'initial', 'values should still be "initial" after mount');
+    test.equal(value, 'secondary', 'value should still be "secondary" after mount');
+    test.equal(renderCount, 3 * strict, "Should have rendered 3 times after mount");
+
+    renderCount = 0;
+    // trigger after mount immediate rerender
+    setAfterMountInc(true);
+
+    await waitFor(() => {}, { container, timeout: 250 });
+
+    test.equal(value, 'third', 'value should still be "third" after immediate rerender after mount');
+    test.equal(renderCount, 3 * strict, "Should have rendered 3 times");
 
     completed();
   });
