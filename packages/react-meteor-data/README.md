@@ -30,13 +30,26 @@ The `withTracker` HOC can be used with all components, function or class based.
 
 It is not necessary to rewrite existing applications to use the `useTracker` hook instead of the existing `withTracker` HOC.
 
-#### `useTracker(reactiveFn, deps)` hook
+#### `useTracker(reactiveFn)` basic hook
 
-You can use the `useTracker` hook to get the value of a Tracker reactive function in your (function) components. The reactive function will get re-run whenever its reactive inputs change, and the component will re-render with the new value.
+You can use the `useTracker` hook to get the value of a Tracker reactive function in your React "function components." The reactive function will get re-run whenever its reactive inputs change, and the component will re-render with the new value.
+
+`useTracker` manages its own state, and causes re-renders when necessary. There is no need to call React state setters from inside your `reactiveFn`. Instead, return the values from your `reactiveFn` and assign those to variables directly. When the `reactiveFn` updates, the variables will be updated, and the React component will re-render.
 
 Arguments:
 - `reactiveFn`: A Tracker reactive function (receives the current computation).
-- `deps`: An optional array of "dependencies" of the reactive function. This is very similar to how the `deps` argument for [React's built-in `useEffect`, `useCallback` or `useMemo` hooks](https://reactjs.org/docs/hooks-reference.html) work. If omitted, the Tracker computation will be recreated on every render (Note: `withTracker` has always done this). If provided, the computation will be retained, and reactive updates after the first run will run asynchronously from the react render cycle. This array typically includes all variables from the outer scope "captured" in the closure passed as the 1st argument. For example, the value of a prop used in a subscription or a Minimongo query; see example below.
+
+The basic way to use `useTracker` is to simply pass it a reactive function, with no further fuss. This is the preferred configuration in many cases.
+
+#### `useTracker(reacitveFn, deps)` hook with deps
+
+You can pass an optional deps array as a second value. When provided, the computation will be retained, and reactive updates after the first run will run asynchronously from the react render execution frame. This array typically includes all variables from the outer scope "captured" in the closure passed as the 1st argument. For example, the value of a prop used in a subscription or a minimongo query; see example below.
+
+This should be considered a low level optimization step for cases where your computations are somewhat long running - like a complex minimongo query. In many cases it's safe and even preferred to omit deps and allow the computation to run synchronously with render.
+
+Arguments:
+- `reactiveFn`
+- `deps`: An optional array of "dependencies" of the reactive function. This is very similar to how the `deps` argument for [React's built-in `useEffect`, `useCallback` or `useMemo` hooks](https://reactjs.org/docs/hooks-reference.html) work.
 
 ```js
 import { useTracker } from 'meteor/react-meteor-data';
@@ -87,6 +100,44 @@ function Foo({ listId }) {
 "react-hooks/exhaustive-deps": ["warn", { "additionalHooks": "useTracker|useSomeOtherHook|..." }]
 ```
 
+#### `useTracker(reactiveFn, deps, skipUpdate)` or `useTracker(reactiveFn, skipUpdate)`
+
+You may optionally pass a function as a second or third argument. The `skipUpdate` function can evaluate the return value of `reactiveFn` for changes, and control re-renders in sensitive cases. *Note:* This is not meant to be used iwth a deep compare (even fast-deep-equals), as in many cases that may actually lead to worse performance than allowing React to do it's thing. But as an example, you could use this to compare an `updatedAt` field between updates, or a subset of specific fields, if you aren't using the entire document in a subscription. As always with any optimization, measure first, then optimize second. Make sure you really need this before implementing it.
+
+Arguments:
+- `reactiveFn`
+- `deps?` - optional - you may omit this, or pass a "falsy" value.
+- `skipUpdate` - A function which receives two arguments: `(prev, next) => (prev === next)`. `prev` and `next` will match the type or data shape as that returned by `reactiveFn`. Note: A return value of `true` means the update will be "skipped". `false` means re-render will occur as normal. So the function should be looking for equivalence.
+
+```jsx
+import { useTracker } from 'meteor/react-meteor-data';
+
+// React function component.
+function Foo({ listId }) {
+  const tasks = useTracker(
+    () => Tasks.find({ listId }).fetch(), [listId],
+    (prev, next) => {
+      // prev and next will match the type returned by the reactiveFn
+      return prev.every((doc, i) => (
+        doc._id === next[i] && doc.updatedAt === next[i]
+      )) && prev.length === next.length;
+    }
+  );
+
+  return (
+    <h1>Hello {currentUser.username}</h1>
+    <div>
+      Here is the Todo list {listId}:
+      <ul>
+        {tasks.map(task => (
+          <li key={task._id}>{task.label}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
 #### `withTracker(reactiveFn)` higher-order component
 
 You can use the `withTracker` HOC to wrap your components and pass them additional props values from a Tracker reactive function. The reactive function will get re-run whenever its reactive inputs change, and the wrapped component will re-render with the new values for the additional props.
@@ -126,6 +177,59 @@ export default withTracker(({ listId }) => {
 The returned component will, when rendered, render `Foo` (the "lower-order" component) with its provided props in addition to the result of the reactive function. So `Foo` will receive `{ listId }` (provided by its parent) as well as `{ currentUser, listLoading, tasks }` (added by the `withTracker` HOC).
 
 For more information, see the [React article](http://guide.meteor.com/react.html) in the Meteor Guide.
+
+#### `withTracker({ reactiveFn, pure, skipUpdate })` advanced container config
+
+The `withTracker` HOC can receive a config object instead of a simple reactive function.
+
+- `getMeteorData` - The `reactiveFn`.
+- `pure` - `true` by default. Causes the resulting Container to be wrapped with React's `memo()`.
+- `skipUpdate` - A function which receives two arguments: `(prev, next) => (prev === next)`. `prev` and `next` will match the type or data shape as that returned by `reactiveFn`. Note: A return value of `true` means the update will be "skipped". `false` means re-render will occur as normal. So the function should be looking for equivalence.
+
+```js
+import { withTracker } from 'meteor/react-meteor-data';
+
+// React component (function or class).
+function Foo({ listId, currentUser, listLoading, tasks }) {
+  return (
+    <h1>Hello {currentUser.username}</h1>
+    {listLoading ?
+      <div>Loading</div> :
+      <div>
+        Here is the Todo list {listId}:
+        <ul>{tasks.map(task => <li key={task._id}>{task.label}</li>)}</ul>
+      </div}
+  );
+}
+
+export default withTracker({
+  getMeteorData ({ listId }) {
+    // Do all your reactive data access in this function.
+    // Note that this subscription will get cleaned up when your component is unmounted
+    const handle = Meteor.subscribe('todoList', listId);
+
+    return {
+      currentUser: Meteor.user(),
+      listLoading: !handle.ready(),
+      tasks: Tasks.find({ listId }).fetch(),
+    };
+  },
+  pure: true,
+  skipUpdate (prev, next) {
+    // prev and next will match the shape returned by the reactiveFn
+    return (
+      prev.currentUser?._id === next.currentUser?._id
+    ) && (
+      prev.listLoading === next.listLoading
+    ) && (
+      prev.tasks.every((doc, i) => (
+        doc._id === next[i] && doc.updatedAt === next[i]
+      ))
+      && prev.tasks.length === next.tasks.length
+    );
+  }
+})(Foo);
+```
 
 ### Concurrent Mode, Suspense and Error Boundaries
 
