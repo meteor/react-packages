@@ -185,6 +185,61 @@ if (Meteor.isClient) {
     completed();
   });
 
+  async function testSkipUpdate (test, deps) {
+    /**
+     * In cases where a state change causes rerender before the render is
+     * committed, useMemo will only run on the first render. This can cause the
+     * value to get lost (unexpected undefined), if we aren't careful.
+     */
+    const container = document.createElement("DIV");
+    const reactiveDict = new ReactiveDict();
+    let value;
+    let renders = 0;
+    const skipUpdate = (prev, next) => {
+      // only update when second changes, not first
+      return prev.second === next.second;
+    };
+    const Test = () => {
+      renders++;
+      value = useTracker(
+        () => {
+          reactiveDict.setDefault('key', { first: 0, second: 0 });
+          return reactiveDict.get('key');
+        },
+        deps || skipUpdate,
+        deps ? skipUpdate : undefined
+      );
+      return <span>{JSON.stringify(value)}</span>;
+    };
+
+    ReactDOM.render(<Test />, container);
+    test.equal(renders, 1, 'Should have rendered only once');
+
+    // wait for useEffect
+    await waitFor(() => {}, { container, timeout: 250 });
+    test.equal(renders, 1, 'Should have rendered only once after mount');
+
+    reactiveDict.set('key', { first: 1, second: 0 });
+    await waitFor(() => {}, { container, timeout: 250 });
+
+    test.equal(renders, 1, "Should still have rendered only once");
+
+    reactiveDict.set('key', { first: 1, second: 1 });
+    await waitFor(() => {}, { container, timeout: 250 });
+
+    test.equal(renders, 2, "Should have rendered a second time");
+  }
+
+  Tinytest.addAsync('useTracker - skipUpdate prevents rerenders', async function (test, completed) {
+    await testSkipUpdate(test, []);
+    completed();
+  });
+
+  Tinytest.addAsync('useTracker (no deps) - skipUpdate prevents rerenders', async function (test, completed) {
+    await testSkipUpdate(test);
+    completed();
+  });
+
   Tinytest.addAsync('useTracker (no deps) - basic track', async function (test, completed) {
     var container = document.createElement("DIV");
 
@@ -196,6 +251,41 @@ if (Meteor.isClient) {
           x: x.get()
         };
       });
+      return <span>{data.x}</span>;
+    };
+
+    ReactDOM.render(<Foo/>, container);
+    test.equal(getInnerHtml(container), '<span>aaa</span>');
+
+    x.set('bbb');
+    await waitFor(() => {
+      Tracker.flush({_throwFirstError: true});
+    }, { container, timeout: 250 });
+
+    test.equal(getInnerHtml(container), '<span>bbb</span>');
+
+    test.equal(x._numListeners(), 1);
+
+    await waitFor(() => {
+      ReactDOM.unmountComponentAtNode(container);
+    }, { container, timeout: 250 });
+
+    test.equal(x._numListeners(), 0);
+
+    completed();
+  });
+
+  Tinytest.addAsync('useTracker - basic track', async function (test, completed) {
+    var container = document.createElement("DIV");
+
+    var x = new ReactiveVar('aaa');
+
+    var Foo = () => {
+      const data = useTracker(() => {
+        return {
+          x: x.get()
+        };
+      }, []);
       return <span>{data.x}</span>;
     };
 
@@ -643,6 +733,63 @@ if (Meteor.isClient) {
       Meteor.defer(expect());
     }
   ]);
+
+  Tinytest.addAsync('useTracker - immediate rerender does not result in `undefined`', async function (test, completed) {
+    /**
+     * In cases where a state change causes rerender before the render is
+     * committed, useMemo will only run on the first render. This can cause the
+     * value to get lost (unexpected undefined), if we aren't careful.
+     */
+    const container = document.createElement("DIV");
+    const reactiveDict = new ReactiveDict();
+    let value;
+    let renderCount = 0;
+    const Test = ({ afterMountInc = false }) => {
+      renderCount++;
+      const [num, setNum] = useState(0);
+      value = useTracker(() => {
+        reactiveDict.setDefault('key', 'initial');
+        return reactiveDict.get('key');
+      }, []);
+      if (num === 0) {
+        reactiveDict.set('key', 'secondary');
+        setNum(1);
+      }
+      if (afterMountInc && num !== 2) {
+        reactiveDict.set('key', 'third');
+        setNum(2);
+      }
+      return <span>{value}</span>;
+    };
+
+    const strict = 2;
+    let afterMountInc, setAfterMountInc;
+    const TestContainer = () => {
+      [afterMountInc, setAfterMountInc] = useState(false);
+      return <StrictMode><Test afterMountInc={afterMountInc} /></StrictMode>;
+    };
+
+    ReactDOM.render(<TestContainer />, container);
+    test.equal(value, 'secondary', 'value should be "secondary" and not undefined');
+    test.equal(renderCount, 2 * strict, "Should have rendered twice before mount");
+
+    // wait for useEffect
+    await waitFor(() => {}, { container, timeout: 250 });
+
+    test.equal(value, 'secondary', 'value should still be "secondary" after mount');
+    test.equal(renderCount, 3 * strict, "Should have rendered 3 times after mount");
+
+    renderCount = 0;
+    // trigger after mount immediate rerender
+    setAfterMountInc(true);
+
+    await waitFor(() => {}, { container, timeout: 250 });
+
+    test.equal(value, 'third', 'value should still be "third" after immediate rerender after mount');
+    test.equal(renderCount, 3 * strict, "Should have rendered 3 times");
+
+    completed();
+  });
 
   // Tinytest.add(
   //   "useTracker - print warning if return cursor from useTracker",

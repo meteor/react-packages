@@ -12,6 +12,55 @@ const getInnerHtml = function (elem) {
 };
 
 if (Meteor.isClient) {
+  Tinytest.addAsync('withTracker - skipUpdate prevents rerenders', async function (test, completed) {
+    /**
+     * In cases where a state change causes rerender before the render is
+     * committed, useMemo will only run on the first render. This can cause the
+     * value to get lost (unexpected undefined), if we aren't careful.
+     */
+    const container = document.createElement("DIV");
+    const reactiveDict = new ReactiveDict();
+    let value;
+    let renders = 0;
+    const skipUpdate = (prev, next) => {
+      // only update when second changes, not first
+      return prev.value.second === next.value.second;
+    };
+    const Test = withTracker({
+      pure: true,
+      getMeteorData: () => {
+        reactiveDict.setDefault('key', { first: 0, second: 0 });
+        return {
+          value: reactiveDict.get('key')
+        };
+      },
+      skipUpdate: skipUpdate,
+    })((props) => {
+      console.log(props)
+      renders++;
+      return <span>{JSON.stringify(props.value)}</span>;
+    });
+
+    ReactDOM.render(<Test />, container);
+    test.equal(renders, 1, 'Should have rendered only once');
+
+    // wait for useEffect
+    await waitFor(() => {}, { container, timeout: 250 });
+    test.equal(renders, 1, 'Should have rendered only once after mount');
+
+    reactiveDict.set('key', { first: 1, second: 0 });
+    await waitFor(() => {}, { container, timeout: 250 });
+
+    test.equal(renders, 1, "Should still have rendered only once");
+
+    reactiveDict.set('key', { first: 1, second: 1 });
+    await waitFor(() => {}, { container, timeout: 250 });
+
+    test.equal(renders, 2, "Should have rendered a second time");
+
+    completed();
+  });
+
   Tinytest.addAsync('withTracker - basic track', async function (test, completed) {
     var container = document.createElement("DIV");
 
