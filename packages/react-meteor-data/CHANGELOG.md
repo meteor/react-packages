@@ -1,4 +1,7 @@
 # CHANGELOG
+## v2.3.0, 2021-05-10
+* Adds a skipUpdate comparator option to both useTracker (with and without deps) and withTracker.
+* Fixes a bug which would sometimes cause the value to get lost (specifically, when a re-render is invoked by an immediate, in-render state change).
 
 ## v2.2.2, 2021-01-28
 * Fix lost reactivity when using deps. https://github.com/meteor/react-packages/pull/314

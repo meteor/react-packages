@@ -1,7 +1,7 @@
 declare var Package: any
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { useReducer, useState, useEffect, useRef, useMemo, DependencyList } from 'react';
+import { useReducer, useEffect, useRef, useMemo, DependencyList } from 'react';
 
 // Warns if data is a Mongo.Cursor or a POJO containing a Mongo.Cursor.
 function checkCursor (data: any): void {
@@ -205,7 +205,7 @@ function useTrackerDev (reactiveFn, deps = null, skipUpdate = null) {
   const data = useTracker(reactiveFn, deps, skipUpdate);
   checkCursor(data);
   return data;
-};
+}
 
 export default Meteor.isDevelopment
   ? useTrackerDev as typeof useTrackerClient
