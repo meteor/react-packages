@@ -1,5 +1,5 @@
 # CHANGELOG
-## v2.3.0, 2021-05-10
+## v2.3.1, 2021-05-10
 * Adds a skipUpdate comparator option to both useTracker (with and without deps) and withTracker.
 * Fixes a bug which would sometimes cause the value to get lost (specifically, when a re-render is invoked by an immediate, in-render state change).
 
