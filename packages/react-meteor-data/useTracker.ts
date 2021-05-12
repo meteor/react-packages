@@ -32,7 +32,7 @@ const fur = (x: number): number => x + 1;
 const useForceUpdate = () => useReducer(fur, 0)[1];
 
 export interface IReactiveFn<T> {
-  <T>(c?: Tracker.Computation): T
+  (c?: Tracker.Computation): T
 }
 
 export interface ISkipUpdate<T> {
