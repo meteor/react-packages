@@ -1,0 +1,15 @@
+{
+  "name": "meteor-react-accounts",
+  "scripts": {
+    "make-types": "npx typescript *.tsx --jsx preserve --declaration --emitDeclarationOnly --outDir types"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^10.0.2",
+    "@types/meteor": "^1.4.42",
+    "@types/react": "^16.9.34",
+    "react": "16.13.1",
+    "react-dom": "16.13.1",
+    "react-test-renderer": "16.13.1",
+    "typescript": "^4.0.3"
+  }
+}
