@@ -29,13 +29,13 @@ observe-sequence@1.0.16
 promise@0.11.2
 random@1.2.0
 react-fast-refresh@0.1.0
-react-template-helper@0.2.13
+react-template-helper@0.2.14
 reactive-var@1.0.11
 spacebars@1.0.10
 spacebars-compiler@1.1.0
 templating@1.1.8
 templating-tools@1.1.1
-tmeasday:check-npm-versions@1.0.1
+tmeasday:check-npm-versions@1.0.2
 tracker@1.2.0
 typescript@4.2.2
 underscore@1.0.10
