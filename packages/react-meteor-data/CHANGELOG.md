@@ -1,5 +1,8 @@
 # CHANGELOG
-## v2.3.2, 2021-06-28
+## v2.3.3, 2021-07-14
+* Fixes a publication issue in v2.3.2
+
+## v2.3.2, 2021-07-12
 * Updated dev dependencies
 * Add version constraint to take package versions from Meteor 2.3+
 
