@@ -36,7 +36,6 @@ if (Meteor.isClient) {
       },
       skipUpdate: skipUpdate,
     })((props) => {
-      console.log(props)
       renders++;
       return <span>{JSON.stringify(props.value)}</span>;
     });

@@ -231,6 +231,59 @@ export default withTracker({
 })(Foo);
 ```
 
+#### `useFind(cursorFactory, deps)` Accellerate your lists
+
+The `useFind` hook can substantially speed up the rendering (and rerendering) of lists coming from mongo queries (subscriptions). It does this by providing highly tailored cursor management within the hook, using the `Cursor.observe` API, and carefully updating only the document object references changed during a DDP update. This approach allows a tighter use of core React tools and philosophies to turbo charge your list renders. It is a very different approach from the more general purpose approached used within `useTracker`, but it also requires a bit more set up.
+
+Here is an example in code:
+
+```jsx
+import React, { memo } from 'react'
+import { useFind } from 'meteor/react-meteor-data'
+import TestDocs from '/imports/api/collections/TestDocs'
+
+// Memoize the list item
+const MemoizedItem = memo(({doc}) => {
+  return (
+    <li>{doc.id},{doc.updated}</li>
+  )
+})
+
+const Test = () => {
+  const docs = useFind(() => TestDocs.find(), [])
+  return (
+    <ul>
+      {docs.map(doc =>
+        <MemoizedItem key={doc.id} doc={doc} />
+      )}
+    </ul>
+  )
+}
+
+// Later on, update a single document - notice only that single component is updated in the DOM
+TestDocs.update({ id: 2 }, { $inc: { someProp: 1 } })
+```
+
+#### `useSubscribe(subName, ...args)` A convenient wrapper for subscriptions
+
+`useSubscribe` is a convenient short hand for setting up subscriptions, particularly when working with `useFind`, which should NOT be used for setting up subs. At its core, it is a very simple wrapper around `useTracker` (with no deps) to create the subscription in a safe way, but allows you to avoid some of the cerimony around defining a factory and defining deps. Just pass the name of your subscription, and the arguments - don't worry about object refs, and off you go.
+
+It does have one super power - by default the `useSubscribe` hook sets up as little reactivity as possible, to keep unecessary rerenders to a minimum. But we still want to be able to check the "loading" state of the subscription. With a little cleverness applied, the hook will return a handle which can be invoked to opt in to reactive "ready" state updates:
+
+```jsx
+// Note: isLoading is a function!
+const isLoading = useSubscription('posts', groupId);
+const posts = useFind(() => Posts.find({ groupId }), [groupId]);
+
+if (isLoading()) {
+  return <Loading />
+} else {
+  return <ul>
+    {posts.map(post => <li key={post._id}>{post.title}</li>)}
+  </ul>
+}
+```
+
 ### Concurrent Mode, Suspense and Error Boundaries
 
 There are some additional considerations to keep in mind when using Concurrent Mode, Suspense and Error Boundaries, as each of these can cause React to cancel and discard (toss) a render, including the result of the first run of your reactive function. One of the things React developers often stress is that we should not create "side-effects" directly in the render method or in functional components. There are a number of good reasons for this, including allowing the React runtime to cancel renders. Limiting the use of side-effects allows features such as concurrent mode, suspense and error boundaries to work deterministically, without leaking memory or creating rogue processes. Care should be taken to avoid side effects in your reactive function for these reasons. (Note: this caution does not apply to Meteor specific side-effects like subscriptions, since those will be automatically cleaned up when `useTracker`'s computation is disposed.)

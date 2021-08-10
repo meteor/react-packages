@@ -51,7 +51,7 @@ const checkCursor = <T>(cursor: Mongo.Cursor<T>) => {
   }
 }
 
-const useFindClient = <T = any>(factory: () => Mongo.Cursor<T>, deps: DependencyList) => {
+const useFindClient = <T = any>(factory: () => Mongo.Cursor<T>, deps: DependencyList = []) => {
   let [data, dispatch] = useReducer<Reducer<T[], useFindActions<T>>>(
     useFindReducer,
     []
@@ -122,3 +122,26 @@ const useFindServer = <T = any>(factory: () => Mongo.Cursor<T>, deps: Dependency
 export const useFind = Meteor.isServer
   ? useFindServer
   : useFindClient
+
+function useFindDev (reactiveFn, deps = null, skipUpdate = null) {
+  function warn (expects: string, pos: string, arg: string, type: string) {
+    console.warn(
+      `Warning: useFind expected a ${expects} in it\'s ${pos} argument `
+        + `(${arg}), but got type of \`${type}\`.`
+    );
+  }
+
+  if (typeof reactiveFn !== 'function') {
+    warn("function", "1st", "reactiveFn", reactiveFn);
+  }
+
+  if (!deps || !Array.isArray(deps)) {
+    warn("array", "2nd", "deps", typeof deps);
+  }
+
+  return useFind(reactiveFn, deps);
+}
+
+export default Meteor.isDevelopment
+  ? useFindDev as typeof useFindClient
+  : useFind;
