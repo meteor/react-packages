@@ -231,9 +231,29 @@ export default withTracker({
 })(Foo);
 ```
 
+#### `useSubscribe(subName, ...args)` A convenient wrapper for subscriptions
+
+`useSubscribe` is a convenient short hand for setting up a subscription. It is particularly useful when working with `useFind`, which should NOT be used for setting up subscriptions. At its core, it is a very simple wrapper around `useTracker` (with no deps) to create the subscription in a safe way, and allows you to avoid some of the cerimony around defining a factory and defining deps. Just pass the name of your subscription, and your arguments.
+
+`useSubscribe` returns an `isLoading` function. You can call `isLoading()` to react to changes in the subscription's loading state. The `isLoading` function will both return the loading state of the subscription, and set up a reactivity for the loading state change. If you don't call this function, no re-render will occur when the loading state changes.
+
+```jsx
+// Note: isLoading is a function!
+const isLoading = useSubscription('posts', groupId);
+const posts = useFind(() => Posts.find({ groupId }), [groupId]);
+
+if (isLoading()) {
+  return <Loading />
+} else {
+  return <ul>
+    {posts.map(post => <li key={post._id}>{post.title}</li>)}
+  </ul>
+}
+```
+
 #### `useFind(cursorFactory, deps)` Accellerate your lists
 
-The `useFind` hook can substantially speed up the rendering (and rerendering) of lists coming from mongo queries (subscriptions). It does this by providing highly tailored cursor management within the hook, using the `Cursor.observe` API, and carefully updating only the document object references changed during a DDP update. This approach allows a tighter use of core React tools and philosophies to turbo charge your list renders. It is a very different approach from the more general purpose `useTracker`, and it requires a bit more set up.
+The `useFind` hook can substantially speed up the rendering (and rerendering) of lists coming from mongo queries (subscriptions). It does this by controlling document object references. By providing a highly tailored cursor management within the hook, using the `Cursor.observe` API, `useFind` carefully updates only the object references changed during a DDP update. This approach allows a tighter use of core React tools and philosophies to turbo charge your list renders. It is a very different approach from the more general purpose `useTracker`, and it requires a bit more set up. A notable differences is that you should NOT call `.fetch()`. `useFind` requires its factory to return a `Mongo.Cursor` object. You may also return `null`, if you want to conditionally set up the Cursor.
 
 Here is an example in code:
 
@@ -262,26 +282,6 @@ const Test = () => {
 
 // Later on, update a single document - notice only that single component is updated in the DOM
 TestDocs.update({ id: 2 }, { $inc: { someProp: 1 } })
-```
-
-#### `useSubscribe(subName, ...args)` A convenient wrapper for subscriptions
-
-`useSubscribe` is a convenient short hand for setting up a subscription. It is particularly useful when working with `useFind`, which should NOT be used for setting up subscriptions. At its core, it is a very simple wrapper around `useTracker` (with no deps) to create the subscription in a safe way, and allows you to avoid some of the cerimony around defining a factory and defining deps. Just pass the name of your subscription, and your arguments. No need to worry about object refs and deps.
-
-`useSubscribe` returns an `isLoading` function. You can call that to react to changes in the subscription's loading state. This function will both return the loading state of the subscription, and enable a reactive update when the state changes. If you don't call this function, no re-render will occur when the state changes.
-
-```jsx
-// Note: isLoading is a function!
-const isLoading = useSubscription('posts', groupId);
-const posts = useFind(() => Posts.find({ groupId }), [groupId]);
-
-if (isLoading()) {
-  return <Loading />
-} else {
-  return <ul>
-    {posts.map(post => <li key={post._id}>{post.title}</li>)}
-  </ul>
-}
 ```
 
 ### Concurrent Mode, Suspense and Error Boundaries
