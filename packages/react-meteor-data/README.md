@@ -233,7 +233,7 @@ export default withTracker({
 
 #### `useFind(cursorFactory, deps)` Accellerate your lists
 
-The `useFind` hook can substantially speed up the rendering (and rerendering) of lists coming from mongo queries (subscriptions). It does this by providing highly tailored cursor management within the hook, using the `Cursor.observe` API, and carefully updating only the document object references changed during a DDP update. This approach allows a tighter use of core React tools and philosophies to turbo charge your list renders. It is a very different approach from the more general purpose approached used within `useTracker`, but it also requires a bit more set up.
+The `useFind` hook can substantially speed up the rendering (and rerendering) of lists coming from mongo queries (subscriptions). It does this by providing highly tailored cursor management within the hook, using the `Cursor.observe` API, and carefully updating only the document object references changed during a DDP update. This approach allows a tighter use of core React tools and philosophies to turbo charge your list renders. It is a very different approach from the more general purpose `useTracker`, and it requires a bit more set up.
 
 Here is an example in code:
 
@@ -266,9 +266,9 @@ TestDocs.update({ id: 2 }, { $inc: { someProp: 1 } })
 
 #### `useSubscribe(subName, ...args)` A convenient wrapper for subscriptions
 
-`useSubscribe` is a convenient short hand for setting up subscriptions, particularly when working with `useFind`, which should NOT be used for setting up subs. At its core, it is a very simple wrapper around `useTracker` (with no deps) to create the subscription in a safe way, but allows you to avoid some of the cerimony around defining a factory and defining deps. Just pass the name of your subscription, and the arguments - don't worry about object refs, and off you go.
+`useSubscribe` is a convenient short hand for setting up a subscription. It is particularly useful when working with `useFind`, which should NOT be used for setting up subscriptions. At its core, it is a very simple wrapper around `useTracker` (with no deps) to create the subscription in a safe way, and allows you to avoid some of the cerimony around defining a factory and defining deps. Just pass the name of your subscription, and your arguments. No need to worry about object refs and deps.
 
-It does have one super power - by default the `useSubscribe` hook sets up as little reactivity as possible, to keep unecessary rerenders to a minimum. But we still want to be able to check the "loading" state of the subscription. With a little cleverness applied, the hook will return a handle which can be invoked to opt in to reactive "ready" state updates:
+`useSubscribe` returns an `isLoading` function. You can call that to react to changes in the subscription's loading state. This function will both return the loading state of the subscription, and enable a reactive update when the state changes. If you don't call this function, no re-render will occur when the state changes.
 
 ```jsx
 // Note: isLoading is a function!
