@@ -42,8 +42,8 @@ const useFindReducer = <T>(data: T[], action: useFindActions<T>): T[] => {
   }
 }
 
-const checkCursor = <T>(cursor: Mongo.Cursor<T>) => {
-  if (!(cursor instanceof Mongo.Cursor)) {
+const checkCursor = <T>(cursor: Mongo.Cursor<T> | undefined | null) => {
+  if (cursor !== null && cursor !== undefined && !(cursor instanceof Mongo.Cursor)) {
     console.warn(
       'Warning: useFind requires an instance of Mongo.Cursor. '
       + 'Make sure you do NOT call .fetch() on your cursor.'
@@ -51,30 +51,36 @@ const checkCursor = <T>(cursor: Mongo.Cursor<T>) => {
   }
 }
 
-const useFindClient = <T = any>(factory: () => Mongo.Cursor<T>, deps: DependencyList = []) => {
+const useFindClient = <T = any>(factory: () => (Mongo.Cursor<T> | undefined | null), deps: DependencyList = []) => {
   let [data, dispatch] = useReducer<Reducer<T[], useFindActions<T>>>(
     useFindReducer,
     []
   )
 
-  const { current: refs } = useRef<{ committed: Boolean, data: T[] }>({ committed: false, data: [] })
+  const { current: refs } = useRef<{ useReducerData: Boolean, data: T[] }>({ useReducerData: false, data: [] })
 
   const cursor = useMemo(() => (
     // To avoid creating side effects in render, opt out
     // of Tracker integration altogether.
     Tracker.nonreactive(() => {
-      refs.committed = false
+      refs.useReducerData = false
       const c = factory()
       if (Meteor.isDevelopment) {
         checkCursor(c)
       }
-      refs.data = c.fetch()
+      refs.data = (c instanceof Mongo.Cursor)
+        ? c.fetch()
+        : null
       return c
     })
   ), deps)
 
   useEffect(() => {
-    refs.committed = true
+    refs.useReducerData = true
+
+    if (!(cursor instanceof Mongo.Cursor)) {
+      return
+    }
 
     // Refetch the data in case an update happened
     // between first render and commit. Additionally,
@@ -108,14 +114,16 @@ const useFindClient = <T = any>(factory: () => Mongo.Cursor<T>, deps: Dependency
     }
   }, [cursor])
 
-  return !refs.committed ? refs.data : data
+  return refs.useReducerData ? data : refs.data
 }
 
-const useFindServer = <T = any>(factory: () => Mongo.Cursor<T>, deps: DependencyList) => (
+const useFindServer = <T = any>(factory: () => Mongo.Cursor<T> | undefined | null, deps: DependencyList) => (
   Tracker.nonreactive(() => {
     const cursor = factory()
     if (Meteor.isDevelopment) checkCursor(cursor)
-    return cursor.fetch()
+    return (cursor instanceof Mongo.Cursor)
+      ? cursor.fetch()
+      : null
   })
 )
 

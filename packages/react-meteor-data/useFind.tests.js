@@ -1,5 +1,5 @@
 /* global Meteor, Tinytest */
-import React, { memo } from 'react'
+import React, { memo, useState } from 'react'
 import ReactDOM from 'react-dom'
 import { waitFor } from '@testing-library/react'
 import { Mongo } from 'meteor/mongo'
@@ -64,6 +64,47 @@ if (Meteor.isClient) {
     }, { container, timeout: 250 })
 
     test.equal(renders, 11, '11 items should have rendered - only 1 of the items should have been matched by the reconciler after a single change.')
+
+    completed()
+  })
+
+  Tinytest.addAsync('useFind - null return is allowed', async function (test, completed) {
+    const container = document.createElement("DIV")
+
+    const TestDocs = new Mongo.Collection(null)
+
+    TestDocs.insert({
+      id: 0,
+      updated: 0
+    })
+
+    let setReturnNull, returnValue;
+
+    const Test = () => {
+      const [returnNull, _setReturnNull] = useState(true)
+      setReturnNull = _setReturnNull
+      const docs = useFind(() => returnNull ? null : TestDocs.find(), [returnNull])
+      returnValue = docs;
+      if (!docs) {
+        return null
+      } else {
+        return (
+          <ul>
+            {docs.map(doc =>
+              <li key={doc.id} doc={doc} />
+            )}
+          </ul>
+        )
+      }
+    }
+
+    ReactDOM.render(<Test />, container)
+    test.isNull(returnValue, 'Return value should be null when the factory returns null')
+
+    setReturnNull(false)
+
+    await waitFor(() => {}, { container, timeout: 250 })
+    test.isNotNull(returnValue, 'Return value should be null when the factory returns null')
 
     completed()
   })
