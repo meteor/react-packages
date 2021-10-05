@@ -263,7 +263,7 @@ import { useFind } from 'meteor/react-meteor-data'
 import TestDocs from '/imports/api/collections/TestDocs'
 
 // Memoize the list item
-const MemoizedItem = memo(({doc}) => {
+const ListItem = memo(({doc}) => {
   return (
     <li>{doc.id},{doc.updated}</li>
   )
@@ -274,7 +274,7 @@ const Test = () => {
   return (
     <ul>
       {docs.map(doc =>
-        <MemoizedItem key={doc.id} doc={doc} />
+        <ListItem key={doc.id} doc={doc} />
       )}
     </ul>
   )
@@ -282,6 +282,17 @@ const Test = () => {
 
 // Later on, update a single document - notice only that single component is updated in the DOM
 TestDocs.update({ id: 2 }, { $inc: { someProp: 1 } })
+```
+
+If you want to conditionally call the find method based on some props configuration or anything else, return `null` from the factory.
+
+```jsx
+const docs = useFind(() => {
+  if (props.skip) {
+    return null
+  }
+  return TestDocs.find()
+}, [])
 ```
 
 ### Concurrent Mode, Suspense and Error Boundaries
