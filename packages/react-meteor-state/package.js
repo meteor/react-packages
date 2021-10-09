@@ -8,10 +8,10 @@ Package.describe({
   git: 'https://github.com/meteor/react-packages',
 });
 
-Package.onUse(function (api) {
+Package.onUse((api) => {
   api.versionsFrom('1.10');
   api.use('tracker');
   api.use('typescript');
 
-  api.mainModule('use-meteor-state.ts', ['client', 'server'], { lazy: true });
+  api.mainModule('use-meteor-state.tsx', ['client', 'server'], { lazy: true });
 });
