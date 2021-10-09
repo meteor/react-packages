@@ -8,10 +8,10 @@ Package.describe({
   git: 'https://github.com/meteor/react-packages',
 });
 
-Package.onUse(function (api) {
-  api.versionsFrom('1.10');
+Package.onUse((api) => {
+  api.versionsFrom(['1.10', '2.3']);
   api.use('tracker');
   api.use('typescript');
 
-  api.mainModule('react-accounts.ts', ['client', 'server'], { lazy: true });
+  api.mainModule('react-accounts.tsx', ['client', 'server'], { lazy: true });
 });
