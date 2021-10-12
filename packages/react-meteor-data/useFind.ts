@@ -131,7 +131,7 @@ export const useFind = Meteor.isServer
   ? useFindServer
   : useFindClient
 
-function useFindDev (reactiveFn, deps = null, skipUpdate = null) {
+function useFindDev <T = any>(factory: () => (Mongo.Cursor<T> | undefined | null), deps: DependencyList = []) {
   function warn (expects: string, pos: string, arg: string, type: string) {
     console.warn(
       `Warning: useFind expected a ${expects} in it\'s ${pos} argument `
@@ -139,17 +139,17 @@ function useFindDev (reactiveFn, deps = null, skipUpdate = null) {
     );
   }
 
-  if (typeof reactiveFn !== 'function') {
-    warn("function", "1st", "reactiveFn", reactiveFn);
+  if (typeof factory !== 'function') {
+    warn("function", "1st", "reactiveFn", factory);
   }
 
   if (!deps || !Array.isArray(deps)) {
     warn("array", "2nd", "deps", typeof deps);
   }
 
-  return useFind(reactiveFn, deps);
+  return useFind(factory, deps);
 }
 
 export default Meteor.isDevelopment
-  ? useFindDev as typeof useFindClient
+  ? useFindDev
   : useFind;
