@@ -3,7 +3,7 @@
 Package.describe({
   name: 'react-meteor-state',
   summary: 'React hook for reactively tracking Meteor data',
-  version: '0.9.0',
+  version: '1.0.0-beta.1',
   documentation: 'README.md',
   git: 'https://github.com/meteor/react-packages',
 });
