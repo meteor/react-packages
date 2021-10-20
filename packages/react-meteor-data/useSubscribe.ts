@@ -6,7 +6,7 @@ const useSubscribeClient = (name?: string, ...args: any[]): () => boolean => {
   let subscription: Meteor.SubscriptionHandle
 
   const isReady = useTracker(() => {
-    if (!name) return false
+    if (!name) return true
 
     subscription = Meteor.subscribe(name, ...args)
 

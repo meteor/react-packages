@@ -239,7 +239,7 @@ export default withTracker({
 
 ```jsx
 // Note: isLoading is a function!
-const isLoading = useSubscription('posts', groupId);
+const isLoading = useSubscribe('posts', groupId);
 const posts = useFind(() => Posts.find({ groupId }), [groupId]);
 
 if (isLoading()) {
@@ -249,6 +249,15 @@ if (isLoading()) {
     {posts.map(post => <li key={post._id}>{post.title}</li>)}
   </ul>
 }
+```
+
+If you want to conditionally subscribe, you can set the `name` field (the first argument) to a falsy value to bypass the subscription.
+
+```jsx
+const needsData = false;
+const isLoading = useSubscribe(needsData ? "my-pub" : null);
+
+// When a subscription is not used, isLoading() will always return false
 ```
 
 #### `useFind(cursorFactory, deps)` Accellerate your lists
