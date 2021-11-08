@@ -41,7 +41,7 @@ Arguments:
 
 The basic way to use `useTracker` is to simply pass it a reactive function, with no further fuss. This is the preferred configuration in many cases.
 
-#### `useTracker(reacitveFn, deps)` hook with deps
+#### `useTracker(reactiveFn, deps)` hook with deps
 
 You can pass an optional deps array as a second value. When provided, the computation will be retained, and reactive updates after the first run will run asynchronously from the react render execution frame. This array typically includes all variables from the outer scope "captured" in the closure passed as the 1st argument. For example, the value of a prop used in a subscription or a minimongo query; see example below.
 
