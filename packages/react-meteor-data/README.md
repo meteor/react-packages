@@ -262,7 +262,7 @@ const isLoading = useSubscribe(needsData ? "my-pub" : null);
 
 #### `useFind(cursorFactory, deps)` Accellerate your lists
 
-The `useFind` hook can substantially speed up the rendering (and rerendering) of lists coming from mongo queries (subscriptions). It does this by controlling document object references. By providing a highly tailored cursor management within the hook, using the `Cursor.observe` API, `useFind` carefully updates only the object references changed during a DDP update. This approach allows a tighter use of core React tools and philosophies to turbo charge your list renders. It is a very different approach from the more general purpose `useTracker`, and it requires a bit more set up. A notable differences is that you should NOT call `.fetch()`. `useFind` requires its factory to return a `Mongo.Cursor` object. You may also return `null`, if you want to conditionally set up the Cursor.
+The `useFind` hook can substantially speed up the rendering (and rerendering) of lists coming from mongo queries (subscriptions). It does this by controlling document object references. By providing a highly tailored cursor management within the hook, using the `Cursor.observe` API, `useFind` carefully updates only the object references changed during a DDP update. This approach allows a tighter use of core React tools and philosophies to turbo charge your list renders. It is a very different approach from the more general purpose `useTracker`, and it requires a bit more set up. A notable difference is that you should NOT call `.fetch()`. `useFind` requires its factory to return a `Mongo.Cursor` object. You may also return `null`, if you want to conditionally set up the Cursor.
 
 Here is an example in code:
 
