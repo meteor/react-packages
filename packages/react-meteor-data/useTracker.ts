@@ -32,7 +32,7 @@ const fur = (x: number): number => x + 1;
 const useForceUpdate = () => useReducer(fur, 0)[1];
 
 export interface IReactiveFn<T> {
-  <T>(c?: Tracker.Computation): T
+  (c?: Tracker.Computation): T
 }
 
 export interface ISkipUpdate<T> {
@@ -120,6 +120,7 @@ const useTrackerWithDeps = <T = any>(reactiveFn: IReactiveFn<T>, deps: Dependenc
   const { current: refs } = useRef<{
     reactiveFn: IReactiveFn<T>;
     data?: T;
+    comp?: Tracker.Computation;
   }>({ reactiveFn });
 
   // keep reactiveFn ref fresh
@@ -133,11 +134,24 @@ const useTrackerWithDeps = <T = any>(reactiveFn: IReactiveFn<T>, deps: Dependenc
         refs.data = refs.reactiveFn();
       })
     );
+    // In some cases, the useEffect hook will run before Meteor.defer, such as
+    // when React.lazy is used. This will allow it to be stopped earlier in
+    // useEffect if needed.
+    refs.comp = comp;
     // To avoid creating side effects in render, stop the computation immediately
-    Meteor.defer(() => { comp.stop() });
+    Meteor.defer(() => {
+      if (refs.comp) {
+        refs.comp.stop();
+        delete refs.comp;
+      }
+    });
   }, deps);
 
   useEffect(() => {
+    if (refs.comp) {
+      refs.comp.stop();
+      delete refs.comp;
+    }
     const computation = Tracker.nonreactive(
       () => Tracker.autorun((c) => {
         const data: T = refs.reactiveFn(c);

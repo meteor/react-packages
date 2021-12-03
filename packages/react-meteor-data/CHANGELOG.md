@@ -1,4 +1,7 @@
 # CHANGELOG
+## v2.4.0, 2021-12-02
+* Added `useSubscribe` and `useFind` hooks
+
 ## v2.3.3, 2021-07-14
 * Fixes a publication issue in v2.3.2
 

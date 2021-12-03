@@ -231,6 +231,79 @@ export default withTracker({
 })(Foo);
 ```
 
+#### `useSubscribe(subName, ...args)` A convenient wrapper for subscriptions
+
+`useSubscribe` is a convenient short hand for setting up a subscription. It is particularly useful when working with `useFind`, which should NOT be used for setting up subscriptions. At its core, it is a very simple wrapper around `useTracker` (with no deps) to create the subscription in a safe way, and allows you to avoid some of the cerimony around defining a factory and defining deps. Just pass the name of your subscription, and your arguments.
+
+`useSubscribe` returns an `isLoading` function. You can call `isLoading()` to react to changes in the subscription's loading state. The `isLoading` function will both return the loading state of the subscription, and set up a reactivity for the loading state change. If you don't call this function, no re-render will occur when the loading state changes.
+
+```jsx
+// Note: isLoading is a function!
+const isLoading = useSubscribe('posts', groupId);
+const posts = useFind(() => Posts.find({ groupId }), [groupId]);
+
+if (isLoading()) {
+  return <Loading />
+} else {
+  return <ul>
+    {posts.map(post => <li key={post._id}>{post.title}</li>)}
+  </ul>
+}
+```
+
+If you want to conditionally subscribe, you can set the `name` field (the first argument) to a falsy value to bypass the subscription.
+
+```jsx
+const needsData = false;
+const isLoading = useSubscribe(needsData ? "my-pub" : null);
+
+// When a subscription is not used, isLoading() will always return false
+```
+
+#### `useFind(cursorFactory, deps)` Accellerate your lists
+
+The `useFind` hook can substantially speed up the rendering (and rerendering) of lists coming from mongo queries (subscriptions). It does this by controlling document object references. By providing a highly tailored cursor management within the hook, using the `Cursor.observe` API, `useFind` carefully updates only the object references changed during a DDP update. This approach allows a tighter use of core React tools and philosophies to turbo charge your list renders. It is a very different approach from the more general purpose `useTracker`, and it requires a bit more set up. A notable difference is that you should NOT call `.fetch()`. `useFind` requires its factory to return a `Mongo.Cursor` object. You may also return `null`, if you want to conditionally set up the Cursor.
+
+Here is an example in code:
+
+```jsx
+import React, { memo } from 'react'
+import { useFind } from 'meteor/react-meteor-data'
+import TestDocs from '/imports/api/collections/TestDocs'
+
+// Memoize the list item
+const ListItem = memo(({doc}) => {
+  return (
+    <li>{doc.id},{doc.updated}</li>
+  )
+})
+
+const Test = () => {
+  const docs = useFind(() => TestDocs.find(), [])
+  return (
+    <ul>
+      {docs.map(doc =>
+        <ListItem key={doc.id} doc={doc} />
+      )}
+    </ul>
+  )
+}
+
+// Later on, update a single document - notice only that single component is updated in the DOM
+TestDocs.update({ id: 2 }, { $inc: { someProp: 1 } })
+```
+
+If you want to conditionally call the find method based on some props configuration or anything else, return `null` from the factory.
+
+```jsx
+const docs = useFind(() => {
+  if (props.skip) {
+    return null
+  }
+  return TestDocs.find()
+}, [])
+```
+
 ### Concurrent Mode, Suspense and Error Boundaries
 
 There are some additional considerations to keep in mind when using Concurrent Mode, Suspense and Error Boundaries, as each of these can cause React to cancel and discard (toss) a render, including the result of the first run of your reactive function. One of the things React developers often stress is that we should not create "side-effects" directly in the render method or in functional components. There are a number of good reasons for this, including allowing the React runtime to cancel renders. Limiting the use of side-effects allows features such as concurrent mode, suspense and error boundaries to work deterministically, without leaking memory or creating rogue processes. Care should be taken to avoid side effects in your reactive function for these reasons. (Note: this caution does not apply to Meteor specific side-effects like subscriptions, since those will be automatically cleaned up when `useTracker`'s computation is disposed.)
