@@ -43,7 +43,7 @@ _Note:_ All HOCs forward refs.
 
 The hook, `useUser()`, returns a stateful value of the current user record.
 
-The HOC, `withUser(Component)`, returns a wrapped version of `Component` that receives a prop the current user record, `user`.
+The HOC, `withUser(Component)`, returns a wrapped version of `Component` that receives a prop of the current user record, `user`.
 
 For more details about the data source, consult the documentation of [`Meteor.user(...)](https://docs.meteor.com/api/accounts.html#Meteor-user).
 
@@ -90,7 +90,7 @@ const withUser: (Component: any) => React.ForwardRefExoticComponent<React.RefAtt
 
 The hook, `useUserId()`, returns a stateful value of the current user id.
 
-The HOC, `withUserId(Component)`, returns a wrapped version of `Component` that receives a prop the current user id, `userId`.
+The HOC, `withUserId(Component)`, returns a wrapped version of `Component` that receives a prop of the current user id, `userId`.
 
 For more details about the data source, consult the documentation of [`Meteor.userId()](https://docs.meteor.com/api/accounts.html#Meteor-userId).
 
