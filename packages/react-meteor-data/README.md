@@ -13,7 +13,7 @@ This package provides an integration between React and [`Tracker`](https://atmos
   - [`withTracker`](#withtrackerreactivefn-higher-order-component)
     - [Advanced container config](#withtracker-reactivefn-pure-skipupdate--advanced-container-config)
   - [`useSubscribe`](#usesubscribesubname-args-a-convenient-wrapper-for-subscriptions)
-  - [`useFind`](#usefindcursorfactory-deps-accellerate-your-lists)
+  - [`useFind`](#usefindcursorfactory-deps-accelerate-your-lists)
   - [Concurrent Mode, Suspense, and Error Boundaries](#concurrent-mode-suspense-and-error-boundaries)
   - [Version compatibility notes](#version-compatibility-notes)
 
@@ -122,7 +122,7 @@ function Foo({ listId }) {
 
 #### `useTracker(reactiveFn, deps, skipUpdate)` or `useTracker(reactiveFn, skipUpdate)`
 
-You may optionally pass a function as a second or third argument. The `skipUpdate` function can evaluate the return value of `reactiveFn` for changes, and control re-renders in sensitive cases. *Note:* This is not meant to be used iwth a deep compare (even fast-deep-equals), as in many cases that may actually lead to worse performance than allowing React to do it's thing. But as an example, you could use this to compare an `updatedAt` field between updates, or a subset of specific fields, if you aren't using the entire document in a subscription. As always with any optimization, measure first, then optimize second. Make sure you really need this before implementing it.
+You may optionally pass a function as a second or third argument. The `skipUpdate` function can evaluate the return value of `reactiveFn` for changes, and control re-renders in sensitive cases. *Note:* This is not meant to be used with a deep compare (even fast-deep-equals), as in many cases that may actually lead to worse performance than allowing React to do it's thing. But as an example, you could use this to compare an `updatedAt` field between updates, or a subset of specific fields, if you aren't using the entire document in a subscription. As always with any optimization, measure first, then optimize second. Make sure you really need this before implementing it.
 
 Arguments:
 
@@ -255,7 +255,7 @@ export default withTracker({
 
 ### `useSubscribe(subName, ...args)` A convenient wrapper for subscriptions
 
-`useSubscribe` is a convenient short hand for setting up a subscription. It is particularly useful when working with `useFind`, which should NOT be used for setting up subscriptions. At its core, it is a very simple wrapper around `useTracker` (with no deps) to create the subscription in a safe way, and allows you to avoid some of the cerimony around defining a factory and defining deps. Just pass the name of your subscription, and your arguments.
+`useSubscribe` is a convenient short hand for setting up a subscription. It is particularly useful when working with `useFind`, which should NOT be used for setting up subscriptions. At its core, it is a very simple wrapper around `useTracker` (with no deps) to create the subscription in a safe way, and allows you to avoid some of the ceremony around defining a factory and defining deps. Just pass the name of your subscription, and your arguments.
 
 `useSubscribe` returns an `isLoading` function. You can call `isLoading()` to react to changes in the subscription's loading state. The `isLoading` function will both return the loading state of the subscription, and set up a reactivity for the loading state change. If you don't call this function, no re-render will occur when the loading state changes.
 
@@ -282,7 +282,7 @@ const isLoading = useSubscribe(needsData ? "my-pub" : null);
 // When a subscription is not used, isLoading() will always return false
 ```
 
-### `useFind(cursorFactory, deps)` Accellerate your lists
+### `useFind(cursorFactory, deps)` Accelerate your lists
 
 The `useFind` hook can substantially speed up the rendering (and rerendering) of lists coming from mongo queries (subscriptions). It does this by controlling document object references. By providing a highly tailored cursor management within the hook, using the `Cursor.observe` API, `useFind` carefully updates only the object references changed during a DDP update. This approach allows a tighter use of core React tools and philosophies to turbo charge your list renders. It is a very different approach from the more general purpose `useTracker`, and it requires a bit more set up. A notable difference is that you should NOT call `.fetch()`. `useFind` requires its factory to return a `Mongo.Cursor` object. You may also return `null`, if you want to conditionally set up the Cursor.
 
