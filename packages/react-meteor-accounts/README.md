@@ -27,6 +27,8 @@ Install React if you have not already:
 meteor npm install react
 ```
 
+_Note:_ The minimum supported version of React is v16.8 ("the one with hooks").
+
 ### Changelog
 
 For recent changes, check the [changelog](./CHANGELOG.md)
