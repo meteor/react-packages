@@ -1,6 +1,6 @@
 # Changelog
 
-Release versions follow [Semantic Versioning 2.0.0 guidelines](#https://semver.org/).
+Release versions follow [Semantic Versioning 2.0.0 guidelines](https://semver.org/).
 
 ## v1.0.0-beta.1
 
