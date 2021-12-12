@@ -31,7 +31,7 @@ _Note:_ The minimum supported version of React is v16.8 ("the one with hooks").
 
 ### Changelog
 
-For recent changes, check the [changelog](./CHANGELOG.md)
+For recent changes, check the [changelog](./CHANGELOG.md).
 
 ## Usage
 
@@ -43,9 +43,9 @@ _Note:_ All HOCs forward refs.
 
 The hook, `useUser()`, returns a stateful value of the current user record.
 
-The HOC, `withUser(Component)`, returns a wrapped version of `Component` that receives a prop of the current user record, `user`.
+The HOC, `withUser(Component)`, returns a wrapped version of `Component`, where `Component` receives a prop of the current user record, `user`.
 
-For more details about the data source, consult the documentation of [`Meteor.user(...)](https://docs.meteor.com/api/accounts.html#Meteor-user).
+For more details about the data source, consult the documentation of [`Meteor.user`](https://docs.meteor.com/api/accounts.html#Meteor-user).
 
 Examples:
 
@@ -65,12 +65,14 @@ function Foo() {
 }
 
 // HOC
-function Bar(props) {
-  if (props.user === null) {
-    return <h1>Log in</h1>;
-  }
+class Bar extends React.Component {
+  render() {
+    if (this.props.user === null) {
+      return <h1>Log in</h1>;
+    }
 
-  return <h1>Hello {props.user.username}</h1>;
+    return <h1>Hello {this.props.user.username}</h1>;
+  }
 }
 
 withUser(Bar);
@@ -90,9 +92,9 @@ const withUser: (Component: any) => React.ForwardRefExoticComponent<React.RefAtt
 
 The hook, `useUserId()`, returns a stateful value of the current user id.
 
-The HOC, `withUserId(Component)`, returns a wrapped version of `Component` that receives a prop of the current user id, `userId`.
+The HOC, `withUserId(Component)`, returns a wrapped version of `Component`, where `Component` receives a prop of the current user id, `userId`.
 
-For more details about the data source, consult the documentation of [`Meteor.userId()](https://docs.meteor.com/api/accounts.html#Meteor-userId).
+For more details about the data source, consult the documentation of [`Meteor.userId`](https://docs.meteor.com/api/accounts.html#Meteor-userId).
 
 Examples:
 
@@ -117,17 +119,19 @@ function Foo() {
 }
 
 // HOC
-function Bar(props) {
-  return (
-    <div>
-      <h1>Account Details</h1>
-      {props.userId ? (
-          <p>Your unique account id is {props.userId}.</p>
-        ) : (
-          <p>Log-in to view your account details.</p>
-        )}
-    </div>
-  )
+class Bar extends React.Component {
+  render() {
+    return (
+      <div>
+        <h1>Account Details</h1>
+        {this.props.userId ? (
+            <p>Your unique account id is {this.props.userId}.</p>
+          ) : (
+            <p>Log-in to view your account details.</p>
+          )}
+      </div>
+    );
+  }
 }
 
 withUserId(Bar);
