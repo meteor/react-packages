@@ -1,8 +1,24 @@
-## `react-meteor-data`
+# react-meteor-data
 
 This package provides an integration between React and [`Tracker`](https://atmospherejs.com/meteor/tracker), Meteor's reactive data system.
 
-### Install
+## Table of Contents
+
+- [Install](#install)
+  - [Changelog](#changelog)
+- [Usage](#usage)
+  - [`useTracker`](#usetrackerreactivefn-basic-hook)
+    - [With dependencies](#usetrackerreactivefn-deps-hook-with-deps)
+    - [Skipping updates](#usetrackerreactivefn-deps-skipUpdate-or-usetrackerreactivefn-skipUpdate)
+  - [`withTracker`](#withtrackerreactivefn-higher-order-component)
+    - [Advanced container config](#withtracker-reactivefn-pure-skipupdate--advanced-container-config)
+  - [`useSubscribe`](#usesubscribesubname-args-a-convenient-wrapper-for-subscriptions)
+  - [`useFind`](#usefindcursorfactory-deps-accellerate-your-lists)
+  - [Concurrent Mode, Suspense, and Error Boundaries](#concurrent-mode-suspense-and-error-boundaries)
+  - [Version compatibility notes](#version-compatibility-notes)
+
+
+## Install
 
 To install the package, use `meteor add`:
 
@@ -16,9 +32,11 @@ You'll also need to install `react` if you have not already:
 meteor npm install react
 ```
 
+### Changelog
+
 [check recent changes here](./CHANGELOG.md)
 
-### Usage
+## Usage
 
 This package provides two ways to use Tracker reactive data in your React components:
 - a hook: `useTracker` (v2 only, requires React `^16.8`)
@@ -30,7 +48,7 @@ The `withTracker` HOC can be used with all components, function or class based.
 
 It is not necessary to rewrite existing applications to use the `useTracker` hook instead of the existing `withTracker` HOC.
 
-#### `useTracker(reactiveFn)` basic hook
+### `useTracker(reactiveFn)` basic hook
 
 You can use the `useTracker` hook to get the value of a Tracker reactive function in your React "function components." The reactive function will get re-run whenever its reactive inputs change, and the component will re-render with the new value.
 
@@ -138,7 +156,7 @@ function Foo({ listId }) {
 }
 ```
 
-#### `withTracker(reactiveFn)` higher-order component
+### `withTracker(reactiveFn)` higher-order component
 
 You can use the `withTracker` HOC to wrap your components and pass them additional props values from a Tracker reactive function. The reactive function will get re-run whenever its reactive inputs change, and the wrapped component will re-render with the new values for the additional props.
 
@@ -231,7 +249,7 @@ export default withTracker({
 })(Foo);
 ```
 
-#### `useSubscribe(subName, ...args)` A convenient wrapper for subscriptions
+### `useSubscribe(subName, ...args)` A convenient wrapper for subscriptions
 
 `useSubscribe` is a convenient short hand for setting up a subscription. It is particularly useful when working with `useFind`, which should NOT be used for setting up subscriptions. At its core, it is a very simple wrapper around `useTracker` (with no deps) to create the subscription in a safe way, and allows you to avoid some of the cerimony around defining a factory and defining deps. Just pass the name of your subscription, and your arguments.
 
@@ -260,7 +278,7 @@ const isLoading = useSubscribe(needsData ? "my-pub" : null);
 // When a subscription is not used, isLoading() will always return false
 ```
 
-#### `useFind(cursorFactory, deps)` Accellerate your lists
+### `useFind(cursorFactory, deps)` Accellerate your lists
 
 The `useFind` hook can substantially speed up the rendering (and rerendering) of lists coming from mongo queries (subscriptions). It does this by controlling document object references. By providing a highly tailored cursor management within the hook, using the `Cursor.observe` API, `useFind` carefully updates only the object references changed during a DDP update. This approach allows a tighter use of core React tools and philosophies to turbo charge your list renders. It is a very different approach from the more general purpose `useTracker`, and it requires a bit more set up. A notable difference is that you should NOT call `.fetch()`. `useFind` requires its factory to return a `Mongo.Cursor` object. You may also return `null`, if you want to conditionally set up the Cursor.
 
