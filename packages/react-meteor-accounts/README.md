@@ -75,7 +75,7 @@ class Bar extends React.Component {
   }
 }
 
-withUser(Bar);
+const WrappedBar = withUser(Bar);
 ```
 
 TypeScript signatures:
@@ -134,7 +134,7 @@ class Bar extends React.Component {
   }
 }
 
-withUserId(Bar);
+const WrappedBar = withUserId(Bar);
 ```
 
 TypeScript signatures:
