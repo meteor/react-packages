@@ -35,7 +35,7 @@ For recent changes, check the [changelog](./CHANGELOG.md).
 
 ## Usage
 
-Utilities for each data source are available in two React paradigms: hooks for use in functional components and higher-order components (HOCs) for use with class components.
+Utilities for each data source are available for the two ways of writing React components: hooks and higher-order components (HOCs). Hooks can only be used in functional components. HOCs can be used for both functional and class components, but are primarily for the latter.
 
 _Note:_ All HOCs forward refs.
 
