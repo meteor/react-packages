@@ -41,11 +41,22 @@ _Note:_ All HOCs forward refs.
 
 ### useUser() / withUser(...)
 
+Get a stateful value of the current user record from [`Meteor.user`](https://docs.meteor.com/api/accounts.html#Meteor-user), a reactive data source.
+
 The hook, `useUser()`, returns a stateful value of the current user record.
+
+- Arguments: *none*.
+- Returns: `object | null`.
 
 The HOC, `withUser(Component)`, returns a wrapped version of `Component`, where `Component` receives a prop of the current user record, `user`.
 
-For more details about the data source, consult the documentation of [`Meteor.user`](https://docs.meteor.com/api/accounts.html#Meteor-user).
+- Arguments:
+
+| Argument | Type | Required | Description |
+| --- | --- | --- | --- |
+| Component | `any` | yes | A React component. |
+
+- Returns: `React.ForwardRefExoticComponent`.
 
 Examples:
 
@@ -90,11 +101,22 @@ const withUser: (Component: any) => React.ForwardRefExoticComponent<React.RefAtt
 
 ### useUserId() / withUserId(...)
 
+Get a stateful value of the current user id from [`Meteor.userId`](https://docs.meteor.com/api/accounts.html#Meteor-userId), a reactive data source.
+
 The hook, `useUserId()`, returns a stateful value of the current user id.
+
+- Arguments: *none*.
+- Returns: `string`.
 
 The HOC, `withUserId(Component)`, returns a wrapped version of `Component`, where `Component` receives a prop of the current user id, `userId`.
 
-For more details about the data source, consult the documentation of [`Meteor.userId`](https://docs.meteor.com/api/accounts.html#Meteor-userId).
+- Arguments:
+
+| Argument | Type | Required | Description |
+| --- | --- | --- | --- |
+| Component | `any` | yes | A React component. |
+
+- Returns: `React.ForwardRefExoticComponent`.
 
 Examples:
 
