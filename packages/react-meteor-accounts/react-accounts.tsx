@@ -2,6 +2,10 @@ import { Meteor } from 'meteor/meteor'
 import { Tracker } from 'meteor/tracker'
 import React, { useState, useEffect, forwardRef } from 'react'
 
+/**
+ * Hook to get a stateful value of the current user id from `Meteor.userId`, a reactive data source.
+ * @see https://docs.meteor.com/api/accounts.html#Meteor-userId
+ */
 export function useUserId(): string | null {
   const [userId, setUserId] = useState(Meteor.userId())
   useEffect(() => {
@@ -15,6 +19,10 @@ export function useUserId(): string | null {
   return userId
 }
 
+/**
+ * HOC to forward a stateful value of the current user id from `Meteor.userId`, a reactive data source.
+ * @see https://docs.meteor.com/api/accounts.html#Meteor-userId
+ */
 export function withUserId<P>(Component: React.ComponentType<P>) {
   return forwardRef((props: P, ref) => {
     const userId = useUserId();
@@ -22,6 +30,10 @@ export function withUserId<P>(Component: React.ComponentType<P>) {
   })
 }
 
+/**
+ * Hook to get a stateful value of the current user record from `Meteor.user`, a reactive data source.
+ * @see https://docs.meteor.com/api/accounts.html#Meteor-user 
+ */
 export function useUser(): Meteor.User | null {
   const [user, setUser] = useState(Meteor.user())
   useEffect(() => {
@@ -35,6 +47,10 @@ export function useUser(): Meteor.User | null {
   return user
 }
 
+/**
+ * HOC to get a stateful value of the current user record from `Meteor.user`, a reactive data source.
+ * @see https://docs.meteor.com/api/accounts.html#Meteor-user 
+ */
 export function withUser<P>(Component: React.ComponentType<P>) {
   return forwardRef((props: P, ref) => {
     const user = useUser();
