@@ -22,75 +22,50 @@ if (Meteor.isClient) {
   
   // common test actions
   async function login() {
-    console.log('before login');
     await new Promise<void>((resolve, reject) => {
-        Meteor.loginWithPassword(username, password, (error) => {
-          if (error) reject(error);
-          else resolve();
-        })
+      Meteor.loginWithPassword(username, password, (error) => {
+        if (error) reject(error);
+        else resolve();
       })
-    console.log('after login');
+    })
   }
   async function logout() {
-    console.log('before logout');
     await new Promise<void>((resolve, reject) => {
       Meteor.logout((error) => {
         if (error) reject(error);
         else resolve();
       })
     })
-    console.log('after logout');
   }
   
   // common test arrangements
   async function beforeEach() {
-    console.log('before beforeEach');
-    console.log('beforeEach - before call reset');
     // reset DB; must complete before creation to avoid potential overlap
     await new Promise((resolve, reject) => {
       Meteor.call('reset', (error, result) => {
-        console.log(`call - reset - ${result} - ${error}`)
         if (error) reject(error);
         else resolve(result);
       })
     });
-    console.log('beforeEach - after call reset');
     // prepare sample user
-    console.log('beforeEach - before createUser');
     await new Promise<void>((resolve, reject) => {
       Accounts.createUser({ username, password }, (error) => {
         if (error) reject(error);
         else resolve();
       })
     });
-    console.log('beforeEach -before createUser');
     // logout since `createUser` auto-logs-in
     await logout();
-    console.log('after beforeEach');
   }
-  async function afterEach() {
-    console.log('before afterEach');
-    await logout();
-    console.log('after afterEach');
-  }
-
 
   // NOTE: each test body has three blocks: Arrange, Act, Assert.
 
   Tinytest.addAsync('useUserId - has initial value of `null`', async function (test, onComplete) {
-    console.log('test - before - beforeEach');
-    try {
-      await beforeEach();
-    } catch (error) {
-      console.log('test - catch - beforeEach')
-      console.error(error)
-      throw error;
-    }
-    console.log('test - after - beforeEach');
+    await beforeEach();
 
     const { result } = renderHook(() => useUserId());
 
-    test.isNull(result.current, 'Expect initial value to be `null`');
+    test.isNull(result.current);
     onComplete();
   });
 
@@ -102,11 +77,10 @@ if (Meteor.isClient) {
     login();
     await waitForNextUpdate();
 
-    test.isNotNull(result.current, 'Expect value after login to be not `null`')
+    test.isNotNull(result.current)
     onComplete();
   });
 
-  
   Tinytest.addAsync('useUserId - is reactive to logout', async function (test, onComplete) {
     await beforeEach();
     await login();
@@ -116,7 +90,41 @@ if (Meteor.isClient) {
     logout();
     await waitForNextUpdate();
 
-    test.isNull(result.current, 'Expect value after logout to be `null`')
+    test.isNull(result.current)
+    onComplete();
+  });
+  
+  Tinytest.addAsync('useLoggingIn - has initial value of `false`', async function (test, onComplete) {
+    await beforeEach();
+
+    const { result } = renderHook(() => useLoggingIn());
+
+    test.isFalse(result.current);
+    onComplete();
+  });
+  
+  Tinytest.addAsync('useLoggingIn - is reactive to login starting', async function (test, onComplete) {
+    await beforeEach();
+
+    const { result, waitForNextUpdate } = renderHook(() => useLoggingIn());
+    login();
+    // first update will be while login strategy is in progress
+    await waitForNextUpdate();
+
+    test.isTrue(result.current);
+    onComplete();
+  });
+  
+  Tinytest.addAsync('useLoggingIn - is reactive to login finishing', async function (test, onComplete) {
+    await beforeEach();
+
+    const { result, waitForNextUpdate } = renderHook(() => useLoggingIn());
+    login();
+    await waitForNextUpdate();
+    // second update will be after login strategy finishes
+    await waitForNextUpdate();
+
+    test.isFalse(result.current);
     onComplete();
   });
 }
