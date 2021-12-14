@@ -127,4 +127,38 @@ if (Meteor.isClient) {
     test.isFalse(result.current);
     onComplete();
   });
+
+  Tinytest.addAsync('useLoggingOut - has initial value of `false`', async function (test, onComplete) {
+    await beforeEach();
+
+    const { result } = renderHook(() => useLoggingOut());
+
+    test.isFalse(result.current);
+    onComplete();
+  });
+  
+  Tinytest.addAsync('useLoggingOut - is reactive to logout starting', async function (test, onComplete) {
+    await beforeEach();
+
+    const { result, waitForNextUpdate } = renderHook(() => useLoggingOut());
+    logout();
+    // first update will be while logout is in progress
+    await waitForNextUpdate();
+
+    test.isTrue(result.current);
+    onComplete();
+  });
+  
+  Tinytest.addAsync('useLoggingOut - is reactive to logout finishing', async function (test, onComplete) {
+    await beforeEach();
+
+    const { result, waitForNextUpdate } = renderHook(() => useLoggingOut());
+    logout();
+    await waitForNextUpdate();
+    // second update will be after logout finishes
+    await waitForNextUpdate();
+
+    test.isFalse(result.current);
+    onComplete();
+  });
 }
