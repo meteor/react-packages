@@ -26,7 +26,7 @@ export function useUserId(): string | null {
 export function withUserId<P>(Component: React.ComponentType<P>) {
   return forwardRef((props: P, ref) => {
     const userId = useUserId();
-    return <Component ref={ref} {...props} userId={userId} />
+    return <Component userId={userId} ref={ref} {...props} />
   })
 }
 
@@ -54,6 +54,6 @@ export function useUser(): Meteor.User | null {
 export function withUser<P>(Component: React.ComponentType<P>) {
   return forwardRef((props: P, ref) => {
     const user = useUser();
-    return <Component ref={ref} {...props} user={user} />
+    return <Component user={user} ref={ref} {...props} />
   })
 }
