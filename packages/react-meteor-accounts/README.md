@@ -93,10 +93,10 @@ TypeScript signatures:
 
 ```ts
 // Hook
-const useUser: () => Meteor.User;
+function useUser(): Meteor.User | null;
 
 // HOC
-const withUser: (Component: any) => React.ForwardRefExoticComponent<React.RefAttributes<unknown>>;
+function withUser<P>(Component: React.ComponentType<P>): React.ForwardRefExoticComponent<React.PropsWithoutRef<P> & React.RefAttributes<unknown>>;
 ```
 
 ### useUserId() / withUserId(...)
@@ -106,7 +106,7 @@ Get a stateful value of the current user id from [`Meteor.userId`](https://docs.
 The hook, `useUserId()`, returns a stateful value of the current user id.
 
 - Arguments: *none*.
-- Returns: `string`.
+- Returns: `string | null`.
 
 The HOC, `withUserId(Component)`, returns a wrapped version of `Component`, where `Component` receives a prop of the current user id, `userId`.
 
@@ -114,7 +114,7 @@ The HOC, `withUserId(Component)`, returns a wrapped version of `Component`, wher
 
 | Argument | Type | Required | Description |
 | --- | --- | --- | --- |
-| Component | `any` | yes | A React component. |
+| Component | `React.ComponentType` | yes | A React component. |
 
 - Returns: `React.ForwardRefExoticComponent`.
 
@@ -163,8 +163,8 @@ TypeScript signatures:
 
 ```ts
 // Hook
-const useUserId: () => string;
+function useUserId(): string | null;
 
 // HOC
-const withUserId: (Component: any) => React.ForwardRefExoticComponent<React.RefAttributes<unknown>>;
+function withUserId<P>(Component: React.ComponentType<P>): React.ForwardRefExoticComponent<React.PropsWithoutRef<P> & React.RefAttributes<unknown>>;
 ```
