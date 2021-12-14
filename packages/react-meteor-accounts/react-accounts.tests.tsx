@@ -8,9 +8,7 @@ import { useLoggingIn, useLoggingOut, useUser, useUserId } from './react-account
 if (Meteor.isServer) {
   Meteor.methods({
     reset() {
-      const res = Meteor.users.remove({});
-      console.log(`method - reset - ${res}`)
-      return res
+      Meteor.users.remove({});
     },
   });
 }
@@ -159,6 +157,41 @@ if (Meteor.isClient) {
     await waitForNextUpdate();
 
     test.isFalse(result.current);
+    onComplete();
+  });
+  
+  Tinytest.addAsync('useUser - has initial value of `null`', async function (test, onComplete) {
+    await beforeEach();
+
+    const { result } = renderHook(() => useUser());
+
+    test.isNull(result.current);
+    onComplete();
+  });
+
+  Tinytest.addAsync('useUser - is reactive to login', async function (test, onComplete) {
+    await beforeEach();
+
+    const { result, waitForNextUpdate } = renderHook(() => useUser());
+    // use `waitFor*` instead of `await`; mimics consumer usage
+    login();
+    await waitForNextUpdate();
+
+    test.isNotNull(result.current)
+    test.equal(result.current.username, username, 'Expected username to match')
+    onComplete();
+  });
+
+  Tinytest.addAsync('useUser - is reactive to logout', async function (test, onComplete) {
+    await beforeEach();
+    await login();
+
+    const { result, waitForNextUpdate } = renderHook(() => useUser());
+    // use `waitFor*` instead of `await`; mimics consumer usage
+    logout();
+    await waitForNextUpdate();
+
+    test.isNull(result.current)
     onComplete();
   });
 }

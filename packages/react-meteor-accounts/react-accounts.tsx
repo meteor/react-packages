@@ -47,7 +47,12 @@ export function useUser(): Meteor.User | null {
   const [user, setUser] = useState(Meteor.user())
   useEffect(() => {
     const computation = Tracker.autorun(() => {
-      setUser(Meteor.user())
+      let user = Meteor.user();
+      // `Meteor.user` returns `undefined` after logout, but that ruins type signature and test parity. So, cast until that's fixed.
+      if (user === undefined) {
+        user = null;
+      }
+      setUser(user)
     })
     return () => {
       computation.stop()
