@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor'
 import { Tracker } from 'meteor/tracker'
-import { useState, useEffect, forwardRef } from 'react'
+import React, { useState, useEffect, forwardRef } from 'react'
 
-export const useUserId = () => {
+export function useUserId(): string | null {
   const [userId, setUserId] = useState(Meteor.userId())
   useEffect(() => {
     const computation = Tracker.autorun(() => {
@@ -15,14 +15,14 @@ export const useUserId = () => {
   return userId
 }
 
-export const withUserId = (Component) => (
-  forwardRef((props, ref) => {
+export function withUserId<P>(Component: React.ComponentType<P>) {
+  return forwardRef((props: P, ref) => {
     const userId = useUserId();
     return <Component ref={ref} {...props} userId={userId} />
   })
-)
+}
 
-export const useUser = () => {
+export function useUser(): Meteor.User | null {
   const [user, setUser] = useState(Meteor.user())
   useEffect(() => {
     const computation = Tracker.autorun(() => {
@@ -35,9 +35,9 @@ export const useUser = () => {
   return user
 }
 
-export const withUser = (Component) => (
-  forwardRef((props, ref) => {
+export function withUser<P>(Component: React.ComponentType<P>) {
+  return forwardRef((props: P, ref) => {
     const user = useUser();
     return <Component ref={ref} {...props} user={user} />
   })
-)
+}
