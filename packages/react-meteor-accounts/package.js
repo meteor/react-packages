@@ -10,8 +10,8 @@ Package.describe({
 
 Package.onUse((api) => {
   api.versionsFrom(['1.10', '2.3']);
-  api.use('tracker');
-  api.use('typescript');
+
+  api.use(['accounts-base', 'tracker', 'typescript']);
 
   api.mainModule('react-accounts.tsx', ['client', 'server'], { lazy: true });
 });
