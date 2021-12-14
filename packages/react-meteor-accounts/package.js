@@ -13,5 +13,5 @@ Package.onUse((api) => {
 
   api.use(['accounts-base', 'tracker', 'typescript']);
 
-  api.mainModule('react-accounts.tsx', ['client', 'server'], { lazy: true });
+  api.mainModule('index.ts', ['client', 'server'], { lazy: true });
 });
