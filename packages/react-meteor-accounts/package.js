@@ -15,3 +15,16 @@ Package.onUse((api) => {
 
   api.mainModule('index.ts', ['client', 'server'], { lazy: true });
 });
+
+Package.onTest((api) => {
+  api.use([
+    'accounts-base',
+    'accounts-password',
+    'react-accounts',
+    'tinytest',
+    'tracker',
+    'typescript',
+  ]);
+
+  api.mainModule('index.tests.ts');
+});
