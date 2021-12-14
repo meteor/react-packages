@@ -23,7 +23,9 @@ export function useUserId(): string | null {
  * HOC to forward a stateful value of the current user id from `Meteor.userId`, a reactive data source.
  * @see https://docs.meteor.com/api/accounts.html#Meteor-userId
  */
-export function withUserId<P>(Component: React.ComponentType<P>) {
+export function withUserId<P extends {
+  userId: string | null
+}>(Component: React.ComponentType<P>) {
   return forwardRef((props: P, ref) => {
     const userId = useUserId();
     return <Component userId={userId} ref={ref} {...props} />
@@ -51,7 +53,9 @@ export function useUser(): Meteor.User | null {
  * HOC to get a stateful value of the current user record from `Meteor.user`, a reactive data source.
  * @see https://docs.meteor.com/api/accounts.html#Meteor-user 
  */
-export function withUser<P>(Component: React.ComponentType<P>) {
+export function withUser<P extends {
+  user: Meteor.User | null
+}>(Component: React.ComponentType<P>) {
   return forwardRef((props: P, ref) => {
     const user = useUser();
     return <Component user={user} ref={ref} {...props} />
