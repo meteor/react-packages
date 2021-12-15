@@ -20,7 +20,6 @@ Package.onTest((api) => {
   api.use([
     'accounts-base',
     'accounts-password',
-    'react-accounts',
     'tinytest',
     'tracker',
     'typescript',
