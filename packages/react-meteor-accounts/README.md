@@ -41,7 +41,7 @@ _Note:_ All HOCs forward refs.
 
 ### useUser() / withUser(...)
 
-Get a stateful value of the current user record from [`Meteor.user`](https://docs.meteor.com/api/accounts.html#Meteor-user), a reactive data source.
+Get a stateful value of the current user record. Uses [`Meteor.user`](https://docs.meteor.com/api/accounts.html#Meteor-user), a reactive data source.
 
 The hook, `useUser()`, returns a stateful value of the current user record.
 
@@ -96,12 +96,12 @@ TypeScript signatures:
 function useUser(): Meteor.User | null;
 
 // HOC
-function withUser<P>(Component: React.ComponentType<P>): React.ForwardRefExoticComponent<React.PropsWithoutRef<P> & React.RefAttributes<unknown>>;
+function withUser<P>(Component: React.ComponentType<P>): React.ForwardRefExoticComponent<React.PropsWithoutRef<Omit<P, "user"> & Partial<WithUserProps>> & React.RefAttributes<unknown>>;
 ```
 
 ### useUserId() / withUserId(...)
 
-Get a stateful value of the current user id from [`Meteor.userId`](https://docs.meteor.com/api/accounts.html#Meteor-userId), a reactive data source.
+Get a stateful value of the current user id. Uses [`Meteor.userId`](https://docs.meteor.com/api/accounts.html#Meteor-userId), a reactive data source.
 
 The hook, `useUserId()`, returns a stateful value of the current user id.
 
@@ -166,5 +166,133 @@ TypeScript signatures:
 function useUserId(): string | null;
 
 // HOC
-function withUserId<P>(Component: React.ComponentType<P>): React.ForwardRefExoticComponent<React.PropsWithoutRef<P> & React.RefAttributes<unknown>>;
+function withUserId<P>(Component: React.ComponentType<P>): React.ForwardRefExoticComponent<React.PropsWithoutRef<Omit<P, "userId"> & Partial<WithUserIdProps>> & React.RefAttributes<unknown>>;
+```
+
+### useLoggingIn() / withLoggingIn(...)
+
+Get a stateful value of whether a login method (e.g. `loginWith<Service>`) is currently in progress. Uses [`Meteor.loggingIn`](https://docs.meteor.com/api/accounts.html#Meteor-loggingIn), a reactive data source.
+
+The hook, `useLoggingIn()`, returns the stateful value.
+
+- Arguments: *none*.
+- Returns: `boolean`.
+
+The HOC, `withLoggingIn(Component)`, returns a wrapped version of `Component`, where `Component` receives a prop of the stateful value, `loggingIn`.
+
+- Arguments:
+
+| Argument | Type | Required | Description |
+| --- | --- | --- | --- |
+| Component | `React.ComponentType` | yes | A React component. |
+
+- Returns: `React.ForwardRefExoticComponent`.
+
+Examples:
+
+```tsx
+import React from 'react';
+import { useLoggingIn, withLoggingIn } from 'meteor/react-meteor-accounts';
+
+// Hook
+function Foo() {
+  const loggingIn = useLoggingIn();
+
+  if (!loggingIn) {
+    return null;
+  }
+
+  return (
+    <div>Logging in, please wait a moment.</div>
+  );
+}
+
+// HOC
+class Bar extends React.Component {
+  render() {
+    if (!this.props.loggingIn) {
+      return null;
+    }
+
+    return (
+      <div>Logging in, please wait a moment.</div>
+    );
+  }
+}
+
+const BarWithLoggingIn = withLoggingIn(Bar);
+```
+
+TypeScript signatures:
+
+```ts
+// Hook
+function useLoggingIn(): boolean;
+
+// HOC
+function withLoggingIn<P>(Component: React.ComponentType<P>): React.ForwardRefExoticComponent<React.PropsWithoutRef<Omit<P, "loggingIn"> & Partial<WithLoggingInProps>> & React.RefAttributes<unknown>>;
+```
+
+### useLoggingOut() / withLoggingOut(...)
+
+Get a stateful value of whether the logout method is currently in progress. Uses `Meteor.loggingOut` (no online documentation), a reactive data source.
+
+The hook, `useLoggingOut()`, returns the stateful value.
+
+- Arguments: *none*.
+- Returns: `boolean`.
+
+The HOC, `withLoggingOut(Component)`, returns a wrapped version of `Component`, where `Component` receives a prop of the stateful value, `loggingOut`.
+
+- Arguments:
+
+| Argument | Type | Required | Description |
+| --- | --- | --- | --- |
+| Component | `React.ComponentType` | yes | A React component. |
+
+- Returns: `React.ForwardRefExoticComponent`.
+
+Examples:
+
+```tsx
+import React from 'react';
+import { useLoggingOut, withLoggingOut } from 'meteor/react-meteor-accounts';
+
+// Hook
+function Foo() {
+  const loggingOut = useLoggingOut();
+
+  if (!loggingOut) {
+    return null;
+  }
+
+  return (
+    <div>Logging out in, please wait a moment.</div>
+  );
+}
+
+// HOC
+class Bar extends React.Component {
+  render() {
+    if (!this.props.loggingOut) {
+      return null;
+    }
+
+    return (
+      <div>Logging out, please wait a moment.</div>
+    );
+  }
+}
+
+const BarWithLoggingOut = withLoggingOut(Bar);
+```
+
+TypeScript signatures:
+
+```ts
+// Hook
+function useLoggingOut(): boolean;
+
+// HOC
+function withLoggingOut<P>(Component: React.ComponentType<P>): React.ForwardRefExoticComponent<React.PropsWithoutRef<Omit<P, "loggingOut"> & Partial<WithLoggingOutProps>> & React.RefAttributes<unknown>>;
 ```
