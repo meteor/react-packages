@@ -9,4 +9,13 @@ if (Meteor.isDevelopment) {
   }
 }
 
-export { useUser, withUser, useUserId, withUserId } from './react-accounts';
+export {
+  useUser,
+  useUserId,
+  useLoggingIn,
+  useLoggingOut,
+  withUser,
+  withUserId,
+  withLoggingIn,
+  withLoggingOut
+} from './react-accounts';
