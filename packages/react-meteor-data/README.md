@@ -1,8 +1,23 @@
-## `react-meteor-data`
+# react-meteor-data
 
 This package provides an integration between React and [`Tracker`](https://atmospherejs.com/meteor/tracker), Meteor's reactive data system.
 
-### Install
+## Table of Contents
+
+- [Install](#install)
+  - [Changelog](#changelog)
+- [Usage](#usage)
+  - [`useTracker`](#usetrackerreactivefn-basic-hook)
+    - [With dependencies](#usetrackerreactivefn-deps-hook-with-deps)
+    - [Skipping updates](#usetrackerreactivefn-deps-skipUpdate-or-usetrackerreactivefn-skipUpdate)
+  - [`withTracker`](#withtrackerreactivefn-higher-order-component)
+    - [Advanced container config](#withtracker-reactivefn-pure-skipupdate--advanced-container-config)
+  - [`useSubscribe`](#usesubscribesubname-args-a-convenient-wrapper-for-subscriptions)
+  - [`useFind`](#usefindcursorfactory-deps-accelerate-your-lists)
+  - [Concurrent Mode, Suspense, and Error Boundaries](#concurrent-mode-suspense-and-error-boundaries)
+  - [Version compatibility notes](#version-compatibility-notes)
+
+## Install
 
 To install the package, use `meteor add`:
 
@@ -16,11 +31,14 @@ You'll also need to install `react` if you have not already:
 meteor npm install react
 ```
 
+### Changelog
+
 [check recent changes here](./CHANGELOG.md)
 
-### Usage
+## Usage
 
 This package provides two ways to use Tracker reactive data in your React components:
+
 - a hook: `useTracker` (v2 only, requires React `^16.8`)
 - a higher-order component (HOC): `withTracker` (v1 and v2).
 
@@ -30,13 +48,14 @@ The `withTracker` HOC can be used with all components, function or class based.
 
 It is not necessary to rewrite existing applications to use the `useTracker` hook instead of the existing `withTracker` HOC.
 
-#### `useTracker(reactiveFn)` basic hook
+### `useTracker(reactiveFn)` basic hook
 
 You can use the `useTracker` hook to get the value of a Tracker reactive function in your React "function components." The reactive function will get re-run whenever its reactive inputs change, and the component will re-render with the new value.
 
 `useTracker` manages its own state, and causes re-renders when necessary. There is no need to call React state setters from inside your `reactiveFn`. Instead, return the values from your `reactiveFn` and assign those to variables directly. When the `reactiveFn` updates, the variables will be updated, and the React component will re-render.
 
 Arguments:
+
 - `reactiveFn`: A Tracker reactive function (receives the current computation).
 
 The basic way to use `useTracker` is to simply pass it a reactive function, with no further fuss. This is the preferred configuration in many cases.
@@ -48,6 +67,7 @@ You can pass an optional deps array as a second value. When provided, the comput
 This should be considered a low level optimization step for cases where your computations are somewhat long running - like a complex minimongo query. In many cases it's safe and even preferred to omit deps and allow the computation to run synchronously with render.
 
 Arguments:
+
 - `reactiveFn`
 - `deps`: An optional array of "dependencies" of the reactive function. This is very similar to how the `deps` argument for [React's built-in `useEffect`, `useCallback` or `useMemo` hooks](https://reactjs.org/docs/hooks-reference.html) work.
 
@@ -96,15 +116,16 @@ function Foo({ listId }) {
 
 **Note:** the [eslint-plugin-react-hooks](https://www.npmjs.com/package/eslint-plugin-react-hooks) package provides ESLint hints to help detect missing values in the `deps` argument of React built-in hooks. It can be configured to also validate the `deps` argument of the `useTracker` hook or some other hooks, with the following `eslintrc` config:
 
-```
+```json
 "react-hooks/exhaustive-deps": ["warn", { "additionalHooks": "useTracker|useSomeOtherHook|..." }]
 ```
 
 #### `useTracker(reactiveFn, deps, skipUpdate)` or `useTracker(reactiveFn, skipUpdate)`
 
-You may optionally pass a function as a second or third argument. The `skipUpdate` function can evaluate the return value of `reactiveFn` for changes, and control re-renders in sensitive cases. *Note:* This is not meant to be used iwth a deep compare (even fast-deep-equals), as in many cases that may actually lead to worse performance than allowing React to do it's thing. But as an example, you could use this to compare an `updatedAt` field between updates, or a subset of specific fields, if you aren't using the entire document in a subscription. As always with any optimization, measure first, then optimize second. Make sure you really need this before implementing it.
+You may optionally pass a function as a second or third argument. The `skipUpdate` function can evaluate the return value of `reactiveFn` for changes, and control re-renders in sensitive cases. *Note:* This is not meant to be used with a deep compare (even fast-deep-equals), as in many cases that may actually lead to worse performance than allowing React to do it's thing. But as an example, you could use this to compare an `updatedAt` field between updates, or a subset of specific fields, if you aren't using the entire document in a subscription. As always with any optimization, measure first, then optimize second. Make sure you really need this before implementing it.
 
 Arguments:
+
 - `reactiveFn`
 - `deps?` - optional - you may omit this, or pass a "falsy" value.
 - `skipUpdate` - A function which receives two arguments: `(prev, next) => (prev === next)`. `prev` and `next` will match the type or data shape as that returned by `reactiveFn`. Note: A return value of `true` means the update will be "skipped". `false` means re-render will occur as normal. So the function should be looking for equivalence.
@@ -138,11 +159,12 @@ function Foo({ listId }) {
 }
 ```
 
-#### `withTracker(reactiveFn)` higher-order component
+### `withTracker(reactiveFn)` higher-order component
 
 You can use the `withTracker` HOC to wrap your components and pass them additional props values from a Tracker reactive function. The reactive function will get re-run whenever its reactive inputs change, and the wrapped component will re-render with the new values for the additional props.
 
 Arguments:
+
 - `reactiveFn`: a Tracker reactive function, getting the props as a parameter, and returning an object of additional props to pass to the wrapped component.
 
 ```js
@@ -231,9 +253,9 @@ export default withTracker({
 })(Foo);
 ```
 
-#### `useSubscribe(subName, ...args)` A convenient wrapper for subscriptions
+### `useSubscribe(subName, ...args)` A convenient wrapper for subscriptions
 
-`useSubscribe` is a convenient short hand for setting up a subscription. It is particularly useful when working with `useFind`, which should NOT be used for setting up subscriptions. At its core, it is a very simple wrapper around `useTracker` (with no deps) to create the subscription in a safe way, and allows you to avoid some of the cerimony around defining a factory and defining deps. Just pass the name of your subscription, and your arguments.
+`useSubscribe` is a convenient short hand for setting up a subscription. It is particularly useful when working with `useFind`, which should NOT be used for setting up subscriptions. At its core, it is a very simple wrapper around `useTracker` (with no deps) to create the subscription in a safe way, and allows you to avoid some of the ceremony around defining a factory and defining deps. Just pass the name of your subscription, and your arguments.
 
 `useSubscribe` returns an `isLoading` function. You can call `isLoading()` to react to changes in the subscription's loading state. The `isLoading` function will both return the loading state of the subscription, and set up a reactivity for the loading state change. If you don't call this function, no re-render will occur when the loading state changes.
 
@@ -260,7 +282,7 @@ const isLoading = useSubscribe(needsData ? "my-pub" : null);
 // When a subscription is not used, isLoading() will always return false
 ```
 
-#### `useFind(cursorFactory, deps)` Accellerate your lists
+### `useFind(cursorFactory, deps)` Accelerate your lists
 
 The `useFind` hook can substantially speed up the rendering (and rerendering) of lists coming from mongo queries (subscriptions). It does this by controlling document object references. By providing a highly tailored cursor management within the hook, using the `Cursor.observe` API, `useFind` carefully updates only the object references changed during a DDP update. This approach allows a tighter use of core React tools and philosophies to turbo charge your list renders. It is a very different approach from the more general purpose `useTracker`, and it requires a bit more set up. A notable difference is that you should NOT call `.fetch()`. `useFind` requires its factory to return a `Mongo.Cursor` object. You may also return `null`, if you want to conditionally set up the Cursor.
 
