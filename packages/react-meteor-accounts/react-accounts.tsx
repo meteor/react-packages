@@ -13,7 +13,7 @@ declare module 'meteor/meteor' {
  * Hook to get a stateful value of the current user id. Uses `Meteor.userId`, a reactive data source.
  * @see https://docs.meteor.com/api/accounts.html#Meteor-userId
  */
-export function useUserId(): string | null {
+export function useUserId() {
   const [userId, setUserId] = useState(Meteor.userId())
   useEffect(() => {
     const computation = Tracker.autorun(() => {
@@ -55,7 +55,7 @@ export function withUserId<P>(Component: React.ComponentType<P>) {
  * Hook to get a stateful value of the current user record. Uses `Meteor.user`, a reactive data source.
  * @see https://docs.meteor.com/api/accounts.html#Meteor-user
  */
-export function useUser(): Meteor.User | null {
+export function useUser() {
   const [user, setUser] = useState(Meteor.user());
   useEffect(() => {
     const computation = Tracker.autorun(() => {
@@ -74,7 +74,7 @@ export function useUser(): Meteor.User | null {
 }
 
 export interface WithUserProps {
-  user: Meteor.User | null;
+  user: Meteor.User;
 }
 
 /**
