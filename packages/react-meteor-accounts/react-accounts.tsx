@@ -2,13 +2,6 @@ import { Meteor } from 'meteor/meteor'
 import { Tracker } from 'meteor/tracker'
 import React, { useState, useEffect, forwardRef } from 'react'
 
-// Augmentation to add missing signature
-declare module 'meteor/meteor' {
-  module Meteor {
-    function loggingOut(): boolean;
-  }
-}
-
 /**
  * Hook to get a stateful value of the current user id. Uses `Meteor.userId`, a reactive data source.
  * @see https://docs.meteor.com/api/accounts.html#Meteor-userId
@@ -74,7 +67,7 @@ export function useUser() {
 }
 
 export interface WithUserProps {
-  user: Meteor.User;
+  user: Meteor.User | null;
 }
 
 /**
