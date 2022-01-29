@@ -54,5 +54,6 @@ export interface WithLoggingOutProps {
 }
 /**
  * HOC to forward a stateful value of whether the logout method is currently in progress. Uses `Meteor.loggingOut`, a reactive data source.
+ * @see https://docs.meteor.com/api/accounts.html#Meteor-loggingOut
  */
 export declare function withLoggingOut<P>(Component: React.ComponentType<P>): React.ForwardRefExoticComponent<React.PropsWithoutRef<Omit<P, "loggingOut"> & Partial<WithLoggingOutProps>> & React.RefAttributes<unknown>>;
