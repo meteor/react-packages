@@ -4,10 +4,10 @@ Release versions follow [Semantic Versioning 2.0.0 guidelines](https://semver.or
 
 ## v1.0.0-beta.2
 
-- `useLogginIn`: Added implementation
-- `useLogginOut`: Added implementation
-- `withLogginIn`: Added implementation
-- `withLogginOut`: Added implementation
+- `useLoggingIn`: Added implementation
+- `useLoggingOut`: Added implementation
+- `withLoggingIn`: Added implementation
+- `withLoggingOut`: Added implementation
 - improved tests and readme
 
 ## v1.0.0-beta.1
