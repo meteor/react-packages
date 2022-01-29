@@ -2,7 +2,7 @@
 
 Release versions follow [Semantic Versioning 2.0.0 guidelines](https://semver.org/).
 
-## v1.0.0-beta.2
+## v1.0.0-rc.1
 
 - `useLoggingIn`: Added implementation
 - `useLoggingOut`: Added implementation
