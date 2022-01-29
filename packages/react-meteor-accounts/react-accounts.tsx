@@ -124,6 +124,7 @@ export function withLoggingIn<P>(Component: React.ComponentType<P>) {
 
 /**
  * Hook to get a stateful value of whether the logout method is currently in progress. Uses `Meteor.loggingOut`, a reactive data source.
+ * @see https://docs.meteor.com/api/accounts.html#Meteor-loggingOut
  */
 export function useLoggingOut(): boolean {
   const [loggingOut, setLoggingOut] = useState(Meteor.loggingOut());
