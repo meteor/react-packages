@@ -294,7 +294,7 @@ function withLoggingIn<P>(Component: React.ComponentType<P>): React.ForwardRefEx
 
 ### withLoggingOut(...)
 
-Return a wrapped version of the given component, where the component receives a stateful prop of whether the logout method is currently in progress. A higher-order component. Uses `Meteor.loggingOut` (no online documentation), a reactive data source.
+Return a wrapped version of the given component, where the component receives a stateful prop of whether the logout method is currently in progress. A higher-order component. Uses [`Meteor.loggingOut`](https://docs.meteor.com/api/accounts.html#Meteor-loggingOut), a reactive data source.
 
 - Arguments:
 
