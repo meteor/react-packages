@@ -1,9 +1,9 @@
 /* global Package */
 
 Package.describe({
-  name: 'react-accounts',
+  name: 'react-meteor-accounts',
   summary: 'React hooks and HOCs for reactively tracking Meteor Accounts data',
-  version: '1.0.0-beta.1',
+  version: '1.0.0',
   documentation: 'README.md',
   git: 'https://github.com/meteor/react-packages',
 });
