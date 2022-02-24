@@ -22,7 +22,7 @@ Simple hooks and higher-order components (HOCs) for getting reactive, stateful v
 Install the package from Atmosphere:
 
 ```shell
-meteor add mdg:react-meteor-accounts
+meteor add react-meteor-accounts
 ```
 
 ### Peer npm dependencies
@@ -56,7 +56,7 @@ Example:
 
 ```tsx
 import React from 'react';
-import { useUser } from 'meteor/mdg:react-meteor-accounts';
+import { useUser } from 'meteor/react-meteor-accounts';
 
 function Foo() {
   const user = useUser();
@@ -86,7 +86,7 @@ Example:
 
 ```tsx
 import React from 'react';
-import { useUserId } from 'meteor/mdg:react-meteor-accounts';
+import { useUserId } from 'meteor/react-meteor-accounts';
 
 function Foo() {
   const userId = useUserId();
@@ -121,7 +121,7 @@ Example:
 
 ```tsx
 import React from 'react';
-import { useLoggingIn } from 'meteor/mdg:react-meteor-accounts';
+import { useLoggingIn } from 'meteor/react-meteor-accounts';
 
 function Foo() {
   const loggingIn = useLoggingIn();
@@ -153,7 +153,7 @@ Example:
 
 ```tsx
 import React from 'react';
-import { useLoggingOut } from 'meteor/mdg:react-meteor-accounts';
+import { useLoggingOut } from 'meteor/react-meteor-accounts';
 
 function Foo() {
   const loggingOut = useLoggingOut();
@@ -190,7 +190,7 @@ Examples:
 
 ```tsx
 import React from 'react';
-import { withUser } from 'meteor/mdg:react-meteor-accounts';
+import { withUser } from 'meteor/react-meteor-accounts';
 
 class Foo extends React.Component {
   render() {
@@ -227,7 +227,7 @@ Example:
 
 ```tsx
 import React from 'react';
-import { withUserId } from 'meteor/mdg:react-meteor-accounts';
+import { withUserId } from 'meteor/react-meteor-accounts';
 
 class Foo extends React.Component {
   render() {
@@ -269,7 +269,7 @@ Example:
 
 ```tsx
 import React from 'react';
-import { withLoggingIn } from 'meteor/mdg:react-meteor-accounts';
+import { withLoggingIn } from 'meteor/react-meteor-accounts';
 
 class Foo extends React.Component {
   render() {
@@ -308,7 +308,7 @@ Example:
 
 ```tsx
 import React from 'react';
-import { withLoggingOut } from 'meteor/mdg:react-meteor-accounts';
+import { withLoggingOut } from 'meteor/react-meteor-accounts';
 
 class Foo extends React.Component {
   render() {
