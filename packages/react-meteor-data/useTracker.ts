@@ -114,6 +114,7 @@ const useTrackerNoDeps = <T = any>(reactiveFn: IReactiveFn<T>, skipUpdate: ISkip
     return () =>{
       refs.computation?.stop();
       delete refs.computation;
+      refs.isMounted = false;
     }
   }, []);
 
@@ -138,7 +139,13 @@ const useTrackerWithDeps = <T = any>(reactiveFn: IReactiveFn<T>, deps: Dependenc
     // reactive function in a computation, then stop it, to force flush cycle.
     const comp = Tracker.nonreactive(
       () => Tracker.autorun((c: Tracker.Computation) => {
-        refs.data = refs.reactiveFn();
+        const data = refs.reactiveFn();
+        if (c.firstRun) {
+          refs.data = data;
+        } else if (!skipUpdate || !skipUpdate(refs.data, data)) {
+          refs.data = data;
+          forceUpdate();
+        }
       })
     );
     // In some cases, the useEffect hook will run before Meteor.defer, such as
@@ -172,6 +179,8 @@ const useTrackerWithDeps = <T = any>(reactiveFn: IReactiveFn<T>, deps: Dependenc
 
     return () => {
       refs.comp.stop();
+      delete refs.comp;
+      refs.isMounted = false;
     };
   }, deps);
 
