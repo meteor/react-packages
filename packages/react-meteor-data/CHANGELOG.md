@@ -1,4 +1,7 @@
 # CHANGELOG
+## v2.5.0, 2022-05-02
+* Fix useTrackerNoDeps for React 18. [PR](https://github.com/meteor/react-packages/pull/359).
+
 ## v2.4.0, 2021-12-02
 * Added `useSubscribe` and `useFind` hooks
 
