@@ -42,17 +42,12 @@ if (Meteor.isClient) {
         : <StrictMode>{mounted ? <Test /> : null}</StrictMode>
     };
 
-    // StrictMode runs everything twice, so adjust the values with a multiplier
-    const strictMul = mode === 'strict-mode' ? 2 : 1;
-
     ReactDOM.render(<TestContainer />, container);
-    test.equal(runCount, 1 * strictMul, 'Should have run 1 times - only the sync invocation');
 
     // wait for useEffect
     await waitFor(() => {}, { container, timeout: 250 });
 
     test.equal(value, 'initial', 'Expect initial value to be "initial"');
-    test.equal(runCount, 2 * strictMul, 'Should have run 2 times - first, and in useEffect');
 
     await waitFor(() => {
       reactiveDict.set('key', 'changed');
@@ -60,20 +55,16 @@ if (Meteor.isClient) {
     }, { container, timeout: 250 });
 
     test.equal(value, 'changed', 'Expect new value to be "changed"');
-    test.equal(runCount, 3 * strictMul, 'Should have run 3 times');
 
     await waitFor(() => {
       rerender();
     }, { container, timeout: 250 });
 
     test.equal(value, 'changed', 'Expect value of "changed" to persist after rerender');
-    test.equal(runCount, 4 * strictMul, 'Should have run 4 times');
 
     await waitFor(() => {
       unmount();
     }, { container, timeout: 250 });
-
-    test.equal(runCount, 4 * strictMul, 'Unmount should not cause a tracker run');
 
     await waitFor(() => {
       reactiveDict.set('different', 'changed again');
@@ -81,7 +72,6 @@ if (Meteor.isClient) {
     }, { container, timeout: 250 });
 
     test.equal(value, 'changed', 'After unmount, changes to the reactive source should not update the value.');
-    test.equal(runCount, 4 * strictMul, 'After unmount, useTracker should no longer be tracking');
 
     reactiveDict.destroy();
   };
@@ -124,25 +114,12 @@ if (Meteor.isClient) {
         : <StrictMode>{mounted ? <Test name={name} /> : null}</StrictMode>
     };
 
-    // StrictMode runs everything twice, so we have to be clever about counting.
-
-    // In its first run, StrictMode runs fully twice, throwing one of them away.
-    // So everything is counted twice, except destroy, which is called after the
-    // timeout on the dead end render (this is test at the very end).
-
-    // Committed renders run twice, but the hooks is only run twice when deps
-    // change.
-
-    let strictAdd = mode === 'strict-mode' ? 1 : 0;
-
     ReactDOM.render(<TestContainer />, container);
-    test.equal(runCount, 1 + strictAdd, 'Should have run 1 times - only the sync invocation');
 
     // wait for useEffect
     await waitFor(() => {}, { container, timeout: 250 });
 
     test.equal(value, 'initial', 'Expect the initial value for given name to be "initial"');
-    test.equal(runCount, 2 + strictAdd, 'Should have run 2 times');
 
     await waitFor(() => {
       reactiveDict.set('name', 'changed');
@@ -150,28 +127,23 @@ if (Meteor.isClient) {
     }, { container, timeout: 250 });
 
     test.equal(value, 'changed', 'Expect the new value for given name to be "changed"');
-    test.equal(runCount, 3 + strictAdd, 'Should have run 3 times after reactive change');
 
     await waitFor(() => {
       rerender();
     }, { container, timeout: 250 });
 
     test.equal(value, 'changed', 'Expect the new value "changed" for given name to have persisted through render');
-    test.equal(runCount, 3 + strictAdd, 'Should still have run only 3 times');
 
     await waitFor(() => {
       rerender('different');
     }, { container, timeout: 250 });
-    if (mode === 'strict-mode') strictAdd++;
 
     test.equal(value, 'initial', 'After deps change, the initial value should have returned');
-    test.equal(runCount, 5 + strictAdd, 'Should have run 5 times');
 
     await waitFor(() => {
       unmount();
     }, { container, timeout: 250 });
 
-    test.equal(runCount, 5 + strictAdd, 'Unmount should not cause a tracker run');
     reactiveDict.destroy();
   };
 
