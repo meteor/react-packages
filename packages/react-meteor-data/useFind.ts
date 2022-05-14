@@ -49,8 +49,8 @@ const useFindReducer = <T>(data: T[], action: useFindActions<T>): T[] => {
 // On server, however, we instead get a private Cursor type from
 // https://github.com/meteor/meteor/blob/devel/packages/mongo/mongo_driver.js
 // which has fields _mongo and _cursorDescription.
-const checkCursor = <T>(cursor: Mongo.Cursor<T> | undefined | null) => {
-  if (cursor != null && !(cursor instanceof Mongo.Cursor) &&
+const checkCursor = <T>(cursor: Mongo.Cursor<T> | Partial<{ _mongo: any, _cursorDescription: any }> | undefined | null) => {
+  if (cursor !== null && cursor !== undefined && !(cursor instanceof Mongo.Cursor) &&
       !(cursor._mongo && cursor._cursorDescription)) {
     console.warn(
       'Warning: useFind requires an instance of Mongo.Cursor. '
@@ -129,7 +129,7 @@ const useFindServer = <T = any>(factory: () => Mongo.Cursor<T> | undefined | nul
   Tracker.nonreactive(() => {
     const cursor = factory()
     if (Meteor.isDevelopment) checkCursor(cursor)
-    return cursor ? cursor.fetch() : null
+    return cursor?.fetch?.() || null
   })
 )
 
