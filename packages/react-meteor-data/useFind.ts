@@ -129,7 +129,7 @@ const useFindServer = <T = any>(factory: () => Mongo.Cursor<T> | undefined | nul
   Tracker.nonreactive(() => {
     const cursor = factory()
     if (Meteor.isDevelopment) checkCursor(cursor)
-    return cursor?.fetch?.() || null
+    return cursor?.fetch?.() ?? null
   })
 )
 
