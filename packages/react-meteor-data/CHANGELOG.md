@@ -1,4 +1,7 @@
 # CHANGELOG
+## v2.5.1, 2022-05-18
+* Fix useFind in SSR: check for server Cursor. [PR](https://github.com/meteor/react-packages/pull/350).
+
 ## v2.5.0, 2022-05-02
 * Fix useTrackerNoDeps for React 18. [PR](https://github.com/meteor/react-packages/pull/359).
 
