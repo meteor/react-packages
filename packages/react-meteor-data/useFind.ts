@@ -54,7 +54,7 @@ const checkCursor = <T>(cursor: Mongo.Cursor<T> | Partial<{ _mongo: any, _cursor
       !(cursor._mongo && cursor._cursorDescription)) {
     console.warn(
       'Warning: useFind requires an instance of Mongo.Cursor. '
-      + 'Make sure you do NOT call .fetch() on your cursor.'
+      + 'Make sure you do NOT call .fetch() or .fetchAsync() on your cursor.'
     );
   }
 }
