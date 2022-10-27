@@ -59,11 +59,10 @@ const checkCursor = <T>(cursor: Mongo.Cursor<T> | Partial<{ _mongo: any, _cursor
   }
 }
 
-const useFindClient = <T = any>(
-  factory: () => Mongo.Cursor<T> | undefined | null,
-  deps: DependencyList = []
-) => {
+const useFindClient = <T = any>(factory: () => (Mongo.Cursor<T> | undefined | null), deps: DependencyList = []) => {
   const cursor = useMemo(() => {
+    // To avoid creating side effects in render, opt out
+    // of Tracker integration altogether.
     const cursor = Tracker.nonreactive(factory);
     if (Meteor.isDevelopment) {
       checkCursor(cursor)
@@ -78,7 +77,7 @@ const useFindClient = <T = any>(
       const data: T[] = []
       if (cursor instanceof Mongo.Cursor) {
         const observer = cursor.observe({
-          addedAt(document, atIndex, before) {
+          addedAt (document, atIndex, before) {
             data.splice(atIndex, 0, document)
           },
         })
