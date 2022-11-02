@@ -5,7 +5,9 @@ checkNpmVersions({
 }, 'react-template-helper');
 
 const React = require('react');
+const { createRoot } = require('react-dom/client')
 const ReactDOM = require('react-dom');
+const shouldUseNewDOMRenderSyntax = React.version >= '18';
 
 // Empty template; logic in `onRendered` below
 Template.React = new Template("Template.React", function () { return []; });
@@ -26,13 +28,30 @@ Template.React.onRendered(function () {
     }
 
     var props = _.omit(data, 'component');
-    ReactDOM.render(React.createElement(comp, props), container);
+    var node = React.createElement(comp, props);
+    if (shouldUseNewDOMRenderSyntax) {
+      // pseudo-validation
+      if (!this.root) {
+        this.root = createRoot(container);
+      }
+      this.root.render(node);
+      return;
+    }
+
+    ReactDOM.render(node, container);
   });
 });
 
 Template.React.onDestroyed(function () {
-  if (this.container)
-    ReactDOM.unmountComponentAtNode(this.container);
+  if (this.container) {
+    if (shouldUseNewDOMRenderSyntax) {
+      if (this.root) {
+        this.root.unmount();
+      }
+    } else {
+      ReactDOM.unmountComponentAtNode(this.container);
+    }
+  }
 });
 
 // Gets the name of the template inside of which this instance of `{{>
