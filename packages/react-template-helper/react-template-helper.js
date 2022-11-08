@@ -5,7 +5,6 @@ checkNpmVersions({
 }, 'react-template-helper');
 
 const React = require('react');
-const { createRoot } = require('react-dom/client')
 const ReactDOM = require('react-dom');
 const shouldUseNewDOMRenderSyntax = React.version >= '18';
 
@@ -32,7 +31,7 @@ Template.React.onRendered(function () {
     if (shouldUseNewDOMRenderSyntax) {
       // pseudo-validation
       if (!this.root) {
-        this.root = createRoot(container);
+        this.root = require('react-dom/client').createRoot(container);
       }
       this.root.render(node);
       return;
