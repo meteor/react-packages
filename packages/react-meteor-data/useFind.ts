@@ -87,9 +87,24 @@ const useFindClient = <T = any>(factory: () => (Mongo.Cursor<T> | undefined | nu
     }
   )
 
+  const didMount = useRef(false)
+
   useEffect(() => {
     if (!(cursor instanceof Mongo.Cursor)) {
       return
+    }
+
+    if (didMount.current) {
+      const data: T[] = []
+      cursor.observe({
+        addedAt (document, atIndex, before) {
+          data.splice(atIndex, 0, document)
+        },
+      }).stop()
+      dispatch({ type: 'refresh', data })
+    }
+    else {
+      didMount.current = true
     }
 
     const observer = cursor.observe({
