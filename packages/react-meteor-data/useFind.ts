@@ -59,6 +59,16 @@ const checkCursor = <T>(cursor: Mongo.Cursor<T> | Partial<{ _mongo: any, _cursor
   }
 }
 
+const fetchData = <T>(cursor: Mongo.Cursor<T>) => {
+  const data: T[] = []
+  cursor.observe({
+    addedAt (document, atIndex, before) {
+      data.splice(atIndex, 0, document)
+    },
+  }).stop()
+  return data
+}
+
 const useFindClient = <T = any>(factory: () => (Mongo.Cursor<T> | undefined | null), deps: DependencyList = []) => {
   const cursor = useMemo(() => {
     // To avoid creating side effects in render, opt out
@@ -74,16 +84,11 @@ const useFindClient = <T = any>(factory: () => (Mongo.Cursor<T> | undefined | nu
     useFindReducer,
     null,
     () => {
-      const data: T[] = []
-      if (cursor instanceof Mongo.Cursor) {
-        const observer = cursor.observe({
-          addedAt (document, atIndex, before) {
-            data.splice(atIndex, 0, document)
-          },
-        })
-        observer.stop()
+      if (!(cursor instanceof Mongo.Cursor)) {
+        return []
       }
-      return data
+
+      return fetchData(cursor)
     }
   )
 
@@ -95,12 +100,7 @@ const useFindClient = <T = any>(factory: () => (Mongo.Cursor<T> | undefined | nu
     }
 
     if (didMount.current) {
-      const data: T[] = []
-      cursor.observe({
-        addedAt (document, atIndex, before) {
-          data.splice(atIndex, 0, document)
-        },
-      }).stop()
+      const data = fetchData(cursor)
       dispatch({ type: 'refresh', data })
     }
     else {
