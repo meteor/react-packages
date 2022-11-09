@@ -59,6 +59,18 @@ const checkCursor = <T>(cursor: Mongo.Cursor<T> | Partial<{ _mongo: any, _cursor
   }
 }
 
+// Synchronous data fetch. It uses cursor observing instead of cursor.fetch() because synchronous fetch will be deprecated.
+const fetchData = <T>(cursor: Mongo.Cursor<T>) => {
+  const data: T[] = []
+  const observer = cursor.observe({
+    addedAt (document, atIndex, before) {
+      data.splice(atIndex, 0, document)
+    },
+  })
+  observer.stop()
+  return data
+}
+
 const useFindClient = <T = any>(factory: () => (Mongo.Cursor<T> | undefined | null), deps: DependencyList = []) => {
   const cursor = useMemo(() => {
     // To avoid creating side effects in render, opt out
@@ -74,22 +86,29 @@ const useFindClient = <T = any>(factory: () => (Mongo.Cursor<T> | undefined | nu
     useFindReducer,
     null,
     () => {
-      const data: T[] = []
-      if (cursor instanceof Mongo.Cursor) {
-        const observer = cursor.observe({
-          addedAt (document, atIndex, before) {
-            data.splice(atIndex, 0, document)
-          },
-        })
-        observer.stop()
+      if (!(cursor instanceof Mongo.Cursor)) {
+        return []
       }
-      return data
+
+      return fetchData(cursor)
     }
   )
+
+  // Store information about mounting the component.
+  // It will be used to run code only if the component is updated.
+  const didMount = useRef(false)
 
   useEffect(() => {
     if (!(cursor instanceof Mongo.Cursor)) {
       return
+    }
+
+    // Fetch intitial data if cursor was changed.
+    if (didMount.current) {
+      const data = fetchData(cursor)
+      dispatch({ type: 'refresh', data })
+    } else {
+      didMount.current = true
     }
 
     const observer = cursor.observe({
