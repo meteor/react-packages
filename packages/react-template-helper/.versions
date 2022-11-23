@@ -28,7 +28,7 @@ observe-sequence@1.0.16
 promise@0.12.1
 random@1.2.1
 react-fast-refresh@0.2.3
-react-template-helper@0.2.15
+react-template-helper@0.2.16
 reactive-var@1.0.12
 spacebars@1.0.10
 spacebars-compiler@1.1.0
