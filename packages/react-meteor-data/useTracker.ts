@@ -206,7 +206,7 @@ const useTrackerServer: typeof useTrackerClient = (reactiveFn) => {
 
 // When rendering on the server, we don't want to use the Tracker.
 // We only do the first rendering on the server so we can get the data right away
-const useTracker = Meteor.isServer
+const _useTracker = Meteor.isServer
   ? useTrackerServer
   : useTrackerClient;
 
@@ -234,11 +234,11 @@ function useTrackerDev (reactiveFn, deps = null, skipUpdate = null) {
     }
   }
 
-  const data = useTracker(reactiveFn, deps, skipUpdate);
+  const data = _useTracker(reactiveFn, deps, skipUpdate);
   checkCursor(data);
   return data;
 }
 
-export default Meteor.isDevelopment
+export const useTracker = Meteor.isDevelopment
   ? useTrackerDev as typeof useTrackerClient
-  : useTracker;
+  : _useTracker;

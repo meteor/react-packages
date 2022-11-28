@@ -8,9 +8,7 @@ if (Meteor.isDevelopment) {
   }
 }
 
-import useTracker from './useTracker';
-import withTracker from './withTracker.tsx';
+export { useTracker } from './useTracker';
+export { withTracker } from './withTracker.tsx';
 export { useFind } from './useFind';
 export { useSubscribe } from './useSubscribe';
-
-export { useTracker, withTracker };

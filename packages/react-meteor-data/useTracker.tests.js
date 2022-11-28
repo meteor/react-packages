@@ -5,7 +5,7 @@ import { cleanup, waitFor } from '@testing-library/react';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { ReactiveVar } from 'meteor/reactive-var';
 
-import useTracker from './useTracker';
+import { useTracker } from './useTracker';
 
 if (Meteor.isClient) {
   const getInnerHtml = function (elem) {
