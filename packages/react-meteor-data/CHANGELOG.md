@@ -1,4 +1,16 @@
 # CHANGELOG
+
+## v2.6.0, 2022-11-28
+*  fix useFind can accept () => null as argument. Previously it returned null in this scenario, so  changed the return statement because it was returning an empty array. [PR](https://github.com/meteor/react-packages/pull/374).
+* fix: named exports for useTracker and withTracker. Now it is has is standardized. [PR](https://github.com/meteor/react-packages/pull/376).
+
+
+## v2.5.3, 2022-11-08
+* useFind Data returned by useFind wasn't updated if the cursor was changed. It happened because the initial fetch was called only once. [PR](https://github.com/meteor/react-packages/pull/370).
+
+## v2.5.2, 2022-10-27
+* useFind  now works with async code by removes the fetch function call and adds a data initializer made with cursor observing.[PR](https://github.com/meteor/react-packages/pull/366)
+
 ## v2.5.1, 2022-05-18
 * Fix useFind in SSR: check for server Cursor. [PR](https://github.com/meteor/react-packages/pull/350).
 
