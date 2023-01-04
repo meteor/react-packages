@@ -13,6 +13,7 @@ Package.onUse((api) => {
   api.use('tracker');
   api.use('ecmascript');
   api.use('typescript');
+  api.addAssets('react-meteor-data.d.ts', 'server');
 
   api.mainModule('index.js', ['client', 'server'], { lazy: true });
 });
