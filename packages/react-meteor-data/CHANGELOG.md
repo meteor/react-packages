@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v2.6.1, 2023-01-04
+*  Added types to the package via zodern:types. More on how to use core types can be seen [here](https://docs.meteor.com/using-core-types.html). [PR](https://github.com/meteor/react-packages/pull/377).
+
+
 ## v2.6.0, 2022-11-28
 *  fix useFind can accept () => null as argument. Previously it returned null in this scenario, so  changed the return statement because it was returning an empty array. [PR](https://github.com/meteor/react-packages/pull/374).
 * fix: named exports for useTracker and withTracker. Now it is has is standardized. [PR](https://github.com/meteor/react-packages/pull/376).
