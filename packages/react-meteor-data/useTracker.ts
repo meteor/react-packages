@@ -148,6 +148,13 @@ const useTrackerWithDeps = <T = any>(reactiveFn: IReactiveFn<T>, deps: Dependenc
         }
       })
     );
+
+    // Stop the computation immediately to avoid creating side effects in render.
+    // refers to this issues:
+    // https://github.com/meteor/react-packages/issues/382
+    // https://github.com/meteor/react-packages/issues/381
+    if (refs.comp) refs.comp.stop();
+
     // In some cases, the useEffect hook will run before Meteor.defer, such as
     // when React.lazy is used. This will allow it to be stopped earlier in
     // useEffect if needed.
