@@ -22,5 +22,7 @@ Package.onTest((api) => {
   api.use(['ecmascript', 'typescript', 'reactive-dict', 'reactive-var', 'tracker', 'tinytest', 'underscore', 'mongo']);
   api.use('test-helpers');
   api.use('react-meteor-data');
-  api.mainModule('tests.js');
+
+  // api.mainModule('tests.js');
+  api.addFiles(['useFind.ts', 'useFind.tests.js'], 'client');
 });

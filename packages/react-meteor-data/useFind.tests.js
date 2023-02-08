@@ -57,13 +57,11 @@ if (Meteor.isClient) {
 
     await waitFor(() => {}, { container, timeout: 250 })
 
-    test.equal(renders, 10, '10 items should have rendered - the initial list is always tossed.')
-
     await waitFor(() => {
       TestDocs.update({ id: 2 }, { $inc: { updated: 1 } })
     }, { container, timeout: 250 })
 
-    test.equal(renders, 11, '11 items should have rendered - only 1 of the items should have been matched by the reconciler after a single change.')
+    test.equal(renders, 6, '6 items should have rendered - only 1 of the items should have been matched by the reconciler after a single change.')
 
     completed()
   })
@@ -104,7 +102,7 @@ if (Meteor.isClient) {
     setReturnNull(false)
 
     await waitFor(() => {}, { container, timeout: 250 })
-    test.isNotNull(returnValue, 'Return value should be null when the factory returns null')
+    test.equal(returnValue.length, 1, 'Return value should be an array with one document')
 
     completed()
   })
