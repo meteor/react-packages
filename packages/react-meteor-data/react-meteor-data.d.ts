@@ -26,3 +26,7 @@ export function useSubscribe(name?: string, ...args: any[]): () => boolean;
 
 export function useFind<T>(factory: () => Mongo.Cursor<T>, deps?: React.DependencyList): T[];
 export function useFind<T>(factory: () => Mongo.Cursor<T> | undefined | null, deps?: React.DependencyList): T[] | null;
+
+export function usePromise<FN extends <T>(...args: any) => T & Promise<T>>
+(promise: (...inputs: Parameters<FN>) => Promise<ReturnType<FN>>,
+ inputs: Parameters<FN>, lifespan: number): Awaited<ReturnType<FN>>
