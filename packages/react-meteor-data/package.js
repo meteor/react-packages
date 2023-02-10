@@ -3,7 +3,7 @@
 Package.describe({
   name: 'react-meteor-data',
   summary: 'React hook for reactively tracking Meteor data',
-  version: '2.6.2',
+  version: '2.6.3',
   documentation: 'README.md',
   git: 'https://github.com/meteor/react-packages',
 });
