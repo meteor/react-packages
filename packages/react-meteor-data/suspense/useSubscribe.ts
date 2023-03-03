@@ -10,7 +10,7 @@ type SubscriptionEntry = {
   params: EJSON[];
   name: string;
   handle?: Meteor.SubscriptionHandle;
-  promise: Promise<unknown>;
+  promise: Promise<Meteor.SubscriptionHandle>;
   result?: unknown;
   error?: unknown;
 };
@@ -42,17 +42,17 @@ export function useSubscribeSuspense(name: string, ...params: EJSON[]) {
   const subscription: SubscriptionEntry = {
     name,
     params,
-    promise: new Promise<void>((resolve, reject) => {
+    promise: new Promise<Meteor.SubscriptionHandle>((resolve, reject) => {
       const h = Meteor.subscribe(name, ...params, {
         onReady() {
           subscription.result = null;
           subscription.handle = h
-          resolve();
+          resolve(h);
         },
         onStop(error: unknown) {
           subscription.error = error;
           subscription.handle = h
-          reject();
+          reject(h);
         },
       });
     }),

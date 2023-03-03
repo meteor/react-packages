@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { Mongo } from 'meteor/mongo';
+import { EJSON } from "meteor/ejson";
+import { Meteor } from "meteor/meteor";
 
 export function useTracker<TDataProps>(reactiveFn: () => TDataProps): TDataProps
 export function useTracker<TDataProps>(reactiveFn: () => TDataProps, deps: React.DependencyList): TDataProps;
@@ -24,5 +26,12 @@ export function withTracker<TDataProps, TOwnProps>(options: {
 
 export function useSubscribe(name?: string, ...args: any[]): () => boolean;
 
+// Suspense
+export function useSubscribe(name: string, ...params: EJSON[]) : Meteor.SubscriptionHandle;
+
 export function useFind<T>(factory: () => Mongo.Cursor<T>, deps?: React.DependencyList): T[];
 export function useFind<T>(factory: () => Mongo.Cursor<T> | undefined | null, deps?: React.DependencyList): T[] | null;
+
+// Suspense
+export function useFind<T>(collection : Mongo.Collection<T>, findArgs: Parameters<Mongo.Collection<T>['find']> | null): T[] | null
+

@@ -15,6 +15,9 @@ Package.onUse((api) => {
   api.use('typescript');
   api.addAssets('react-meteor-data.d.ts', 'server');
 
+  // not sure if this works.
+  // maybe a suspense-index.js file in the root?
+  api.addFiles('suspense/index.js', ['client', 'server'], { lazy: true });
   api.mainModule('index.js', ['client', 'server'], { lazy: true });
 });
 
