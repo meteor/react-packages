@@ -57,8 +57,8 @@ const useFindSuspense = <T = any>(
         ) {
           for (const selector of cachedSelectors) {
             removeFromArray(cachedSelectors, selector);
-            selectorsCache.set(collection, cachedSelectors);
           }
+          selectorsCache.set(collection, cachedSelectors);
         }
       }, 0)
     }
