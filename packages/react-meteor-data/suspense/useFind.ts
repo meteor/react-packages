@@ -1,84 +1,66 @@
 import { Meteor } from 'meteor/meteor'
-import { Mongo } from 'meteor/mongo'
+import { type Mongo } from 'meteor/mongo'
 import { useEffect } from 'react'
-import isEqual from 'lodash/isEqual';
-import clone from 'lodash/clone'
+import { useFind as useFindClient } from '../useFind'
 
+export const selectorsCache = new Map<string, SelectorEntry>()
+const deferDelete = (name: string, time = 0) => {
+  setTimeout(() => {
+    selectorsCache.delete(name)
+  }, time)
+}
 
-export const selectorsCache = new Map<Mongo.Collection<unknown>, SelectorEntry[]>();
-type SelectorEntry = {
-  findArgs: Parameters<Mongo.Collection<unknown>['find']>;
-  promise: Promise<unknown>;
-  result?: unknown;
-  error?: unknown;
-  counter: number;
+interface SelectorEntry {
+  findArgs: Parameters<Mongo.Collection<unknown>['find']>
+  promise: Promise<unknown>
+  result?: unknown
+  error?: unknown
+  counter: number
 
-};
+}
+
 export const removeFromArray =
   <T>(list: T[], obj: T): void => {
     if (obj) {
-      const index = list.indexOf(obj);
+      const index = list.indexOf(obj)
       if (index !== -1) {
-        list.splice(index, 1);
+        list.splice(index, 1)
       }
     }
   }
 const useFindSuspense = <T = any>(
+  key: string,
   collection: Mongo.Collection<T>,
-  findArgs: Parameters<Mongo.Collection<T>['find']> | null,
+  findArgs: Parameters<Mongo.Collection<T>['find']> | null
 ) => {
   useEffect(() => {
-    const cachedSelectors = selectorsCache.get(collection) ?? [];
-    const _args = clone(findArgs)
-    const selector = cachedSelectors.find(x => isEqual(x.findArgs, _args));
-
-    if (selector) ++selector.counter;
-
+    const selector = selectorsCache.get(key) ?? null
+    if (selector != null) ++selector.counter
     return () => {
-      // defer
       setTimeout(() => {
-        const cachedSelectors = selectorsCache.get(collection) ?? [];
-        const selector = cachedSelectors.find(x => isEqual(x.findArgs, _args));
-        if (selector && --selector.counter === 0) {
-          removeFromArray(cachedSelectors, selector);
-          selectorsCache.set(collection, cachedSelectors);
-        }
-      }, 0)
-    };
-  }, [findArgs, collection]);
-
-  useEffect(() => {
-    return () => {
-      // defer
-      setTimeout(() => {
-        const cachedSelectors = selectorsCache.get(collection) ?? [];
-        if (
-          findArgs === null && cachedSelectors.length > 0
-        ) {
-          for (const selector of cachedSelectors) {
-            removeFromArray(cachedSelectors, selector);
-          }
-          selectorsCache.set(collection, cachedSelectors);
-        }
+        const selector = selectorsCache.get(key) ?? null
+        if ((selector != null) && (--selector.counter === 0)) selectorsCache.delete(key)
       }, 0)
     }
-  }, [findArgs])
+  }, [key, findArgs, collection])
+
+  useEffect(() => {
+    // cached selector is not valid anymore
+    deferDelete(key)
+    return () => {
+      deferDelete(key)
+    }
+  }, [key, findArgs])
 
   if (findArgs === null) return null
 
-  const cachedSelectors = selectorsCache.get(collection) ?? [];
-  const cachedSelector = cachedSelectors.find(x => isEqual(x.findArgs, findArgs));
+  const cachedSelector = selectorsCache.get(key)
 
-  if (cachedSelector) {
-    if ('error' in cachedSelector) {
-      throw cachedSelector.error;
-    }
-    if ('result' in cachedSelector) {
-      return cachedSelector.result as T[];
-    }
-    throw cachedSelector.promise;
+  if (cachedSelector != null) {
+    if ('error' in cachedSelector) throw cachedSelector.error
+    if ('result' in cachedSelector) return cachedSelector.result as T[]
+    throw cachedSelector.promise
   }
-
 
   const selector: SelectorEntry = {
     findArgs,
@@ -90,37 +72,37 @@ const useFindSuspense = <T = any>(
           selector.result = result
         },
         error => {
-          selector.error = error;
+          selector.error = error
         }),
-    counter: 0,
-  };
-  cachedSelectors.push(selector);
-  selectorsCache.set(collection, cachedSelectors);
+    counter: 0
+  }
+  selectorsCache.set(key, selector)
 
-  throw selector.promise;
-};
-
+  throw selector.promise
+}
 export { useFindSuspense }
 
-export const useFind = useFindSuspense
+export const useFind = Meteor.isClient
+  ? useFindClient
+  : useFindSuspense
 
 function useFindDev<T = any>(
   collection: Mongo.Collection<T>,
   findArgs: Parameters<Mongo.Collection<T>['find']> | null) {
   function warn(expects: string, pos: string, arg: string, type: string) {
     console.warn(
-      `Warning: useFind expected a ${ expects } in it\'s ${ pos } argument `
-      + `(${ arg }), but got type of \`${ type }\`.`
-    );
+      `Warning: useFind expected a ${expects} in it\'s ${pos} argument ` +
+      `(${arg}), but got type of \`${type}\`.`
+    )
   }
 
   if (typeof collection !== 'object') {
-    warn("Mongo Collection", "1st", "reactiveFn", collection);
+    warn('Mongo Collection', '1st', 'reactiveFn', collection)
   }
 
-  return useFindSuspense(collection, findArgs);
+  return useFindSuspense(collection, findArgs)
 }
 
 export default Meteor.isDevelopment
   ? useFindDev
-  : useFind;
+  : useFind
