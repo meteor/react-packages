@@ -34,18 +34,18 @@ const useFindSuspense = <T = any>(
   findArgs: Parameters<Mongo.Collection<T>['find']> | null
 ) => {
   useEffect(() => {
-    const cachedSelectors = cacheMap.get(collection)
-    const selector = cachedSelectors?.find(x => isEqual(x.findArgs, findArgs))
-    if (selector != null) ++selector.counter
+    const cachedEntries = cacheMap.get(collection)
+    const entry = cachedEntries?.find(x => isEqual(x.findArgs, findArgs))
+    if (entry != null) ++entry.counter
 
     removeNullCaches(cacheMap)
     return () => {
       // defer
       setTimeout(() => {
-        const cachedSelectors = cacheMap.get(collection)
-        const selector = cachedSelectors?.find(x => isEqual(x.findArgs, findArgs))
+        const cachedEntries = cacheMap.get(collection)
+        const entry = cachedEntries?.find(x => isEqual(x.findArgs, findArgs))
 
-        if ((selector != null) && --selector.counter === 0) removeFromArray(cachedSelectors, selector)
+        if ((entry != null) && --entry.counter === 0) removeFromArray(cachedEntries, selector)
 
         removeNullCaches(cacheMap)
       }, 0)
@@ -54,34 +54,34 @@ const useFindSuspense = <T = any>(
 
   if (findArgs === null) return null
 
-  const cachedSelectors = cacheMap.get(collection)
-  const cachedSelector = cachedSelectors?.find(x => isEqual(x.findArgs, findArgs))
+  const cachedEntries = cacheMap.get(collection)
+  const cachedEntry = cachedEntries?.find(x => isEqual(x.findArgs, findArgs))
 
-  if (cachedSelector != null) {
-    if ('error' in cachedSelector) throw cachedSelector.error
-    if ('result' in cachedSelector) return cachedSelector.result as T[]
-    throw cachedSelector.promise
+  if (cachedEntry != null) {
+    if ('error' in cachedEntry) throw cachedEntry.error
+    if ('result' in cachedEntry) return cachedEntry.result as T[]
+    throw cachedEntry.promise
   }
 
-  const selector: Entry = {
+  const entry: Entry = {
     findArgs,
     promise: collection
       .find(...findArgs)
       .fetchAsync()
       .then(
         result => {
-          selector.result = result
+          entry.result = result
         },
         error => {
-          selector.error = error
+          entry.error = error
         }),
     counter: 0
   }
 
-  if (cachedSelectors != null) cachedSelectors.push(selector)
-  else cacheMap.set(collection, [selector])
+  if (cachedEntries != null) cachedEntries.push(entry)
+  else cacheMap.set(collection, [entry])
 
-  throw selector.promise
+  throw entry.promise
 }
 
 export { useFindSuspense }
