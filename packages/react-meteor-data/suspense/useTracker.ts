@@ -64,7 +64,13 @@ function resolveAsync<T>(key: string, promise: Promise<T> | null, deps: Dependen
 
   if (cached !== undefined) {
     if ('error' in cached) throw cached.error
-    if ('result' in cached) return cached.result as T
+    if ('result' in cached) {
+      const result = cached.result as T
+      setTimeout(() => {
+        cacheMap.delete(key)
+      }, 0)
+      return result
+    }
     throw cached.promise
   }
 
@@ -79,13 +85,6 @@ function resolveAsync<T>(key: string, promise: Promise<T> | null, deps: Dependen
         .catch((error: any) => {
           entry.error = error
           reject(error)
-        })
-        .finally(() => {
-          // if 0 recursion :/
-          // also forcing an update thigs when out of hand
-          setTimeout(() => {
-            cacheMap.delete(key)
-          }, 10)
         })
     })
   }
