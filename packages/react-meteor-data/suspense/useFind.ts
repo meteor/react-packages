@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import { useEffect } from 'react'
-import {useFind as useFindClient} from '../useFind'
-import isEqual from 'lodash/isEqual'
+import { useFind as useFindClient } from '../useFind'
+import isEqual from 'lodash.isequal'
 
 export const cacheMap = new Map<Mongo.Collection<unknown>, Entry[]>()
+
 interface Entry {
   findArgs: Parameters<Mongo.Collection<unknown>['find']>
   promise: Promise<unknown>
@@ -13,6 +14,7 @@ interface Entry {
   counter: number
 
 }
+
 export const removeFromArray =
   <T>(list: T[], obj: T): void => {
     if (obj) {
@@ -26,7 +28,9 @@ const removeNullCaches =
     for (const cache of cacheMap.values()) {
       cache
         .filter(c => c.counter === 0)
-        .forEach(c => { removeFromArray(cache, c) })
+        .forEach(c => {
+          removeFromArray(cache, c)
+        })
     }
   }
 const useFindSuspense = <T = any>(
@@ -45,7 +49,7 @@ const useFindSuspense = <T = any>(
         const cachedEntries = cacheMap.get(collection)
         const entry = cachedEntries?.find(x => isEqual(x.findArgs, findArgs))
 
-        if (entry != null) --entry.counter === 0;
+        if (entry != null) --entry.counter
 
         removeNullCaches(cacheMap)
       }, 0)

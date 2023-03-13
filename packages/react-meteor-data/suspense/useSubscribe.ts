@@ -1,17 +1,17 @@
 import { useEffect } from 'react'
 import { EJSON } from 'meteor/ejson'
 import { Meteor } from 'meteor/meteor'
-import isEqual from 'lodash/isEqual'
-import { removeFromArray } from './useFind'
+import isEqual from 'lodash.isequal'
+import remove from 'lodash.remove'
 
-const cachedSubscriptions: SubscriptionEntry[] = []
+const cachedSubscriptions: Entry[] = []
 
-interface SubscriptionEntry {
+interface Entry {
   params: EJSON[]
   name: string
   handle?: Meteor.SubscriptionHandle
-  promise: Promise<Meteor.SubscriptionHandle>
-  result?: Meteor.SubscriptionHandle
+  promise: Promise<void>
+  result?: null
   error?: unknown
 }
 
@@ -19,16 +19,15 @@ export function useSubscribeSuspense(name: string, ...params: EJSON[]) {
   const cachedSubscription =
     cachedSubscriptions.find(x => x.name === name && isEqual(x.params, params))
 
-  useEffect(() => 
+  useEffect(() =>
     () => {
       setTimeout(() => {
         if (cachedSubscription != null) {
           cachedSubscription?.handle?.stop()
-          removeFromArray(cachedSubscriptions, cachedSubscription)
+          remove(cachedSubscriptions, x => isEqual(x, cachedSubscription))
         }
       }, 0)
-    }
-  }, [name, ...params])
+    }, [name, ...params])
 
   if (cachedSubscription != null) {
     if ('error' in cachedSubscription) throw cachedSubscription.error
@@ -36,20 +35,20 @@ export function useSubscribeSuspense(name: string, ...params: EJSON[]) {
     throw cachedSubscription.promise
   }
 
-  const subscription: SubscriptionEntry = {
+  const subscription: Entry = {
     name,
     params,
     promise: new Promise<Meteor.SubscriptionHandle>((resolve, reject) => {
       const h = Meteor.subscribe(name, ...params, {
         onReady() {
-          subscription.result = h
+          subscription.result = null
           subscription.handle = h
           resolve(h)
         },
         onStop(error: unknown) {
           subscription.error = error
           subscription.handle = h
-          reject(h)
+          reject(error)
         }
       })
     })
