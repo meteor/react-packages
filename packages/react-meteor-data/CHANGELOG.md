@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## v2.6.3, 2023-02-10
+*  Removed assets so that zodern:types can work properly. More on how to use core types can be seen [here](https://docs.meteor.com/using-core-types.html). [PR](https://github.com/meteor/react-packages/pull/377).
+
+## v2.6.2, 2023-02-02
+
+* Stop the computation immediately to avoid creating side effects in render. refers to this issues:
+  [#382](https://github.com/meteor/react-packages/issues/382)
+  [#381](https://github.com/meteor/react-packages/issues/381)
+
 ## v2.6.1, 2023-01-04
 *  Added types to the package via zodern:types. More on how to use core types can be seen [here](https://docs.meteor.com/using-core-types.html). [PR](https://github.com/meteor/react-packages/pull/377).
 
