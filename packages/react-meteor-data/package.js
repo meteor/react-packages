@@ -3,7 +3,7 @@
 Package.describe({
   name: 'react-meteor-data',
   summary: 'React hook for reactively tracking Meteor data',
-  version: '2.6.2',
+  version: '2.6.3',
   documentation: 'README.md',
   git: 'https://github.com/meteor/react-packages'
 })
@@ -15,7 +15,7 @@ Package.onUse((api) => {
   api.use('typescript')
   api.addAssets('react-meteor-data.d.ts', 'server')
 
-  api.mainModule('index.js', ['client', 'server'], { lazy: true })
+  api.mainModule('index.js', ['client', 'server'], {lazy: true})
 })
 
 Package.onTest((api) => {
