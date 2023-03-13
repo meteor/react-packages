@@ -1,3 +1,4 @@
+import isEqual from 'lodash.isequal'
 import { Tracker } from 'meteor/tracker'
 import { EJSON } from 'meteor/ejson'
 import { DependencyList, useEffect, useMemo, useReducer, useRef } from 'react'
@@ -25,9 +26,9 @@ function checkCursor(data: any): void {
   }
 }
 
-export const cache = new Map<string, Cache>()
+export const cacheMap = new Map<string, Entry>()
 
-interface Cache {
+interface Entry {
   deps: EJSON[]
   promise: Promise<unknown>
   result?: unknown
@@ -49,24 +50,25 @@ interface TrackerRefs {
   trackerData: any
 }
 
-function resolveAsync(key: string, promise: Promise<unknown>, deps: DependencyList = []) {
-  const cached = cache.get(key) ?? false
-  useEffect(() => {
-    return () => {
+function resolveAsync<T>(key: string, promise: Promise<T> | null, deps: DependencyList = []): typeof promise extends null ? null : T {
+  const cached = cacheMap.get(key)
+
+  useEffect(() =>
+    () => {
       setTimeout(() => {
-        // maybe verify deps?
-        if (cached) cache.delete(key)
+        if (cached !== undefined && isEqual(cached.deps, deps)) cacheMap.delete(key)
       }, 0)
-    }
-  }, [cached, key, ...deps])
+    }, [cached, key, ...deps])
+
   if (promise === null) return null
-  if (cached) {
+
+  if (cached !== undefined) {
     if ('error' in cached) throw cached.error
-    if ('result' in cached) return cached.result
+    if ('result' in cached) return cached.result as T
     throw cached.promise
   }
 
-  const entry: Cache = {
+  const entry: Entry = {
     deps,
     promise: new Promise((resolve, reject) => {
       promise
@@ -82,12 +84,12 @@ function resolveAsync(key: string, promise: Promise<unknown>, deps: DependencyLi
           // if 0 recursion :/
           // also forcing an update thigs when out of hand
           setTimeout(() => {
-            cache.delete(key)
+            cacheMap.delete(key)
           }, 10)
         })
     })
   }
-  cache.set(key, entry)
+  cacheMap.set(key, entry)
   throw entry.promise
 }
 
@@ -114,7 +116,7 @@ export function useTrackerNoDeps<T = any>(key: string, reactiveFn: IReactiveFn<T
     Tracker.autorun((c: Tracker.Computation) => {
       refs.computation = c
 
-      const data: Promise<any> = Tracker.withComputation(c, async () => reactiveFn(c))
+      const data: Promise<any> = Tracker.withComputation(c, async () => await reactiveFn(c))
       if (c.firstRun) {
         // Always run the reactiveFn on firstRun
         refs.trackerData = data
@@ -170,7 +172,7 @@ export function useTrackerNoDeps<T = any>(key: string, reactiveFn: IReactiveFn<T
     }
   }, [])
 
-  return resolveAsync(key, refs.trackerData) as T
+  return resolveAsync(key, refs.trackerData)
 }
 
 export const useTrackerWithDeps =
@@ -192,7 +194,7 @@ export const useTrackerWithDeps =
       // reactive function in a computation, then stop it, to force flush cycle.
       const comp = Tracker.nonreactive(
         () => Tracker.autorun((c: Tracker.Computation) => {
-          const data = Tracker.withComputation(c, async () => await refs.reactiveFn())
+          const data = Tracker.withComputation(c, async () => await refs.reactiveFn(c))
           if (c.firstRun) {
             refs.data = data
           } else if (!skipUpdate || !skipUpdate(refs.data, data)) {
@@ -245,7 +247,7 @@ export const useTrackerWithDeps =
       }
     }, deps)
 
-    return resolveAsync(key, refs.data as Promise<T>, deps) as T
+    return resolveAsync(key, refs.data as Promise<T>, deps)
   }
 
 function useTrackerClient<T = any> (key: string, reactiveFn: IReactiveFn<T>, skipUpdate?: ISkipUpdate<T>): T
