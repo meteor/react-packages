@@ -45,7 +45,7 @@ const useFindSuspense = <T = any>(
         const cachedEntries = cacheMap.get(collection)
         const entry = cachedEntries?.find(x => isEqual(x.findArgs, findArgs))
 
-        if ((entry != null) && --entry.counter === 0) removeFromArray(cachedEntries, selector)
+        if (entry != null) --entry.counter === 0;
 
         removeNullCaches(cacheMap)
       }, 0)
