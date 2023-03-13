@@ -114,7 +114,7 @@ export function useTrackerNoDeps<T = any>(key: string, reactiveFn: IReactiveFn<T
     Tracker.autorun((c: Tracker.Computation) => {
       refs.computation = c
 
-      const data: Promise<any> = Tracker.withComputation(c, async () => await reactiveFn(c))
+      const data: Promise<any> = Tracker.withComputation(c, async () => reactiveFn(c))
       if (c.firstRun) {
         // Always run the reactiveFn on firstRun
         refs.trackerData = data
