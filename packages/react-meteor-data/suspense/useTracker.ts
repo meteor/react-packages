@@ -1,7 +1,7 @@
 import isEqual from 'lodash.isequal'
 import { Tracker } from 'meteor/tracker'
-import { EJSON } from 'meteor/ejson'
-import { DependencyList, useEffect, useMemo, useReducer, useRef } from 'react'
+import { type EJSON } from 'meteor/ejson'
+import { type DependencyList, useEffect, useMemo, useReducer, useRef } from 'react'
 import { Meteor } from 'meteor/meteor'
 
 function checkCursor(data: any): void {
@@ -52,7 +52,6 @@ interface TrackerRefs {
 
 function resolveAsync<T>(key: string, promise: Promise<T> | null, deps: DependencyList = []): typeof promise extends null ? null : T {
   const cached = cacheMap.get(key)
-
   useEffect(() =>
     () => {
       setTimeout(() => {
@@ -112,10 +111,10 @@ export function useTrackerNoDeps<T = any>(key: string, reactiveFn: IReactiveFn<T
   // Computations, where if the outer one is invalidated or stopped,
   // it stops the inner one.
   Tracker.nonreactive(() =>
-    Tracker.autorun(async (c: Tracker.Computation) => {
+    Tracker.autorun(async(c: Tracker.Computation) => {
       refs.computation = c
 
-      const data: Promise<any> = Tracker.withComputation(c, async () => await reactiveFn(c))
+      const data: Promise<any> = Tracker.withComputation(c, async() => await reactiveFn(c))
       if (c.firstRun) {
         // Always run the reactiveFn on firstRun
         refs.trackerData = data
@@ -149,8 +148,8 @@ export function useTrackerNoDeps<T = any>(key: string, reactiveFn: IReactiveFn<T
         forceUpdate()
       } else {
         Tracker.nonreactive(() =>
-          Tracker.autorun(async (c: Tracker.Computation) => {
-            const data = Tracker.withComputation(c, async () => await reactiveFn(c))
+          Tracker.autorun(async(c: Tracker.Computation) => {
+            const data = Tracker.withComputation(c, async() => await reactiveFn(c))
 
             refs.computation = c
             if (!skipUpdate(await refs.trackerData, await data)) {
@@ -190,8 +189,8 @@ export const useTrackerWithDeps =
       // To jive with the lifecycle interplay between Tracker/Subscribe, run the
       // reactive function in a computation, then stop it, to force flush cycle.
       const comp = Tracker.nonreactive(
-        () => Tracker.autorun(async (c: Tracker.Computation) => {
-          const data = Tracker.withComputation(c, async () => await refs.reactiveFn(c))
+        () => Tracker.autorun(async(c: Tracker.Computation) => {
+          const data = Tracker.withComputation(c, async() => await refs.reactiveFn(c))
           if (c.firstRun) {
             refs.data = data
           } else if (!skipUpdate || !skipUpdate(await refs.data, await data)) {
@@ -226,8 +225,8 @@ export const useTrackerWithDeps =
 
       if (refs.comp == null) {
         refs.comp = Tracker.nonreactive(
-          () => Tracker.autorun(async (c) => {
-            const data: Promise<T> = Tracker.withComputation(c, async () => await refs.reactiveFn())
+          () => Tracker.autorun(async(c) => {
+            const data: Promise<T> = Tracker.withComputation(c, async() => await refs.reactiveFn())
             if (!skipUpdate || !skipUpdate(await refs.data, await data)) {
               refs.data = data
               forceUpdate()
@@ -247,8 +246,8 @@ export const useTrackerWithDeps =
     return resolveAsync(key, refs.data as Promise<T>, deps)
   }
 
-function useTrackerClient<T = any> (key: string, reactiveFn: IReactiveFn<T>, skipUpdate?: ISkipUpdate<T>): T
-function useTrackerClient<T = any> (key: string, reactiveFn: IReactiveFn<T>, deps?: DependencyList, skipUpdate?: ISkipUpdate<T>): T
+function useTrackerClient<T = any>(key: string, reactiveFn: IReactiveFn<T>, skipUpdate?: ISkipUpdate<T>): T
+function useTrackerClient<T = any>(key: string, reactiveFn: IReactiveFn<T>, deps?: DependencyList, skipUpdate?: ISkipUpdate<T>): T
 function useTrackerClient<T = any>(key: string, reactiveFn: IReactiveFn<T>, deps: DependencyList | ISkipUpdate<T> = null, skipUpdate: ISkipUpdate<T> = null): T {
   if (deps === null || deps === undefined || !Array.isArray(deps)) {
     if (typeof deps === 'function') {
