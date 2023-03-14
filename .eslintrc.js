@@ -22,7 +22,8 @@ module.exports = {
     'react'
   ],
   rules: {
-    'object-curly-spacing': ['error', 'never'],
-    'space-before-function-paren': ['error', 'never']
+    'object-curly-spacing': ['error', 'always'],
+    'space-before-function-paren': ['error', 'never'],
+    '@typescript-eslint/space-before-function-paren': ['error', 'never']
   }
 }
