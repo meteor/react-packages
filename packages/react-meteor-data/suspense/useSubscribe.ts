@@ -22,6 +22,8 @@ export function useSubscribeSuspense(name: string, ...params: EJSON[]) {
   useEffect(() =>
     () => {
       setTimeout(() => {
+        const cachedSubscription =
+          cachedSubscriptions.find(x => x.name === name && isEqual(x.params, params))
         if (cachedSubscription != null) {
           cachedSubscription?.handle?.stop()
           remove(cachedSubscriptions, x => isEqual(x, cachedSubscription))
