@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor'
-import { Mongo } from 'meteor/mongo'
+import { type Mongo } from 'meteor/mongo'
+import type React from 'react'
 import { useEffect } from 'react'
 import { useFind as useFindClient } from '../useFind'
 import isEqual from 'lodash.isequal'
@@ -35,7 +36,8 @@ const removeNullCaches =
   }
 const useFindSuspense = <T = any>(
   collection: Mongo.Collection<T>,
-  findArgs: Parameters<Mongo.Collection<T>['find']> | null
+  findArgs: Parameters<Mongo.Collection<T>['find']> | null,
+  deps: React.DependencyList = []
 ) => {
   useEffect(() => {
     const cachedEntries = cacheMap.get(collection)
@@ -54,7 +56,7 @@ const useFindSuspense = <T = any>(
         removeNullCaches(cacheMap)
       }, 0)
     }
-  }, [findArgs, collection])
+  }, [findArgs, collection, ...deps])
 
   if (findArgs === null) return null
 
@@ -96,7 +98,9 @@ export const useFind = Meteor.isClient
 
 function useFindDev<T = any>(
   collection: Mongo.Collection<T>,
-  findArgs: Parameters<Mongo.Collection<T>['find']> | null) {
+  findArgs: Parameters<Mongo.Collection<T>['find']> | null,
+  deps: React.DependencyList = []
+) {
   function warn(expects: string, pos: string, arg: string, type: string) {
     console.warn(
       `Warning: useFind expected a ${expects} in it\'s ${pos} argument ` +
@@ -108,7 +112,7 @@ function useFindDev<T = any>(
     warn('Mongo Collection', '1st', 'reactiveFn', collection)
   }
 
-  return useFindSuspense(collection, findArgs)
+  return useFindSuspense(collection, findArgs, deps)
 }
 
 export default Meteor.isDevelopment
