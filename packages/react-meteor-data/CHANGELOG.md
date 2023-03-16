@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## v2.7.0, 2023-03-16
+*  Added suspendable hooks:
+  - `suspense/useFind`: A Suspense version of `useFind`. Is intended to be used along with SSR.
+  - `suspense/useSubscribe`: A Suspense version of `useSubscribe`, moving the isLoading checking state to Suspense
+  - `suspense/useTracker`: A Suspense version of `useTracker`, that accepts async function and maintains the reactivity of the data.
+more can be seen in the docs. 
+
+
 ## v2.6.3, 2023-02-10
 *  Removed assets so that zodern:types can work properly. More on how to use core types can be seen [here](https://docs.meteor.com/using-core-types.html). [PR](https://github.com/meteor/react-packages/pull/377).
 
