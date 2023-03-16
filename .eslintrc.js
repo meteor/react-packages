@@ -4,15 +4,12 @@ module.exports = {
     node: true,
     es2021: true
   },
-  settings: {
-
-  },
+  settings: {},
   extends: [
     'plugin:react/recommended',
     'standard-with-typescript'
   ],
-  overrides: [
-  ],
+  overrides: [],
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
@@ -23,7 +20,19 @@ module.exports = {
   ],
   rules: {
     'object-curly-spacing': ['error', 'always'],
-    'space-before-function-paren': ['error', 'never'],
-    '@typescript-eslint/space-before-function-paren': ['error', 'never']
+    'space-before-function-paren': ['error',
+      {
+        anonymous: 'never',
+        named: 'never',
+        asyncArrow: 'always'
+      }
+    ],
+    '@typescript-eslint/space-before-function-paren': ['error',
+      {
+        anonymous: 'never',
+        named: 'never',
+        asyncArrow: 'always'
+      }],
+    '@typescript-eslint/return-await': 'off'
   }
 }

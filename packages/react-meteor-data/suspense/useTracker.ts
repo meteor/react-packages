@@ -111,10 +111,10 @@ export function useTrackerNoDeps<T = any>(key: string, reactiveFn: IReactiveFn<T
   // Computations, where if the outer one is invalidated or stopped,
   // it stops the inner one.
   Tracker.nonreactive(() =>
-    Tracker.autorun(async(c: Tracker.Computation) => {
+    Tracker.autorun(async (c: Tracker.Computation) => {
       refs.computation = c
 
-      const data: Promise<any> = Tracker.withComputation(c, async() => await reactiveFn(c))
+      const data: Promise<any> = Tracker.withComputation(c, async () => reactiveFn(c))
       if (c.firstRun) {
         // Always run the reactiveFn on firstRun
         refs.trackerData = data
@@ -148,8 +148,8 @@ export function useTrackerNoDeps<T = any>(key: string, reactiveFn: IReactiveFn<T
         forceUpdate()
       } else {
         Tracker.nonreactive(() =>
-          Tracker.autorun(async(c: Tracker.Computation) => {
-            const data = Tracker.withComputation(c, async() => await reactiveFn(c))
+          Tracker.autorun(async (c: Tracker.Computation) => {
+            const data = Tracker.withComputation(c, async () => reactiveFn(c))
 
             refs.computation = c
             if (!skipUpdate(await refs.trackerData, await data)) {
@@ -189,8 +189,8 @@ export const useTrackerWithDeps =
       // To jive with the lifecycle interplay between Tracker/Subscribe, run the
       // reactive function in a computation, then stop it, to force flush cycle.
       const comp = Tracker.nonreactive(
-        () => Tracker.autorun(async(c: Tracker.Computation) => {
-          const data = Tracker.withComputation(c, async() => await refs.reactiveFn(c))
+        () => Tracker.autorun(async (c: Tracker.Computation) => {
+          const data = Tracker.withComputation(c, async () => refs.reactiveFn(c))
           if (c.firstRun) {
             refs.data = data
           } else if (!skipUpdate || !skipUpdate(await refs.data, await data)) {
@@ -225,8 +225,8 @@ export const useTrackerWithDeps =
 
       if (refs.comp == null) {
         refs.comp = Tracker.nonreactive(
-          () => Tracker.autorun(async(c) => {
-            const data: Promise<T> = Tracker.withComputation(c, async() => await refs.reactiveFn())
+          () => Tracker.autorun(async (c) => {
+            const data: Promise<T> = Tracker.withComputation(c, async () => refs.reactiveFn())
             if (!skipUpdate || !skipUpdate(await refs.data, await data)) {
               refs.data = data
               forceUpdate()
