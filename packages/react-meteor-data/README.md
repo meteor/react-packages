@@ -365,24 +365,62 @@ and the component mounted, the computation is kept running, and everything will 
 
 ### `suspense/useTracker`
 
-This is a version of `useTracker` that can be used with React Suspense. It is similar to `useTracker`, 
-but it throws a promise and suspends the rendering until the promise is resolved. Also in this version it has the need
-for a key as its first parameters. the key is used to identify the computation and to avoid recreating it when the 
+This is a version of `useTracker` that can be used with React Suspense.
+
+For its first argument, a key is necessary, witch is used to identify the computation and to avoid recreating it when the 
 component is re-rendered.
+
+Its second argument is a function that can be async and reactive, 
+this argument works similar to the original `useTracker` that does not suspend.
+
+For its _optional_ third argument, the dependency array, works similar to the `useTracker` that does not suspend,
+you pass in an array of variables that this tracking function depends upon.
+
+For its _optional_ fourth argument, the options object, works similar to the `useTracker` that does not suspend,
+you pass in a function for when should skip the update.
+
 
 ```jsx
 import { useTracker } from 'meteor/react-meteor-data/suspense'
+import { useSubscribe } from 'meteor/react-meteor-data/suspense'
 
 function Tasks() { // this component will suspend
   useSubscribe("tasks");
-  const { username } = useTracker("user", () => Meteor.user())  // Meteor.user() is now async
+  const { username } = useTracker("user", () => Meteor.user())  // Meteor.user() is async meteor 3.0
   const tasksByUser = useTracker("tasksByUser", () =>
-          TasksCollection.find({username}, { sort: { createdAt: -1 } }).fetchAsync() // fetch will be async
+          TasksCollection.find({username}, { sort: { createdAt: -1 } }).fetchAsync() // async call
   );
 
 
   // render the tasks
 }
+```
+
+
+### Maintaining the reactive context
+
+To maintain a reactive context using the new Meteor Async methods, we are using the new `Tracker.withComputation` API to maintain the reactive context of an 
+async call, this is needed because otherwise it would be only called once, and the computation would never run again,
+this way, every time we have a new Link being added, this useTracker is ran.
+
+```jsx
+// needs Tracker.withComputation because otherwise it would be only called once, and the computation would never run again
+const docs = useTracker('name', async (c) => {
+    const placeholders = await fetch('https://jsonplaceholder.typicode.com/todos').then(x => x.json());
+    console.log(placeholders);
+    return active ? await Tracker.withComputation(c, () => LinksCollection.find().fetchAsync()) : null
+  }, [active]);
+
+```
+
+A rule of thumb is that if you are using a reactive function for example `find` + `fetchAsync`, it is nice to wrap it
+inside `Tracker.withComputation` to make sure that the computation is kept alive, if you are just calling that function
+that is not necessary, like the one bellow, will be always reactive.
+
+```jsx
+
+const docs = useTracker('name', () => LinksCollection.find().fetchAsync());
+
 ```
 
 ### `suspense/useSubscribe`
@@ -398,9 +436,9 @@ import { useSubscribe } from 'meteor/react-meteor-data/suspense'
 
 function Tasks() { // this component will suspend
   useSubscribe("tasks");
-  const { username } = useTracker("user", () => Meteor.user())  // Meteor.user() is now async
+  const { username } = useTracker("user", () => Meteor.user())  // Meteor.user() is async meteor 3.0
   const tasksByUser = useTracker("tasksByUser", () =>
-          TasksCollection.find({username}, { sort: { createdAt: -1 } }).fetchAsync() // fetch will be async
+          TasksCollection.find({username}, { sort: { createdAt: -1 } }).fetchAsync() // async call
   );
 
 
@@ -416,7 +454,7 @@ It has a few differences from the `useFind` without suspense, it throws a promis
 It returns the result and it is reactive.
 You should pass as the first parameter the collection where is being searched upon and as the second parameter an array with the arguments,
 the same arguments that you would pass to the `find` method of the collection, third parameter is optional, and it is dependency array object.
-It is intended to be used in the server(SSR)
+It's meant for the SSR, you don't have to use it if you're not interested in SSR.
 
 ```jsx
 
