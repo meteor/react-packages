@@ -4,7 +4,7 @@ import type React from 'react'
 import { useEffect } from 'react'
 import { useFind as useFindClient } from '../useFind'
 import isEqual from 'lodash.isequal'
-
+import remove from 'lodash.remove'
 export const cacheMap = new Map<Mongo.Collection<unknown>, Entry[]>()
 
 interface Entry {
@@ -16,22 +16,10 @@ interface Entry {
 
 }
 
-export const removeFromArray =
-  <T>(list: T[], obj: T): void => {
-    if (obj) {
-      const index = list.indexOf(obj)
-      if (index !== -1) list.splice(index, 1)
-    }
-  }
-
 const removeNullCaches =
   (cacheMap: Map<Mongo.Collection<unknown, unknown>, Entry[]>) => {
     for (const cache of cacheMap.values()) {
-      cache
-        .filter(c => c.counter === 0)
-        .forEach(c => {
-          removeFromArray(cache, c)
-        })
+      remove(cache, c => c.counter === 0)
     }
   }
 const useFindSuspense = <T = any>(
@@ -42,16 +30,15 @@ const useFindSuspense = <T = any>(
   useEffect(() => {
     const cachedEntries = cacheMap.get(collection)
     const entry = cachedEntries?.find(x => isEqual(x.findArgs, findArgs))
-    if (entry != null) ++entry.counter
+    if (entry) ++entry.counter
 
     removeNullCaches(cacheMap)
     return () => {
-      // defer
       setTimeout(() => {
         const cachedEntries = cacheMap.get(collection)
         const entry = cachedEntries?.find(x => isEqual(x.findArgs, findArgs))
 
-        if (entry != null) --entry.counter
+        if (entry) --entry.counter
 
         removeNullCaches(cacheMap)
       }, 0)

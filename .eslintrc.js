@@ -23,6 +23,7 @@ module.exports = {
   ],
   rules: {
     'object-curly-spacing': ['error', 'never'],
-    'space-before-function-paren': ['error', 'never']
+    'space-before-function-paren': ['error', 'never'],
+    '@typescript-eslint/strict-boolean-expressions': 'off'
   }
 }

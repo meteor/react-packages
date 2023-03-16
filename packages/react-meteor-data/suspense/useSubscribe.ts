@@ -9,7 +9,7 @@ const cachedSubscriptions: Entry[] = []
 interface Entry {
   params: EJSON[]
   name: string
-  handle?: Meteor.SubscriptionHandle
+  handle: Meteor.SubscriptionHandle
   promise: Promise<void>
   result?: null
   error?: unknown
@@ -24,9 +24,12 @@ export function useSubscribeSuspense(name: string, ...params: EJSON[]) {
       setTimeout(() => {
         const cachedSubscription =
           cachedSubscriptions.find(x => x.name === name && isEqual(x.params, params))
-        if (cachedSubscription != null) {
-          cachedSubscription?.handle?.stop()
-          remove(cachedSubscriptions, x => isEqual(x, cachedSubscription))
+        if (cachedSubscription) {
+          cachedSubscription.handle.stop()
+          remove(cachedSubscriptions,
+            x =>
+              x.name === cachedSubscription.name &&
+              isEqual(x.params, cachedSubscription.params))
         }
       }, 0)
     }, [name, ...params])
