@@ -33,6 +33,7 @@ module.exports = {
         named: 'never',
         asyncArrow: 'always'
       }],
-    '@typescript-eslint/return-await': 'off'
+    '@typescript-eslint/return-await': 'off',
+    '@typescript-eslint/strict-boolean-expressions': 'off'
   }
 }
