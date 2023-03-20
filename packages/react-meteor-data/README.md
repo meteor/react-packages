@@ -404,12 +404,13 @@ async call, this is needed because otherwise it would be only called once, and t
 this way, every time we have a new Link being added, this useTracker is ran.
 
 ```jsx
+
 // needs Tracker.withComputation because otherwise it would be only called once, and the computation would never run again
 const docs = useTracker('name', async (c) => {
     const placeholders = await fetch('https://jsonplaceholder.typicode.com/todos').then(x => x.json());
     console.log(placeholders);
-    return active ? await Tracker.withComputation(c, () => LinksCollection.find().fetchAsync()) : null
-  }, [active]);
+    return await Tracker.withComputation(c, () => LinksCollection.find().fetchAsync());
+});
 
 ```
 
