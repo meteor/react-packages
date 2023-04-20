@@ -80,8 +80,12 @@ const useFindSuspense = <T = any>(
 export { useFindSuspense }
 
 export const useFind = Meteor.isClient
-  ? useFindClient
-  : useFindSuspense
+  ? <T>(
+      collection: Mongo.Collection<T>,
+      findArgs: Parameters<Mongo.Collection<T>["find"]> | null,
+      deps?: React.DependencyList
+    ) => useFindClient(() => collection.find(...findArgs), deps)
+  : useFindSuspense;
 
 function useFindDev<T = any>(
   collection: Mongo.Collection<T>,
