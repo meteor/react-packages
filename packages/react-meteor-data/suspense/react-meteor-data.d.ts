@@ -25,6 +25,6 @@ export function useTracker<TDataProps>(
   skipUpdate: (prev: Promise<TDataProps>, next: Promise<TDataProps>) => boolean
 ): TDataProps
 
-export function useFind<T>(collection: Mongo.Collection<T>, findArgs: Parameters<Mongo.Collection<T>['find']> | null): T[] | null
+export function useFind<T>(collection: Mongo.Collection<T>, findArgs: Parameters<Mongo.Collection<T>['find']> | null, deps?: React.DependencyList): T[] | null
 
 export function useSubscribe(name: string, ...params: EJSON[]): Meteor.SubscriptionHandle
