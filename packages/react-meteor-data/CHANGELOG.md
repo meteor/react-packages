@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## v2.7.2, 2023-04-20
+*  Updated the `suspense/useFind` hook to be isomorphic.
+*  Updated the `suspense/useFind` types to match its implementation. [PR](https://github.com/meteor/react-packages/pull/390).
+
+## v2.7.1, 2023-03-16
+*  Added missing dependencies for the suspense hooks.
+
 ## v2.7.0, 2023-03-16
 *  Added suspendable hooks:
   - `suspense/useFind`: A Suspense version of `useFind`. Is intended to be used along with SSR.
