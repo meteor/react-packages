@@ -84,7 +84,7 @@ export const useFind = Meteor.isClient
       collection: Mongo.Collection<T>,
       findArgs: Parameters<Mongo.Collection<T>["find"]> | null,
       deps?: React.DependencyList
-    ) => useFindClient(() => collection.find(...findArgs), deps)
+    ) => useFindClient(() => findArgs && collection.find(...findArgs), deps)
   : useFindSuspense;
 
 function useFindDev<T = any>(
