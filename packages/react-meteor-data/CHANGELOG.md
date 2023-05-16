@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## v3.0.0-alpha.6, 2023-05-11
+*  Bumped package version to be compatible with meteor v3
+
 ## v2.7.2, 2023-04-20
 *  Updated the `suspense/useFind` hook to be isomorphic.
 *  Updated the `suspense/useFind` types to match its implementation. [PR](https://github.com/meteor/react-packages/pull/390).
