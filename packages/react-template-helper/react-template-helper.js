@@ -44,8 +44,13 @@ Template.React.onRendered(function () {
 Template.React.onDestroyed(function () {
   if (this.container) {
     if (shouldUseNewDOMRenderSyntax) {
-      if (this.root) {
-        this.root.unmount();
+      // React root is created inside the BlazeView, not TemplateInstance
+      // Keeping the first this.root just in case somebody monkey-patched it
+      // but it should be undefined here
+      var reactRoot = this.root || (this.view && this.view.root);
+
+      if (reactRoot) {
+        reactRoot.unmount();
       }
     } else {
       ReactDOM.unmountComponentAtNode(this.container);
