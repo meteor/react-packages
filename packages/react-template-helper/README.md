@@ -46,3 +46,5 @@ Template.Dropdown.helpers({
 ```
 
 Check out [the React article](http://guide.meteor.com/react.html) in the Meteor Guide to learn how to use Meteor and React together to build awesome apps.
+
+Check the [Changelog](./CHANGELOG.md).
