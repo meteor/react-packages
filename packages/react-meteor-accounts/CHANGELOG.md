@@ -2,6 +2,14 @@
 
 Release versions follow [Semantic Versioning 2.0.0 guidelines](https://semver.org/).
 
+## v1.0.1
+
+Bump `.versions` dependencies to match `react-meteor-data` dependencies.
+
+## v1.0.0
+
+Published as a core package named `react-meteor-accounts`.
+
 ## v1.0.0-rc.1
 
 - `useLoggingIn`: Added implementation
