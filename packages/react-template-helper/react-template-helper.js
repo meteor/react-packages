@@ -1,11 +1,12 @@
 import { checkNpmVersions } from 'meteor/tmeasday:check-npm-versions';
 checkNpmVersions({
-  'react': '15.3 - 17',
-  'react-dom': '15.3 - 17'
+  'react': '15.3 - 18',
+  'react-dom': '15.3 - 18'
 }, 'react-template-helper');
 
 const React = require('react');
 const ReactDOM = require('react-dom');
+const shouldUseNewDOMRenderSyntax = React.version >= '18';
 
 // Empty template; logic in `onRendered` below
 Template.React = new Template("Template.React", function () { return []; });
@@ -26,13 +27,35 @@ Template.React.onRendered(function () {
     }
 
     var props = _.omit(data, 'component');
-    ReactDOM.render(React.createElement(comp, props), container);
+    var node = React.createElement(comp, props);
+    if (shouldUseNewDOMRenderSyntax) {
+      // pseudo-validation
+      if (!this.root) {
+        this.root = require('react-dom/client').createRoot(container);
+      }
+      this.root.render(node);
+      return;
+    }
+
+    ReactDOM.render(node, container);
   });
 });
 
 Template.React.onDestroyed(function () {
-  if (this.container)
-    ReactDOM.unmountComponentAtNode(this.container);
+  if (this.container) {
+    if (shouldUseNewDOMRenderSyntax) {
+      // React root is created inside the BlazeView, not TemplateInstance
+      // Keeping the first this.root just in case somebody monkey-patched it
+      // but it should be undefined here
+      var reactRoot = this.root || (this.view && this.view.root);
+
+      if (reactRoot) {
+        reactRoot.unmount();
+      }
+    } else {
+      ReactDOM.unmountComponentAtNode(this.container);
+    }
+  }
 });
 
 // Gets the name of the template inside of which this instance of `{{>

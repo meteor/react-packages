@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import { waitFor } from '@testing-library/react';
 import { ReactiveVar } from 'meteor/reactive-var';
 
-import withTracker from './withTracker';
+import { withTracker } from './withTracker';
 
 const getInnerHtml = function (elem) {
   // clean up elem.innerHTML and strip data-reactid attributes too
@@ -36,7 +36,6 @@ if (Meteor.isClient) {
       },
       skipUpdate: skipUpdate,
     })((props) => {
-      console.log(props)
       renders++;
       return <span>{JSON.stringify(props.value)}</span>;
     });
