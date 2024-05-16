@@ -3,7 +3,7 @@
 Package.describe({
   name: 'react-meteor-data',
   summary: 'React hook for reactively tracking Meteor data',
-  version: '2.7.2',
+  version: '3.0.0-rc.0',
   documentation: 'README.md',
   git: 'https://github.com/meteor/react-packages'
 })
@@ -14,7 +14,7 @@ Npm.depends({
 })
 
 Package.onUse((api) => {
-  api.versionsFrom(['1.8.2', '1.12', '2.0', '2.3'])
+  api.versionsFrom(['1.8.2', '1.12', '2.0', '2.3', '3.0-rc.0'])
   api.use('tracker')
   api.use('ecmascript')
   api.use('typescript')
