@@ -1,6 +1,6 @@
 Package.describe({
   name: 'react-template-helper',
-  version: '0.2.17',
+  version: '0.3.0-rc.0',
   // Brief, one-line summary of the package.
   summary: 'Use React components in native Meteor templates',
   // URL to the Git repository containing the source code for this package.
@@ -11,13 +11,13 @@ Package.describe({
 });
 
 Package.onUse((api) => {
-  api.versionsFrom(['1.3', '2.3']);
+  api.versionsFrom(['1.3', '2.3', '3.0-rc.1']);
 
   api.use([
     'templating',
     'underscore',
     'ecmascript',
-    'tmeasday:check-npm-versions@1.0.2',
+    'tmeasday:check-npm-versions@2.0.0-beta.0',
   ]);
 
   api.addFiles(['react-template-helper.js'], 'client');
