@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## v3.0.0, 2024-07-12
+*  Official bumped package version to be compatible with meteor v3
+
 ## v3.0.0-alpha.6, 2023-05-11
 *  Bumped package version to be compatible with meteor v3
 
