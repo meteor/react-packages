@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## v3.0.1, 2024-07-18
+*  Replace Meteor dependency version from 3.0-rc.0 to 3.0
+
 ## v3.0.0, 2024-07-12
 *  Official bumped package version to be compatible with meteor v3
 
