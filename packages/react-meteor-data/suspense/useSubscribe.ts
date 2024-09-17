@@ -32,7 +32,7 @@ export function useSubscribeSuspense(name: string, ...params: EJSON[]) {
               isEqual(x.params, cachedSubscription.params))
         }
       }, 0)
-    }, [name, ...params])
+    }, [name, EJSON.stringify(params)])
 
   if (cachedSubscription != null) {
     if ('error' in cachedSubscription) throw cachedSubscription.error

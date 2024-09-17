@@ -2,6 +2,10 @@
 
 Release versions follow [Semantic Versioning 2.0.0 guidelines](https://semver.org/).
 
+## v1.0.3
+
+Update api.versionsFrom() adding `3.0` to support Meteor 3.0 official.
+
 ## v1.0.2
 
 Update api.versionsFrom() adding `3.0-alpha.19` to support Meteor 3.0-alpha.
