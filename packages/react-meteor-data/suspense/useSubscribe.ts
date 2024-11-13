@@ -47,7 +47,7 @@ export function useSubscribeSuspense(name: string, ...params: EJSON[]) {
           resolve(h)
         },
         onStop(error: unknown) {
-          if(!error){
+          if (!error) {
             remove(cachedSubscriptions,
               x =>
                 x.name === subscription.name &&
