@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## v3.0.3, 2024-12-30
+*  Add `useSubscribeSuspenseServer` hook to be used in SSR.
+
 ## v3.0.1, 2024-07-18
 *  Replace Meteor dependency version from 3.0-rc.0 to 3.0
 
@@ -21,7 +24,7 @@
   - `suspense/useFind`: A Suspense version of `useFind`. Is intended to be used along with SSR.
   - `suspense/useSubscribe`: A Suspense version of `useSubscribe`, moving the isLoading checking state to Suspense
   - `suspense/useTracker`: A Suspense version of `useTracker`, that accepts async function and maintains the reactivity of the data.
-more can be seen in the docs. 
+more can be seen in the docs.
 
 
 ## v2.6.3, 2023-02-10
