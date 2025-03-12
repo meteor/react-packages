@@ -22,8 +22,8 @@ import {
 // Prepare method for clearing DB (doesn't need to be isomorphic).
 if (Meteor.isServer) {
   Meteor.methods({
-    reset() {
-      Meteor.users.removeAsync({});
+    async reset() {
+      await Meteor.users.removeAsync({});
     },
   });
 }
