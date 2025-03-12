@@ -29,6 +29,5 @@ Package.onTest((api) => {
   api.use('test-helpers')
   api.use('react-meteor-data')
 
-  // api.mainModule('tests.js')
-  api.addFiles(['useFind.ts', 'useFind.tests.js'], 'client');
+  api.mainModule('tests.js');
 })
