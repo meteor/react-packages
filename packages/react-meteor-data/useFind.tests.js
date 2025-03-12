@@ -40,7 +40,6 @@ if (Meteor.isClient) {
         <li>{doc.id},{doc.updated}</li>
       )
     })
-    console.log("=>(useFind.tests.js:41) renders", renders);
 
     const Test = () => {
       const docs = useFind(() => TestDocs.find(), [])
