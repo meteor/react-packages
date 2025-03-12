@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import { waitFor } from '@testing-library/react';
 import { ReactiveVar } from 'meteor/reactive-var';
 
-import withTracker from './withTracker';
+import { withTracker } from './withTracker';
 
 const getInnerHtml = function (elem) {
   // clean up elem.innerHTML and strip data-reactid attributes too

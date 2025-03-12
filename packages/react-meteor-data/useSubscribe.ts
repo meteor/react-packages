@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor'
-import useTracker from './useTracker'
+import { useTracker } from './useTracker'
 
 const useSubscribeClient = (name?: string, ...args: any[]): () => boolean => {
   let updateOnReady = false

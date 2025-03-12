@@ -1,5 +1,5 @@
 import React, { forwardRef, memo } from 'react';
-import useTracker from './useTracker';
+import { useTracker } from './useTracker';
 
 type ReactiveFn = (props: object) => any;
 type ReactiveOptions = {
@@ -8,7 +8,7 @@ type ReactiveOptions = {
   skipUpdate?: (prev: any, next: any) => boolean;
 }
 
-export default function withTracker(options: ReactiveFn | ReactiveOptions) {
+export const withTracker = (options: ReactiveFn | ReactiveOptions) => {
   return (Component: React.ComponentType) => {
     const getMeteorData = typeof options === 'function'
       ? options

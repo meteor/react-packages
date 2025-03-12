@@ -99,16 +99,20 @@ const useFindClient = <T = any>(factory: () => (Mongo.Cursor<T> | undefined | nu
   const didMount = useRef(false)
 
   useEffect(() => {
-    if (!(cursor instanceof Mongo.Cursor)) {
-      return
-    }
-
     // Fetch intitial data if cursor was changed.
     if (didMount.current) {
+      if (!(cursor instanceof Mongo.Cursor)) {
+        return
+      }
+
       const data = fetchData(cursor)
       dispatch({ type: 'refresh', data })
     } else {
       didMount.current = true
+    }
+
+    if (!(cursor instanceof Mongo.Cursor)) {
+      return
     }
 
     const observer = cursor.observe({
@@ -133,7 +137,7 @@ const useFindClient = <T = any>(factory: () => (Mongo.Cursor<T> | undefined | nu
     }
   }, [cursor])
 
-  return data
+  return cursor ? data : cursor
 }
 
 const useFindServer = <T = any>(factory: () => Mongo.Cursor<T> | undefined | null, deps: DependencyList) => (

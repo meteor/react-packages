@@ -15,6 +15,10 @@ This package provides an integration between React and [`Tracker`](https://atmos
   - [`useSubscribe`](#usesubscribesubname-args-a-convenient-wrapper-for-subscriptions)
   - [`useFind`](#usefindcursorfactory-deps-accelerate-your-lists)
   - [Concurrent Mode, Suspense, and Error Boundaries](#concurrent-mode-suspense-and-error-boundaries)
+  - [Suspendable version of hooks](#suspendable-hooks)
+    - [useTracker](#suspense/useTracker)
+    - [useSubscribe](#suspense/useSubscribe)
+    - [useFind](#suspense/useFind)
   - [Version compatibility notes](#version-compatibility-notes)
 
 ## Install
@@ -328,13 +332,148 @@ const docs = useFind(() => {
 
 ### Concurrent Mode, Suspense and Error Boundaries
 
-There are some additional considerations to keep in mind when using Concurrent Mode, Suspense and Error Boundaries, as each of these can cause React to cancel and discard (toss) a render, including the result of the first run of your reactive function. One of the things React developers often stress is that we should not create "side-effects" directly in the render method or in functional components. There are a number of good reasons for this, including allowing the React runtime to cancel renders. Limiting the use of side-effects allows features such as concurrent mode, suspense and error boundaries to work deterministically, without leaking memory or creating rogue processes. Care should be taken to avoid side effects in your reactive function for these reasons. (Note: this caution does not apply to Meteor specific side-effects like subscriptions, since those will be automatically cleaned up when `useTracker`'s computation is disposed.)
+There are some additional considerations to keep in mind when using Concurrent Mode, Suspense and Error Boundaries, as
+each of these can cause React to cancel and discard (toss) a render, including the result of the first run of your
+reactive function. One of the things React developers often stress is that we should not create "side-effects" directly
+in the render method or in functional components. There are a number of good reasons for this, including allowing the
+React runtime to cancel renders. Limiting the use of side-effects allows features such as concurrent mode, suspense and
+error boundaries to work deterministically, without leaking memory or creating rogue processes. Care should be taken to
+avoid side effects in your reactive function for these reasons. (Note: this caution does not apply to Meteor specific
+side-effects like subscriptions, since those will be automatically cleaned up when `useTracker`'s computation is
+disposed.)
 
-Ideally, side-effects such as creating a Meteor computation would be done in `useEffect`. However, this is problematic for Meteor, which mixes an initial data query with setting up the computation to watch those data sources all in one initial run. If we wait to do that in `useEffect`, we'll end up rendering a minimum of 2 times (and using hacks for the first one) for every component which uses `useTracker` or `withTracker`, or not running at all in the initial render and still requiring a minimum of 2 renders, and complicating the API.
+Ideally, side-effects such as creating a Meteor computation would be done in `useEffect`. However, this is problematic
+for Meteor, which mixes an initial data query with setting up the computation to watch those data sources all in one
+initial run. If we wait to do that in `useEffect`, we'll end up rendering a minimum of 2 times (and using hacks for the
+first one) for every component which uses `useTracker` or `withTracker`, or not running at all in the initial render and
+still requiring a minimum of 2 renders, and complicating the API.
 
-To work around this and keep things running fast, we are creating the computation in the render method directly, and doing a number of checks later in `useEffect` to make sure we keep that computation fresh and everything up to date, while also making sure to clean things up if we detect the render has been tossed. For the most part, this should all be transparent.
+To work around this and keep things running fast, we are creating the computation in the render method directly, and
+doing a number of checks later in `useEffect` to make sure we keep that computation fresh and everything up to date,
+while also making sure to clean things up if we detect the render has been tossed. For the most part, this should all be
+transparent.
 
-The important thing to understand is that your reactive function can be initially called more than once for a single render, because sometimes the work will be tossed. Additionally, `useTracker` will not call your reactive function reactively until the render is committed (until `useEffect` runs). If you have a particularly fast changing data source, this is worth understanding. With this very short possible suspension, there are checks in place to make sure the eventual result is always up to date with the current state of the reactive function. Once the render is "committed", and the component mounted, the computation is kept running, and everything will run as expected.
+The important thing to understand is that your reactive function can be initially called more than once for a single
+render, because sometimes the work will be tossed. Additionally, `useTracker` will not call your reactive function
+reactively until the render is committed (until `useEffect` runs). If you have a particularly fast changing data source,
+this is worth understanding. With this very short possible suspension, there are checks in place to make sure the
+eventual result is always up to date with the current state of the reactive function. Once the render is "committed",
+and the component mounted, the computation is kept running, and everything will run as expected.
+
+
+## Suspendable version of hooks
+
+### `suspense/useTracker`
+
+This is a version of `useTracker` that can be used with React Suspense.
+
+For its first argument, a key is necessary, witch is used to identify the computation and to avoid recreating it when the 
+component is re-rendered.
+
+Its second argument is a function that can be async and reactive, 
+this argument works similar to the original `useTracker` that does not suspend.
+
+For its _optional_ third argument, the dependency array, works similar to the `useTracker` that does not suspend,
+you pass in an array of variables that this tracking function depends upon.
+
+For its _optional_ fourth argument, the options object, works similar to the `useTracker` that does not suspend,
+you pass in a function for when should skip the update.
+
+
+```jsx
+import { useTracker } from 'meteor/react-meteor-data/suspense'
+import { useSubscribe } from 'meteor/react-meteor-data/suspense'
+
+function Tasks() { // this component will suspend
+  useSubscribe("tasks");
+  const { username } = useTracker("user", () => Meteor.user())  // Meteor.user() is async meteor 3.0
+  const tasksByUser = useTracker("tasksByUser", () =>
+          TasksCollection.find({username}, { sort: { createdAt: -1 } }).fetchAsync() // async call
+  );
+
+
+  // render the tasks
+}
+```
+
+
+### Maintaining the reactive context
+
+To maintain a reactive context using the new Meteor Async methods, we are using the new `Tracker.withComputation` API to maintain the reactive context of an 
+async call, this is needed because otherwise it would be only called once, and the computation would never run again,
+this way, every time we have a new Link being added, this useTracker is ran.
+
+```jsx
+
+// needs Tracker.withComputation because otherwise it would be only called once, and the computation would never run again
+const docs = useTracker('name', async (c) => {
+    const placeholders = await fetch('https://jsonplaceholder.typicode.com/todos').then(x => x.json());
+    console.log(placeholders);
+    return await Tracker.withComputation(c, () => LinksCollection.find().fetchAsync());
+});
+
+```
+
+A rule of thumb is that if you are using a reactive function for example `find` + `fetchAsync`, it is nice to wrap it
+inside `Tracker.withComputation` to make sure that the computation is kept alive, if you are just calling that function
+that is not necessary, like the one bellow, will be always reactive.
+
+```jsx
+
+const docs = useTracker('name', () => LinksCollection.find().fetchAsync());
+
+```
+
+### `suspense/useSubscribe`
+
+This is a version of `useSubscribe` that can be used with React Suspense. 
+It is similar to `useSubscribe`, it throws a promise and suspends the rendering until the promise is resolved.
+It does not return a Meteor Handle to control the subscription
+
+```jsx
+
+import { useTracker } from 'meteor/react-meteor-data/suspense'
+import { useSubscribe } from 'meteor/react-meteor-data/suspense'
+
+function Tasks() { // this component will suspend
+  useSubscribe("tasks");
+  const { username } = useTracker("user", () => Meteor.user())  // Meteor.user() is async meteor 3.0
+  const tasksByUser = useTracker("tasksByUser", () =>
+          TasksCollection.find({username}, { sort: { createdAt: -1 } }).fetchAsync() // async call
+  );
+
+
+// render the tasks
+}
+
+```
+
+### `suspense/useFind`
+
+This is a version of `useFind` that can be used with React Suspense.
+It has a few differences from the `useFind` without suspense, it throws a promise and suspends the rendering until the promise is resolved.
+It returns the result and it is reactive.
+You should pass as the first parameter the collection where is being searched upon and as the second parameter an array with the arguments,
+the same arguments that you would pass to the `find` method of the collection, third parameter is optional, and it is dependency array object.
+It's meant for the SSR, you don't have to use it if you're not interested in SSR.
+
+```jsx
+
+import { useFind } from 'meteor/react-meteor-data/suspense'
+import { useSubscribe } from 'meteor/react-meteor-data/suspense'
+
+function Tasks() { // this component will suspend
+  useSubscribe("tasks");
+  const tasksByUser = useFind(
+          TasksCollection,
+          [{}, { sort: { createdAt: -1 } }] 
+  );
+
+  // render the tasks
+}
+
+```
+
 
 ### Version compatibility notes
 
