@@ -17,5 +17,3 @@ es5-shim@4.8.1                # ECMAScript 5 compatibility for older browsers
 ecmascript@0.16.10              # Enable ECMAScript2015+ syntax in app code
 typescript@5.6.3              # Enable TypeScript syntax in .ts and .tsx modules
 shell-server@0.6.1            # Server-side component of the `meteor shell` command
-
-react-meteor-data
