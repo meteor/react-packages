@@ -22,29 +22,31 @@ type useFindActions<T> =
     }
     return true;
   };
+  const mergeRefreshData = <T>(oldData: T[], newData: T[]): T[] => {
+    if (oldData.length !== newData.length) return newData;
+  
+    let changed = false;
+    const merged: T[] = new Array(newData.length);
+    const oldDocs = new Map(oldData.map(doc => [(doc as any).id, doc]));
+    // This verification is necessary for reference stability between rerenders
+    for (let i = 0; i < newData.length; i++) {
+      const newDoc = newData[i];
+      const oldDoc = oldDocs.get((newDoc as any).id);
+      if (oldDoc && shallowEqual(oldDoc, newDoc)) {
+        merged[i] = oldDoc;
+      } else {
+        merged[i] = newDoc;
+        changed = true;
+      }
+    }
+    return changed ? merged : oldData;
+  }
+// -------
 
 const useFindReducer = <T>(data: T[], action: useFindActions<T>): T[] => {
   switch (action.type) {
-    // Those changes are necessary for Verify reference stability between rerenders
-    case 'refresh': {
-      if (data.length === action.data.length) {
-        let changed = false;
-        // Map old docs by id.
-        const previousMap = new Map(data.map(doc => [(doc as any).id, doc]));
-        const merged = action.data.map(newDoc => {
-          const oldDoc = previousMap.get((newDoc as any).id);
-          // Use shallowEqual to detect changes.
-          if (oldDoc && shallowEqual(oldDoc, newDoc)) {
-            return oldDoc;
-          } else {
-            changed = true;
-            return newDoc;
-          }
-        });
-        return changed ? merged : data;
-      }
-      return action.data;
-    }
+    case 'refresh': 
+      return mergeRefreshData(data, action.data);
     case 'addedAt':
       return [
         ...data.slice(0, action.atIndex),
