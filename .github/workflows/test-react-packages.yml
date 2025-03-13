@@ -1,0 +1,44 @@
+name: Meteor CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    name: Meteor react-packages tests
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Meteor
+        uses: meteorengineer/setup-meteor@v2
+        with:
+          meteor-release: '3.1.2'
+
+      - name: Cache Meteor packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.meteor
+          key: meteor-${{ runner.os }}
+          restore-keys: |
+            meteor-
+
+      # Install and test in Folder1 in a single step
+      - name: Install and test in react-meteor-data
+        working-directory: tests/react-meteor-data-harness
+        run: |
+          meteor npm install
+          meteor npm run test:ci
+
+      # Install and test in Folder2 in a single step
+      - name: Install and test in react-meteor-accounts-harness
+        working-directory: tests/react-meteor-accounts-harness
+        run: |
+          meteor npm install
+          meteor npm run test:ci
