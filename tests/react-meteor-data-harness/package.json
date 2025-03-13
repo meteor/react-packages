@@ -6,7 +6,7 @@
     "test:ci": "METEOR_PACKAGE_DIRS=../../packages meteor npx mtest --package react-meteor-data --once"
   },
   "dependencies": {
-    "@babel/runtime": "^7.17.9",
+    "@babel/runtime": "^7.26.10",
     "@testing-library/react": "^12.0.0",
     "meteor-node-stubs": "^1.2.1",
     "react": "17.0.2",
