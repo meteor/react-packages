@@ -132,16 +132,16 @@ const useFindClient = <T = any>(factory: () => (Mongo.Cursor<T> | undefined | nu
     dispatch({ type: 'refresh', data: newData });
     
     const observer = cursor.observe({
-      addedAt (document, atIndex, before) {
+      addedAt (document, atIndex) {
         dispatch({ type: 'addedAt', document, atIndex })
       },
-      changedAt (newDocument, oldDocument, atIndex) {
+      changedAt (newDocument, _, atIndex) {
         dispatch({ type: 'changedAt', document: newDocument, atIndex })
       },
-      removedAt (oldDocument, atIndex) {
+      removedAt (_, atIndex) {
         dispatch({ type: 'removedAt', atIndex })
       },
-      movedTo (document, fromIndex, toIndex, before) {
+      movedTo (_, fromIndex, toIndex) {
         dispatch({ type: 'movedTo', fromIndex, toIndex })
       },
       // @ts-ignore
