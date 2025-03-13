@@ -16,6 +16,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Cache Meteor
+        uses: actions/cache@v4
+        with:
+          path: ~/.meteor
+          key: meteor-cache
+
       - name: Setup Meteor
         uses: meteorengineer/setup-meteor@v2
         with:
@@ -24,14 +30,6 @@ jobs:
       - name: Prepare mtest
         run: |
           meteor npm i -g @zodern/mtest
-
-      - name: Cache Meteor
-        uses: actions/cache@v4
-        with:
-          path: ~/.meteor
-          key: meteor-${{ runner.os }}
-          restore-keys: |
-            meteor-
 
       - name: Install and test in react-meteor-data
         working-directory: tests/react-meteor-data-harness
