@@ -84,37 +84,18 @@ const useFindClient = <T = any>(factory: () => (Mongo.Cursor<T> | undefined | nu
 
   const [data, dispatch] = useReducer<Reducer<T[], useFindActions<T>>, null>(
     useFindReducer,
-    null,
-    () => {
-      if (!(cursor instanceof Mongo.Cursor)) {
-        return []
-      }
-
-      return fetchData(cursor)
-    }
-  )
-
-  // Store information about mounting the component.
-  // It will be used to run code only if the component is updated.
-  const didMount = useRef(false)
+    []
+  );
 
   useEffect(() => {
-    // Fetch intitial data if cursor was changed.
-    if (didMount.current) {
-      if (!(cursor instanceof Mongo.Cursor)) {
-        return
-      }
-
-      const data = fetchData(cursor)
-      dispatch({ type: 'refresh', data })
-    } else {
-      didMount.current = true
-    }
-
     if (!(cursor instanceof Mongo.Cursor)) {
       return
     }
-
+    
+    // Perform the initial data fetch inside the effect.
+    const newData = fetchData(cursor);
+    dispatch({ type: 'refresh', data: newData });
+    
     const observer = cursor.observe({
       addedAt (document, atIndex, before) {
         dispatch({ type: 'addedAt', document, atIndex })
