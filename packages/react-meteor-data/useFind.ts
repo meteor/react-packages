@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
-import { useReducer, useMemo, useEffect, Reducer, DependencyList, useRef } from 'react'
+import { useReducer, useMemo, useEffect, Reducer, DependencyList } from 'react'
 import { Tracker } from 'meteor/tracker'
 
 type useFindActions<T> =
@@ -10,10 +10,41 @@ type useFindActions<T> =
   | { type: 'removedAt', atIndex: number }
   | { type: 'movedTo', fromIndex: number, toIndex: number }
 
+  // Should I put this in a utils file?
+  const shallowEqual = (a: any, b: any) => {
+    if (a === b) return true;
+    if (!a || !b || typeof a !== 'object' || typeof b !== 'object') return false;
+    const keysA = Object.keys(a);
+    const keysB = Object.keys(b);
+    if (keysA.length !== keysB.length) return false;
+    for (const key of keysA) {
+      if (a[key] !== b[key]) return false;
+    }
+    return true;
+  };
+
 const useFindReducer = <T>(data: T[], action: useFindActions<T>): T[] => {
   switch (action.type) {
-    case 'refresh':
-      return action.data
+    // Those changes are necessary for Verify reference stability between rerenders
+    case 'refresh': {
+      if (data.length === action.data.length) {
+        let changed = false;
+        // Map old docs by id.
+        const previousMap = new Map(data.map(doc => [(doc as any).id, doc]));
+        const merged = action.data.map(newDoc => {
+          const oldDoc = previousMap.get((newDoc as any).id);
+          // Use shallowEqual to detect changes.
+          if (oldDoc && shallowEqual(oldDoc, newDoc)) {
+            return oldDoc;
+          } else {
+            changed = true;
+            return newDoc;
+          }
+        });
+        return changed ? merged : data;
+      }
+      return action.data;
+    }
     case 'addedAt':
       return [
         ...data.slice(0, action.atIndex),
@@ -82,50 +113,32 @@ const useFindClient = <T = any>(factory: () => (Mongo.Cursor<T> | undefined | nu
     return cursor
   }, deps)
 
-  const [data, dispatch] = useReducer<Reducer<T[], useFindActions<T>>, null>(
+  const initialData = cursor instanceof Mongo.Cursor ? fetchData(cursor) : [];
+  const [data, dispatch] = useReducer<Reducer<T[], useFindActions<T>>>(
     useFindReducer,
-    null,
-    () => {
-      if (!(cursor instanceof Mongo.Cursor)) {
-        return []
-      }
+    initialData
+  );
 
-      return fetchData(cursor)
-    }
-  )
-
-  // Store information about mounting the component.
-  // It will be used to run code only if the component is updated.
-  const didMount = useRef(false)
 
   useEffect(() => {
-    // Fetch intitial data if cursor was changed.
-    if (didMount.current) {
-      if (!(cursor instanceof Mongo.Cursor)) {
-        return
-      }
-
-      const data = fetchData(cursor)
-      dispatch({ type: 'refresh', data })
-    } else {
-      didMount.current = true
-    }
-
     if (!(cursor instanceof Mongo.Cursor)) {
       return
     }
-
+    
+    const newData = fetchData(cursor);
+    dispatch({ type: 'refresh', data: newData });
+    
     const observer = cursor.observe({
-      addedAt (document, atIndex, before) {
+      addedAt(document, atIndex) {
         dispatch({ type: 'addedAt', document, atIndex })
       },
-      changedAt (newDocument, oldDocument, atIndex) {
+      changedAt(newDocument, _oldDocument, atIndex) {
         dispatch({ type: 'changedAt', document: newDocument, atIndex })
       },
-      removedAt (oldDocument, atIndex) {
-        dispatch({ type: 'removedAt', atIndex })
+      removedAt(_oldDocument, atIndex) {
+        dispatch({ type: 'removedAt', atIndex });
       },
-      movedTo (document, fromIndex, toIndex, before) {
+      movedTo(_document, fromIndex, toIndex) {
         dispatch({ type: 'movedTo', fromIndex, toIndex })
       },
       // @ts-ignore
