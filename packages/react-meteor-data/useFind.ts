@@ -71,6 +71,27 @@ const fetchData = <T>(cursor: Mongo.Cursor<T>) => {
   return data
 }
 
+const useSyncEffect = (effect, deps) => {
+  const cleanup = useMemo(effect, deps);
+  const cleanupTimoutIdRef = useRef(null);
+
+  if (!cleanupTimoutIdRef.current) { // first run
+    // Clean fallback if useEffect never called
+    cleanupTimoutIdRef.current = setTimeout(() => {
+      cleanup();
+    }, 1000);
+  }
+
+  useEffect(() => {
+    clearTimeout(cleanupTimoutIdRef.current);
+
+    return () => {
+      cleanup();
+    };
+  }, []);
+};
+
+
 const useFindClient = <T = any>(factory: () => (Mongo.Cursor<T> | undefined | null), deps: DependencyList = []) => {
   const cursor = useMemo(() => {
     // To avoid creating side effects in render, opt out
@@ -94,38 +115,25 @@ const useFindClient = <T = any>(factory: () => (Mongo.Cursor<T> | undefined | nu
     }
   )
 
-  // Store information about mounting the component.
-  // It will be used to run code only if the component is updated.
-  const didMount = useRef(false)
-
-  useEffect(() => {
-    // Fetch intitial data if cursor was changed.
-    if (didMount.current) {
-      if (!(cursor instanceof Mongo.Cursor)) {
-        return
-      }
-
-      const data = fetchData(cursor)
-      dispatch({ type: 'refresh', data })
-    } else {
-      didMount.current = true
-    }
-
+  useSyncEffect(() => {
     if (!(cursor instanceof Mongo.Cursor)) {
       return
     }
 
+    const initialData = fetchData(cursor);
+    dispatch({ type: 'refresh', data: initialData });
+
     const observer = cursor.observe({
-      addedAt (document, atIndex, before) {
+      addedAt(document, atIndex, before) {
         dispatch({ type: 'addedAt', document, atIndex })
       },
-      changedAt (newDocument, oldDocument, atIndex) {
+      changedAt(newDocument, oldDocument, atIndex) {
         dispatch({ type: 'changedAt', document: newDocument, atIndex })
       },
-      removedAt (oldDocument, atIndex) {
+      removedAt(oldDocument, atIndex) {
         dispatch({ type: 'removedAt', atIndex })
       },
-      movedTo (document, fromIndex, toIndex, before) {
+      movedTo(document, fromIndex, toIndex, before) {
         dispatch({ type: 'movedTo', fromIndex, toIndex })
       },
       // @ts-ignore
@@ -135,7 +143,7 @@ const useFindClient = <T = any>(factory: () => (Mongo.Cursor<T> | undefined | nu
     return () => {
       observer.stop()
     }
-  }, [cursor])
+  }, [cursor]);
 
   return cursor ? data : cursor
 }
