@@ -28,6 +28,7 @@ Package.onTest((api) => {
   api.use(['ecmascript', 'typescript', 'reactive-dict', 'reactive-var', 'tracker', 'tinytest', 'underscore', 'mongo'])
   api.use('test-helpers')
   api.use('react-meteor-data')
+  api.use('jquery@3.0.0', 'client');
 
   api.mainModule('tests.js');
 })

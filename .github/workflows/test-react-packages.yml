@@ -21,7 +21,11 @@ jobs:
         with:
           meteor-release: '3.1.2'
 
-      - name: Cache Meteor packages
+      - name: Prepare mtest
+        run: |
+          meteor npm i -g @zodern/mtest
+
+      - name: Cache Meteor
         uses: actions/cache@v4
         with:
           path: ~/.meteor
@@ -29,14 +33,12 @@ jobs:
           restore-keys: |
             meteor-
 
-      # Install and test in Folder1 in a single step
       - name: Install and test in react-meteor-data
         working-directory: tests/react-meteor-data-harness
         run: |
           meteor npm install
           meteor npm run test:ci
 
-      # Install and test in Folder2 in a single step
       - name: Install and test in react-meteor-accounts-harness
         working-directory: tests/react-meteor-accounts-harness
         run: |

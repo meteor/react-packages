@@ -2,7 +2,8 @@
   "name": "react-meteor-accounts-harness",
   "private": true,
   "scripts": {
-    "test": "METEOR_PACKAGE_DIRS=../../packages  meteor test-packages react-meteor-accounts --driver-package test-in-browser"
+    "test": "METEOR_PACKAGE_DIRS=../../packages  meteor test-packages react-meteor-accounts --driver-package test-in-browser",
+    "test:ci": "METEOR_PACKAGE_DIRS=../../packages meteor npx mtest --package react-meteor-accounts --once"
   },
   "dependencies": {
     "@babel/runtime": "^7.17.9",
@@ -11,5 +12,8 @@
     "meteor-node-stubs": "^1.2.1",
     "react": "16.13.1",
     "react-dom": "16.13.1"
+  },
+  "devDependencies": {
+    "puppeteer": "^19.11.1"
   }
 }
