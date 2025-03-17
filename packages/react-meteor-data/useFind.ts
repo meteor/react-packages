@@ -72,23 +72,20 @@ const fetchData = <T>(cursor: Mongo.Cursor<T>) => {
 }
 
 const useSyncEffect = (effect, deps) => {
-  const cleanup = useMemo(effect, deps);
-  const cleanupTimoutIdRef = useRef(null);
-
-  if (!cleanupTimoutIdRef.current) { // first run
-    // Clean fallback if useEffect never called
-    cleanupTimoutIdRef.current = setTimeout(() => {
-      cleanup();
-    }, 1000);
-  }
+  const [cleanup, timeout] = useMemo(
+    () => {
+      const cleanup = effect();
+      const timeout = setTimeout(cleanup, 1000);
+      return [cleanup, timeout];
+    },
+    deps
+  );
 
   useEffect(() => {
     clearTimeout(cleanupTimoutIdRef.current);
 
-    return () => {
-      cleanup();
-    };
-  }, []);
+    return cleanup;
+  }, [cleanup]);
 };
 
 
