@@ -1,56 +1,38 @@
 import { Meteor } from 'meteor/meteor'
+import { EJSON } from 'meteor/ejson'
 import { type Mongo } from 'meteor/mongo'
 import type React from 'react'
-import { useEffect } from 'react'
 import { useFind as useFindClient } from '../useFind'
-import isEqual from 'lodash.isequal'
-import remove from 'lodash.remove'
-export const cacheMap = new Map<Mongo.Collection<unknown>, Entry[]>()
+
+const cacheMap = new Map<Mongo.Collection<unknown>, Map<string, Entry>>()
 
 interface Entry {
   findArgs: Parameters<Mongo.Collection<unknown>['find']>
   promise: Promise<unknown>
   result?: unknown
   error?: unknown
-  counter: number
-
 }
 
-const removeNullCaches =
-  (cacheMap: Map<Mongo.Collection<unknown, unknown>, Entry[]>) => {
-    for (const cache of cacheMap.values()) {
-      remove(cache, c => c.counter === 0)
-    }
-  }
 const useFindSuspense = <T = any>(
   collection: Mongo.Collection<T>,
   findArgs: Parameters<Mongo.Collection<T>['find']> | null,
   deps: React.DependencyList = []
 ) => {
-  useEffect(() => {
-    const cachedEntries = cacheMap.get(collection)
-    const entry = cachedEntries?.find(x => isEqual(x.findArgs, findArgs))
-    if (entry) ++entry.counter
-
-    removeNullCaches(cacheMap)
-    return () => {
-      setTimeout(() => {
-        const cachedEntries = cacheMap.get(collection)
-        const entry = cachedEntries?.find(x => isEqual(x.findArgs, findArgs))
-
-        if (entry) --entry.counter
-
-        removeNullCaches(cacheMap)
-      }, 0)
-    }
-  }, [findArgs, collection, ...deps])
-
   if (findArgs === null) return null
+  if (Meteor.isClient)
+    throw new Error('useFindSuspense is only available on the server.')
 
   const cachedEntries = cacheMap.get(collection)
-  const cachedEntry = cachedEntries?.find(x => isEqual(x.findArgs, findArgs))
+  const findArgsKey = EJSON.stringify(findArgs)
+  const cachedEntry = cachedEntries?.get(findArgsKey)
 
   if (cachedEntry != null) {
+    if ('error' in cachedEntry || 'result' in cachedEntry) {
+      setTimeout(() => {
+        if (cachedEntries) cachedEntries.delete(findArgsKey)
+        else cacheMap.delete(collection)
+      }, 0)
+    }
     if ('error' in cachedEntry) throw cachedEntry.error
     if ('result' in cachedEntry) return cachedEntry.result as T[]
     throw cachedEntry.promise
@@ -67,12 +49,12 @@ const useFindSuspense = <T = any>(
         },
         error => {
           entry.error = error
-        }),
-    counter: 0
+        }
+      )
   }
 
-  if (cachedEntries != null) cachedEntries.push(entry)
-  else cacheMap.set(collection, [entry])
+  if (!cachedEntries) cacheMap.set(collection, new Map([[findArgsKey, entry]]))
+  else cachedEntries.set(findArgsKey, entry)
 
   throw entry.promise
 }
@@ -95,7 +77,7 @@ function useFindDev<T = any>(
   function warn(expects: string, pos: string, arg: string, type: string) {
     console.warn(
       `Warning: useFind expected a ${expects} in it\'s ${pos} argument ` +
-      `(${arg}), but got type of \`${type}\`.`
+        `(${arg}), but got type of \`${type}\`.`
     )
   }
 
