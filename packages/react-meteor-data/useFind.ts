@@ -71,7 +71,7 @@ const fetchData = <T>(cursor: Mongo.Cursor<T>) => {
   return data
 }
 
-const useFindClient = <T = any>(factory: () => (Mongo.Cursor<T> | undefined | null), deps: DependencyList = []) => {
+const useFindClient = <T = any>(factory: () => (Mongo.Cursor<T> | undefined | null), deps: DependencyList) => {
   const cursor = useMemo(() => {
     // To avoid creating side effects in render, opt out
     // of Tracker integration altogether.
