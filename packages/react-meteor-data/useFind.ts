@@ -11,43 +11,9 @@ type useFindActions<T> =
   | { type: 'movedTo', fromIndex: number, toIndex: number }
 
 const useFindReducer = <T>(data: T[], action: useFindActions<T>): T[] => {
-
-    // Should I put this in a utils file?
-    const shallowEqual = (a: any, b: any) => {
-      if (a === b) return true;
-      if (!a || !b || typeof a !== 'object' || typeof b !== 'object') return false;
-      const keysA = Object.keys(a);
-      const keysB = Object.keys(b);
-      if (keysA.length !== keysB.length) return false;
-      for (const key of keysA) {
-        if (a[key] !== b[key]) return false;
-      }
-      return true;
-    };
-    const mergeRefreshData = <T>(oldData: T[], newData: T[]): T[] => {
-      if (oldData.length !== newData.length) return newData;
-    
-      let changed = false;
-      const merged: T[] = new Array(newData.length);
-      const oldDocs = new Map(oldData.map(doc => [(doc as any).id, doc]));
-      // This verification is necessary for reference stability between rerenders
-      for (let i = 0; i < newData.length; i++) {
-        const newDoc = newData[i];
-        const oldDoc = oldDocs.get((newDoc as any).id);
-        if (oldDoc && shallowEqual(oldDoc, newDoc)) {
-          merged[i] = oldDoc;
-        } else {
-          merged[i] = newDoc;
-          changed = true;
-        }
-      }
-      return changed ? merged : oldData;
-    }
-  // -------
-
   switch (action.type) {
     case 'refresh':
-     return mergeRefreshData(data, action.data);
+      return action.data
     case 'addedAt':
       return [
         ...data.slice(0, action.atIndex),
@@ -134,8 +100,7 @@ const useFindClient = <T = any>(factory: () => (Mongo.Cursor<T> | undefined | nu
     return cursor
   }, deps)
 
-  const initialData = cursor instanceof Mongo.Cursor ? fetchData(cursor) : [];
-  const [data, dispatch] = useReducer<Reducer<T[], useFindActions<T>>>(
+  const [data, dispatch] = useReducer<Reducer<T[], useFindActions<T>>, null>(
     useFindReducer,
     null,
     () => {
