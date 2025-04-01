@@ -106,7 +106,51 @@ if (Meteor.isClient) {
 
     completed()
   })
+  // Test that catches the issue reported on https://github.com/meteor/react-packages/issues/418
+  Tinytest.addAsync(
+    'useFind - Immediate update before effect registration (race condition test)',
+    async function (test, completed) {
+      completed(); // Remove this line to implement your change on packages/react-meteor-data/useFind.ts and check if it is working
+      const container = document.createElement('div');
+      document.body.appendChild(container);
 
+      const TestDocs = new Mongo.Collection(null);
+      // Insert a single document.
+      TestDocs.insert({ id: 1, val: 'initial' });
+
+      const Test = () => {
+        const docs = useFind(() => TestDocs.find(), []);
+        return (
+          <div data-testid="doc-value">
+            {docs && docs[0] && docs[0].val}
+          </div>
+        );
+      };
+
+      // Render the component.
+      ReactDOM.render(<Test />, container);
+
+      // Immediately update the document (this should occur
+      // after the synchronous fetch in the old code but before the effect attaches).
+      TestDocs.update({ id: 1 }, { $set: { val: 'updated' } });
+
+      // Wait until the rendered output reflects the update.
+      await waitFor(() => {
+        const node = container.querySelector('[data-testid="doc-value"]');
+        if (!node || !node.textContent.includes('updated')) {
+          throw new Error('Updated value not rendered yet');
+        }
+      }, { container, timeout: 500 });
+
+      test.ok(
+        container.innerHTML.includes('updated'),
+        'Document should display updated value; the old code would fail to capture this update.'
+      );
+
+      document.body.removeChild(container);
+      completed();
+    }
+  );
 } else {
 
 }
