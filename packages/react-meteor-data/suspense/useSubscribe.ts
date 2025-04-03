@@ -1,10 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { EJSON } from 'meteor/ejson'
 import { Meteor } from 'meteor/meteor'
-import isEqual from 'lodash.isequal'
-import remove from 'lodash.remove'
 
-const cachedSubscriptions: Entry[] = []
+const cachedSubscriptions = new Map<string, Entry>();
 
 interface Entry {
   params: EJSON[]
@@ -16,23 +14,36 @@ interface Entry {
 }
 
 const useSubscribeSuspenseClient = (name: string, ...params: EJSON[]) => {
-  const cachedSubscription =
-    cachedSubscriptions.find(x => x.name === name && isEqual(x.params, params))
+  const subscribeKey = EJSON.stringify([name, params]);
+  const cachedSubscription = cachedSubscriptions.get(subscribeKey);
+  const cleanupTimoutIdRefs = useRef(new Map());
 
-  useEffect(() =>
-    () => {
-      setTimeout(() => {
-        const cachedSubscription =
-          cachedSubscriptions.find(x => x.name === name && isEqual(x.params, params))
-        if (cachedSubscription) {
-          cachedSubscription.handle?.stop()
-          remove(cachedSubscriptions,
-            x =>
-              x.name === cachedSubscription.name &&
-              isEqual(x.params, cachedSubscription.params))
-        }
-      }, 0)
-    }, [name, EJSON.stringify(params)])
+  useEffect(() => {
+    /**
+     * In strict mode (development only), `useEffect` may run 1-2 times.
+     * Throwing a promise outside can cause premature cleanup of subscriptions and cachedSubscription before unmount.
+     * To avoid this, check the `timeout` to ensure cleanup only occurs after unmount.
+     */
+    if (cleanupTimoutIdRefs.current.has(subscribeKey)) {
+      clearTimeout(cleanupTimoutIdRefs.current.get(subscribeKey));
+      cleanupTimoutIdRefs.current.delete(subscribeKey);
+    }
+
+    return () => {
+      cleanupTimoutIdRefs.current.set(
+        subscribeKey,
+        setTimeout(() => {
+          const cachedSubscription = cachedSubscriptions.get(subscribeKey);
+
+          if (cachedSubscription) {
+            cachedSubscription.handle?.stop();
+            cachedSubscriptions.delete(subscribeKey);
+            cleanupTimoutIdRefs.current.delete(subscribeKey);
+          }
+        }, 0)
+      );
+    };
+  }, [subscribeKey]);
 
   if (cachedSubscription != null) {
     if ('error' in cachedSubscription) throw cachedSubscription.error
@@ -59,7 +70,7 @@ const useSubscribeSuspenseClient = (name: string, ...params: EJSON[]) => {
     })
   }
 
-  cachedSubscriptions.push(subscription)
+  cachedSubscriptions.set(subscribeKey, subscription)
 
   throw subscription.promise
 }
@@ -67,7 +78,7 @@ const useSubscribeSuspenseClient = (name: string, ...params: EJSON[]) => {
 const useSubscribeSuspenseServer = (name?: string, ...args: any[]) => undefined;
 
 export const useSubscribeSuspense = Meteor.isServer
-? useSubscribeSuspenseServer
-: useSubscribeSuspenseClient
+  ? useSubscribeSuspenseServer
+  : useSubscribeSuspenseClient
 
 export const useSubscribe = useSubscribeSuspense
