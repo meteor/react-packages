@@ -110,7 +110,6 @@ if (Meteor.isClient) {
   Tinytest.addAsync(
     'useFind - Immediate update before effect registration (race condition test)',
     async function (test, completed) {
-      completed(); // Remove this line to implement your change on packages/react-meteor-data/useFind.ts and check if it is working
       const container = document.createElement('div');
       document.body.appendChild(container);
 
