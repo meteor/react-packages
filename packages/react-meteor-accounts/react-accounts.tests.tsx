@@ -22,8 +22,8 @@ import {
 // Prepare method for clearing DB (doesn't need to be isomorphic).
 if (Meteor.isServer) {
   Meteor.methods({
-    reset() {
-      Meteor.users.remove({});
+    async reset() {
+      await Meteor.users.removeAsync({});
     },
   });
 }
@@ -54,19 +54,9 @@ if (Meteor.isClient) {
   // common test arrangements
   async function beforeEach() {
     // reset DB; must complete before creation to avoid potential overlap
-    await new Promise((resolve, reject) => {
-      Meteor.call("reset", (error, result) => {
-        if (error) reject(error);
-        else resolve(result);
-      });
-    });
+    await Meteor.callAsync("reset");
     // prepare sample user
-    await new Promise<void>((resolve, reject) => {
-      Accounts.createUser({ username, password }, (error) => {
-        if (error) reject(error);
-        else resolve();
-      });
-    });
+    await Accounts.createUserAsync({ username, password });
     // logout since `createUser` auto-logs-in
     await logout();
   }
