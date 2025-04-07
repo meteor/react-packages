@@ -26,10 +26,6 @@ const useSubscribeSuspenseClient = (name: string, ...params: EJSON[]) => {
           cachedSubscriptions.find(x => x.name === name && isEqual(x.params, params))
         if (cachedSubscription) {
           cachedSubscription.handle?.stop()
-          remove(cachedSubscriptions,
-            x =>
-              x.name === cachedSubscription.name &&
-              isEqual(x.params, cachedSubscription.params))
         }
       }, 0)
     }, [name, EJSON.stringify(params)])
@@ -51,6 +47,12 @@ const useSubscribeSuspenseClient = (name: string, ...params: EJSON[]) => {
           resolve(h)
         },
         onStop(error: unknown) {
+          if (!error) {
+            remove(cachedSubscriptions,
+              x =>
+                x.name === subscription.name &&
+                isEqual(x.params, subscription.params))
+          }
           subscription.error = error
           subscription.handle = h
           reject(error)
