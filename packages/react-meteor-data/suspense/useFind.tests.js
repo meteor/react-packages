@@ -30,6 +30,10 @@ if (Meteor.isServer) {
 
       // first return promise
       renderToString(<TestSuspense />)
+      test.isUndefined(
+        returnValue,
+        'Return value should be undefined as find promise unresolved'
+      );
       // wait promise
       await new Promise((resolve) => setTimeout(resolve, 100))
       // return data
@@ -67,16 +71,34 @@ if (Meteor.isServer) {
 
       // first return promise
       renderToString(<TestSuspense />)
+
+      test.isUndefined(
+        returnValue,
+        'Return value should be undefined as find promise unresolved'
+      );
       // wait promise
       await new Promise((resolve) => setTimeout(resolve, 100))
       // return data
       renderToString(<TestSuspense />)
+
+      test.equal(
+        returnValue[0].updated,
+        0,
+        'Return value should be an array with initial value as find promise resolved'
+      );
 
       TestDocs.updateAsync({ id: 0 }, { $inc: { updated: 1 } })
       await new Promise((resolve) => setTimeout(resolve, 100))
 
       // second return promise
       renderToString(<TestSuspense />)
+
+      test.equal(
+        returnValue[0].updated,
+        0,
+        'Return value should still not updated as second find promise unresolved'
+      );
+
       // wait promise
       await new Promise((resolve) => setTimeout(resolve, 100))
       // return data
@@ -85,7 +107,7 @@ if (Meteor.isServer) {
       test.equal(
         returnValue[0].updated,
         1,
-        'Return value should be an array with one document'
+        'Return value should be an array with one document with value updated'
       )
     }
   )
