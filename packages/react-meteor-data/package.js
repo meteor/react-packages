@@ -9,8 +9,7 @@ Package.describe({
 })
 
 Npm.depends({
-  'lodash.isequal': '4.5.0',
-  'lodash.remove': '4.7.0'
+  'lodash.isequal': '4.5.0'
 })
 
 Package.onUse((api) => {
