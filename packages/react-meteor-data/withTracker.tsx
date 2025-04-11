@@ -1,5 +1,6 @@
 import React, { forwardRef, memo } from 'react';
 import { useTracker } from './useTracker';
+import { Meteor } from 'meteor/meteor';
 
 type ReactiveFn = (props: object) => any;
 type ReactiveOptions = {
@@ -10,6 +11,9 @@ type ReactiveOptions = {
 
 export const withTracker = (options: ReactiveFn | ReactiveOptions) => {
   return (Component: React.ComponentType) => {
+    if (Meteor.isDevelopment) {
+      console.warn('It appears that you are using withTracker. This approach has been deprecated and will be removed in future versions of the package. Please migrate to using hooks.')
+    }
     const getMeteorData = typeof options === 'function'
       ? options
       : options.getMeteorData;
