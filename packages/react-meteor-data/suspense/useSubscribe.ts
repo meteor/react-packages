@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { EJSON } from 'meteor/ejson'
 import { Meteor } from 'meteor/meteor'
 
-const cachedSubscriptions = new Map<string, Entry>();
+const cachedSubscriptions = new Map<string, Entry>()
 
 interface Entry {
   params: EJSON[]
@@ -11,12 +11,13 @@ interface Entry {
   promise: Promise<void>
   result?: null
   error?: unknown
+  counter: number
 }
 
 const useSubscribeSuspenseClient = (name: string, ...params: EJSON[]) => {
-  const subscribeKey = EJSON.stringify([name, params]);
-  const cachedSubscription = cachedSubscriptions.get(subscribeKey);
-  const cleanupTimoutIdRefs = useRef(new Map());
+  const subscribeKey = EJSON.stringify([name, params])
+  const cachedSubscription = cachedSubscriptions.get(subscribeKey)
+  const cleanupTimoutIdRefs = useRef(new Map())
 
   useEffect(() => {
     /**
@@ -25,25 +26,32 @@ const useSubscribeSuspenseClient = (name: string, ...params: EJSON[]) => {
      * To avoid this, check the `timeout` to ensure cleanup only occurs after unmount.
      */
     if (cleanupTimoutIdRefs.current.has(subscribeKey)) {
-      clearTimeout(cleanupTimoutIdRefs.current.get(subscribeKey));
-      cleanupTimoutIdRefs.current.delete(subscribeKey);
+      clearTimeout(cleanupTimoutIdRefs.current.get(subscribeKey))
+      cleanupTimoutIdRefs.current.delete(subscribeKey)
+    } else {
+      const cachedSubscription = cachedSubscriptions.get(subscribeKey)
+      if (cachedSubscription) cachedSubscription.counter++
     }
 
     return () => {
       cleanupTimoutIdRefs.current.set(
         subscribeKey,
         setTimeout(() => {
-          const cachedSubscription = cachedSubscriptions.get(subscribeKey);
+          const cachedSubscription = cachedSubscriptions.get(subscribeKey)
 
           if (cachedSubscription) {
-            cachedSubscription.handle?.stop();
-            cachedSubscriptions.delete(subscribeKey);
-            cleanupTimoutIdRefs.current.delete(subscribeKey);
+            cachedSubscription.counter--
+            
+            if (cachedSubscription.counter === 0) {
+              cachedSubscription.handle?.stop()
+              cachedSubscriptions.delete(subscribeKey)
+              cleanupTimoutIdRefs.current.delete(subscribeKey)
+            }
           }
         }, 0)
-      );
-    };
-  }, [subscribeKey]);
+      )
+    }
+  }, [subscribeKey])
 
   if (cachedSubscription != null) {
     if ('error' in cachedSubscription) throw cachedSubscription.error
@@ -67,7 +75,8 @@ const useSubscribeSuspenseClient = (name: string, ...params: EJSON[]) => {
           reject(error)
         }
       })
-    })
+    }),
+    counter: 0
   }
 
   cachedSubscriptions.set(subscribeKey, subscription)
@@ -75,7 +84,7 @@ const useSubscribeSuspenseClient = (name: string, ...params: EJSON[]) => {
   throw subscription.promise
 }
 
-const useSubscribeSuspenseServer = (name?: string, ...args: any[]) => undefined;
+const useSubscribeSuspenseServer = (name?: string, ...args: any[]) => undefined
 
 export const useSubscribeSuspense = Meteor.isServer
   ? useSubscribeSuspenseServer
