@@ -29,7 +29,7 @@ if (Meteor.isServer) {
         );
       };
 
-      const { queryByText, findByText } = render(<TestSuspense />, {
+      const { queryByText, findByText, unmount } = render(<TestSuspense />, {
         container: document.createElement('container'),
       });
 
@@ -39,6 +39,8 @@ if (Meteor.isServer) {
       );
 
       test.isTrue(await findByText('nameA'), 'Need to return data');
+
+      unmount();
     }
   );
 
@@ -47,7 +49,7 @@ if (Meteor.isServer) {
     async (test) => {
       // Repeated runs of this block should consistently pass without failures.
       for (let i = 0; i < 10; i++) {
-        const { result, rerender } = renderHook(
+        const { result, rerender, unmount } = renderHook(
           () => {
             try {
               return useSubscribeSuspense('testUseSubscribe');
@@ -69,7 +71,82 @@ if (Meteor.isServer) {
           'Should be null after rerender (this indicates the data has been read)'
         );
 
+        unmount();
+      }
+    }
+  );
+
+  Tinytest.addAsync(
+    'suspense/useSubscribe - when multiple subscriptions are active, cleaning one preserves others',
+    async (test) => {
+      // Run in both normal mode and strict mode respectively.
+      for (const reactStrictMode of [false, true]) {
+        const {
+          result: resultA,
+          rerender: rerenderA,
+          unmount: unmountA,
+        } = renderHook(
+          () => {
+            try {
+              return useSubscribeSuspense('testUseSubscribe');
+            } catch (promise) {
+              return promise;
+            }
+          },
+          { reactStrictMode }
+        );
+
+        await resultA.current;
+        rerenderA();
+
+        const { result: resultB, unmount: unmountB } = renderHook(
+          () => {
+            try {
+              return useSubscribeSuspense('testUseSubscribe');
+            } catch (promise) {
+              return promise;
+            }
+          },
+          { reactStrictMode }
+        );
+
+        test.isNull(
+          resultB.current,
+          'Should be null after subscribeA (this indicates the data has been cached)'
+        );
+
+        unmountB();
         await waitFor(() => {});
+
+        rerenderA();
+
+        test.isNull(
+          resultA.current,
+          'Should be null (this indicates the data has been cached)'
+        );
+
+        unmountA();
+        await waitFor(() => {});
+
+        const { result: resultA2, unmount: unmountA2 } = renderHook(
+          () => {
+            try {
+              return useSubscribeSuspense('testUseSubscribe');
+            } catch (promise) {
+              return promise;
+            }
+          },
+          { reactStrictMode }
+        );
+
+        test.instanceOf(
+          resultA2.current,
+          Promise,
+          'Should be a promise (this indicates the data has been cleaned)'
+        );
+
+        await resultA2.current;
+        unmountA2();
       }
     }
   );
