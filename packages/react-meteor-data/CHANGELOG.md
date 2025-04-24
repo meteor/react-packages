@@ -1,9 +1,9 @@
 # CHANGELOG
 
 ## v4.0.0-beta.0, xxx
-*  Breaking change: useFind describes no deps by default [#431](https://github.com/meteor/react-packages/pull/431)
+*  Breaking change: useFind describes no deps by default [PR#431](https://github.com/meteor/react-packages/pull/431)
 *  Fix concurrency issue with useFind [PR#419](https://github.com/meteor/react-packages/pull/419)
-*  Improve `useFind` and `useSubscribe` React suspense hooks [PR#420](https://github.com/meteor/react-packages/pull/429), [#430](https://github.com/meteor/react-packages/pull/430) and [#441](https://github.com/meteor/react-packages/pull/441)
+*  Improve `useFind` and `useSubscribe` React suspense hooks [PR#420](https://github.com/meteor/react-packages/pull/429), [PR#430](https://github.com/meteor/react-packages/pull/430) and [PR#441](https://github.com/meteor/react-packages/pull/441)
 
 ## v3.0.3, 2024-12-30
 *  Add `useSubscribeSuspenseServer` hook to be used in SSR.
