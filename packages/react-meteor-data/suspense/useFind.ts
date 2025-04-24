@@ -2,15 +2,15 @@ import { Meteor } from 'meteor/meteor'
 import { EJSON } from 'meteor/ejson'
 import { Mongo } from 'meteor/mongo'
 import type React from 'react'
-import { useReducer, useMemo, useEffect, Reducer, DependencyList, useRef } from 'react'
+import { useReducer, useMemo, useEffect, type Reducer, type DependencyList, useRef } from 'react'
 import { Tracker } from 'meteor/tracker'
 
 type useFindActions<T> =
-    | { type: 'refresh'; data: T[] }
-    | { type: 'addedAt'; document: T; atIndex: number }
-    | { type: 'changedAt'; document: T; atIndex: number }
-    | { type: 'removedAt'; atIndex: number }
-    | { type: 'movedTo'; fromIndex: number; toIndex: number }
+    | { type: 'refresh', data: T[] }
+    | { type: 'addedAt', document: T, atIndex: number }
+    | { type: 'changedAt', document: T, atIndex: number }
+    | { type: 'removedAt', atIndex: number }
+    | { type: 'movedTo', fromIndex: number, toIndex: number }
 
 const useFindReducer = <T>(data: T[], action: useFindActions<T>): T[] => {
   switch (action.type) {
@@ -20,24 +20,24 @@ const useFindReducer = <T>(data: T[], action: useFindActions<T>): T[] => {
       return [
         ...data.slice(0, action.atIndex),
         action.document,
-        ...data.slice(action.atIndex),
+        ...data.slice(action.atIndex)
       ]
     case 'changedAt':
       return [
         ...data.slice(0, action.atIndex),
         action.document,
-        ...data.slice(action.atIndex + 1),
+        ...data.slice(action.atIndex + 1)
       ]
     case 'removedAt':
       return [
         ...data.slice(0, action.atIndex),
-        ...data.slice(action.atIndex + 1),
+        ...data.slice(action.atIndex + 1)
       ]
     case 'movedTo':
       const doc = data[action.fromIndex]
       const copy = [
         ...data.slice(0, action.fromIndex),
-        ...data.slice(action.fromIndex + 1),
+        ...data.slice(action.fromIndex + 1)
       ]
       copy.splice(action.toIndex, 0, doc)
       return copy
@@ -52,20 +52,20 @@ const useFindReducer = <T>(data: T[], action: useFindActions<T>): T[] => {
 // https://github.com/meteor/meteor/blob/devel/packages/mongo/mongo_driver.js
 // which has fields _mongo and _cursorDescription.
 const checkCursor = <T,>(
-    cursor:
-        | Mongo.Cursor<T>
-        | Partial<{ _mongo: any; _cursorDescription: any }>
-        | undefined
-        | null
+  cursor:
+  | Mongo.Cursor<T>
+  | Partial<{ _mongo: any, _cursorDescription: any }>
+  | undefined
+  | null
 ) => {
   if (
-      cursor !== null &&
+    cursor !== null &&
       cursor !== undefined &&
       !(cursor instanceof Mongo.Cursor) &&
       !(cursor._mongo && cursor._cursorDescription)
   ) {
     console.warn(
-        'Warning: useFind requires an instance of Mongo.Cursor. ' +
+      'Warning: useFind requires an instance of Mongo.Cursor. ' +
         'Make sure you do NOT call .fetch() on your cursor.'
     )
   }
@@ -77,16 +77,16 @@ const fetchData = <T>(cursor: Mongo.Cursor<T>) => {
   const observer = cursor.observe({
     addedAt(document, atIndex, before) {
       data.splice(atIndex, 0, document)
-    },
+    }
   })
   observer.stop()
   return data
 }
 
 export const useFindSuspenseClient = <T = any>(
-    collection: Mongo.Collection<T>,
-    findArgs: Parameters<Mongo.Collection<T>['find']> | null,
-    deps: DependencyList = []
+  collection: Mongo.Collection<T>,
+  findArgs: Parameters<Mongo.Collection<T>['find']> | null,
+  deps: DependencyList = []
 ) => {
   const findArgsKey = EJSON.stringify(findArgs)
 
@@ -101,15 +101,15 @@ export const useFindSuspenseClient = <T = any>(
   }, [findArgsKey, ...deps])
 
   const [data, dispatch] = useReducer<Reducer<T[], useFindActions<T>>, null>(
-      useFindReducer,
-      null,
-      () => {
-        if (!(cursor instanceof Mongo.Cursor)) {
-          return []
-        }
-
-        return fetchData(cursor)
+    useFindReducer,
+    null,
+    () => {
+      if (!(cursor instanceof Mongo.Cursor)) {
+        return []
       }
+
+      return fetchData(cursor)
+    }
   )
 
   // Store information about mounting the component.
@@ -146,8 +146,8 @@ export const useFindSuspenseClient = <T = any>(
       movedTo(document, fromIndex, toIndex, before) {
         dispatch({ type: 'movedTo', fromIndex, toIndex })
       },
-      // @ts-ignore
-      _suppress_initial: true,
+      // @ts-expect-error
+      _suppress_initial: true
     })
 
     return () => {
@@ -168,9 +168,9 @@ interface Entry {
 const cacheMap = new Map<Mongo.Collection<unknown>, Map<string, Entry>>()
 
 export const useFindSuspenseServer = <T = any>(
-    collection: Mongo.Collection<T>,
-    findArgs: Parameters<Mongo.Collection<T>['find']> | null,
-    deps: React.DependencyList = []
+  collection: Mongo.Collection<T>,
+  findArgs: Parameters<Mongo.Collection<T>['find']> | null,
+  deps: React.DependencyList = []
 ) => {
   if (findArgs === null) return null
 
@@ -193,16 +193,16 @@ export const useFindSuspenseServer = <T = any>(
   const entry: Entry = {
     findArgs,
     promise: collection
-        .find(...findArgs)
-        .fetchAsync()
-        .then(
-            result => {
-              entry.result = result
-            },
-            error => {
-              entry.error = error
-            }
-        )
+      .find(...findArgs)
+      .fetchAsync()
+      .then(
+        result => {
+          entry.result = result
+        },
+        error => {
+          entry.error = error
+        }
+      )
   }
 
   if (!cachedEntries) cacheMap.set(collection, new Map([[findArgsKey, entry]]))
@@ -212,13 +212,13 @@ export const useFindSuspenseServer = <T = any>(
 }
 
 export const useFind = Meteor.isServer
-    ? useFindSuspenseServer
-    : useFindSuspenseClient
+  ? useFindSuspenseServer
+  : useFindSuspenseClient
 
 function useFindDev<T = any>(
-    collection: Mongo.Collection<T>,
-    findArgs: Parameters<Mongo.Collection<T>['find']> | null,
-    deps: React.DependencyList = []
+  collection: Mongo.Collection<T>,
+  findArgs: Parameters<Mongo.Collection<T>['find']> | null,
+  deps: React.DependencyList = []
 ) {
   function warn(expects: string, pos: string, arg: string, type: string) {
     console.warn(
@@ -235,5 +235,5 @@ function useFindDev<T = any>(
 }
 
 export default Meteor.isDevelopment
-    ? useFindDev
-    : useFind
+  ? useFindDev
+  : useFind
