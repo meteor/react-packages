@@ -6,11 +6,11 @@ import { useReducer, useMemo, useEffect, Reducer, DependencyList, useRef } from 
 import { Tracker } from 'meteor/tracker'
 
 type useFindActions<T> =
-  | { type: 'refresh' data: T[] }
-  | { type: 'addedAt' document: T atIndex: number }
-  | { type: 'changedAt' document: T atIndex: number }
-  | { type: 'removedAt' atIndex: number }
-  | { type: 'movedTo' fromIndex: number toIndex: number }
+    | { type: 'refresh'; data: T[] }
+    | { type: 'addedAt'; document: T; atIndex: number }
+    | { type: 'changedAt'; document: T; atIndex: number }
+    | { type: 'removedAt'; atIndex: number }
+    | { type: 'movedTo'; fromIndex: number; toIndex: number }
 
 const useFindReducer = <T>(data: T[], action: useFindActions<T>): T[] => {
   switch (action.type) {
@@ -51,21 +51,21 @@ const useFindReducer = <T>(data: T[], action: useFindActions<T>): T[] => {
 // On server, however, we instead get a private Cursor type from
 // https://github.com/meteor/meteor/blob/devel/packages/mongo/mongo_driver.js
 // which has fields _mongo and _cursorDescription.
-const checkCursor = <T>(
-  cursor:
-    | Mongo.Cursor<T>
-    | Partial<{ _mongo: any _cursorDescription: any }>
-    | undefined
-    | null
+const checkCursor = <T,>(
+    cursor:
+        | Mongo.Cursor<T>
+        | Partial<{ _mongo: any; _cursorDescription: any }>
+        | undefined
+        | null
 ) => {
   if (
-    cursor !== null &&
-    cursor !== undefined &&
-    !(cursor instanceof Mongo.Cursor) &&
-    !(cursor._mongo && cursor._cursorDescription)
+      cursor !== null &&
+      cursor !== undefined &&
+      !(cursor instanceof Mongo.Cursor) &&
+      !(cursor._mongo && cursor._cursorDescription)
   ) {
     console.warn(
-      'Warning: useFind requires an instance of Mongo.Cursor. ' +
+        'Warning: useFind requires an instance of Mongo.Cursor. ' +
         'Make sure you do NOT call .fetch() on your cursor.'
     )
   }
@@ -84,9 +84,9 @@ const fetchData = <T>(cursor: Mongo.Cursor<T>) => {
 }
 
 export const useFindSuspenseClient = <T = any>(
-  collection: Mongo.Collection<T>,
-  findArgs: Parameters<Mongo.Collection<T>['find']> | null,
-  deps: DependencyList = []
+    collection: Mongo.Collection<T>,
+    findArgs: Parameters<Mongo.Collection<T>['find']> | null,
+    deps: DependencyList = []
 ) => {
   const findArgsKey = EJSON.stringify(findArgs)
 
@@ -101,15 +101,15 @@ export const useFindSuspenseClient = <T = any>(
   }, [findArgsKey, ...deps])
 
   const [data, dispatch] = useReducer<Reducer<T[], useFindActions<T>>, null>(
-    useFindReducer,
-    null,
-    () => {
-      if (!(cursor instanceof Mongo.Cursor)) {
-        return []
-      }
+      useFindReducer,
+      null,
+      () => {
+        if (!(cursor instanceof Mongo.Cursor)) {
+          return []
+        }
 
-      return fetchData(cursor)
-    }
+        return fetchData(cursor)
+      }
   )
 
   // Store information about mounting the component.
@@ -168,9 +168,9 @@ interface Entry {
 const cacheMap = new Map<Mongo.Collection<unknown>, Map<string, Entry>>()
 
 export const useFindSuspenseServer = <T = any>(
-  collection: Mongo.Collection<T>,
-  findArgs: Parameters<Mongo.Collection<T>['find']> | null,
-  deps: React.DependencyList = []
+    collection: Mongo.Collection<T>,
+    findArgs: Parameters<Mongo.Collection<T>['find']> | null,
+    deps: React.DependencyList = []
 ) => {
   if (findArgs === null) return null
 
@@ -193,16 +193,16 @@ export const useFindSuspenseServer = <T = any>(
   const entry: Entry = {
     findArgs,
     promise: collection
-      .find(...findArgs)
-      .fetchAsync()
-      .then(
-        result => {
-          entry.result = result
-        },
-        error => {
-          entry.error = error
-        }
-      )
+        .find(...findArgs)
+        .fetchAsync()
+        .then(
+            result => {
+              entry.result = result
+            },
+            error => {
+              entry.error = error
+            }
+        )
   }
 
   if (!cachedEntries) cacheMap.set(collection, new Map([[findArgsKey, entry]]))
@@ -212,17 +212,17 @@ export const useFindSuspenseServer = <T = any>(
 }
 
 export const useFind = Meteor.isServer
-  ? useFindSuspenseServer
-  : useFindSuspenseClient
+    ? useFindSuspenseServer
+    : useFindSuspenseClient
 
 function useFindDev<T = any>(
-  collection: Mongo.Collection<T>,
-  findArgs: Parameters<Mongo.Collection<T>['find']> | null,
-  deps: React.DependencyList = []
+    collection: Mongo.Collection<T>,
+    findArgs: Parameters<Mongo.Collection<T>['find']> | null,
+    deps: React.DependencyList = []
 ) {
   function warn(expects: string, pos: string, arg: string, type: string) {
     console.warn(
-      `Warning: useFind expected a ${expects} in it\'s ${pos} argument ` +
+        `Warning: useFind expected a ${expects} in it\'s ${pos} argument ` +
         `(${arg}), but got type of \`${type}\`.`
     )
   }
@@ -235,5 +235,5 @@ function useFindDev<T = any>(
 }
 
 export default Meteor.isDevelopment
-  ? useFindDev
-  : useFind
+    ? useFindDev
+    : useFind
