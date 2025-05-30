@@ -9,6 +9,6 @@ if (Meteor.isDevelopment) {
 }
 
 export { useTracker } from './useTracker';
-export { withTracker } from './withTracker.tsx';
+export { withTracker } from './withTracker';
 export { useFind } from './useFind';
 export { useSubscribe } from './useSubscribe';
