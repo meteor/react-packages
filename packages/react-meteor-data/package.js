@@ -17,9 +17,10 @@ Package.onUse((api) => {
   api.use('tracker')
   api.use('ecmascript')
   api.use('typescript')
-  api.use('zodern:types', 'server')
+  api.addAssets('react-meteor-data.d.ts', 'server')
+  api.addAssets('suspense/react-meteor-data.d.ts', 'server')
 
-  api.mainModule('index.ts', ['client', 'server'], { lazy: true })
+  api.mainModule('index.js', ['client', 'server'], { lazy: true })
 })
 
 Package.onTest((api) => {
