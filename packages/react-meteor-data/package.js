@@ -3,7 +3,7 @@
 Package.describe({
   name: 'react-meteor-data',
   summary: 'React hook for reactively tracking Meteor data',
-  version: '3.0.5-beta.0',
+  version: '3.0.6',
   documentation: 'README.md',
   git: 'https://github.com/meteor/react-packages'
 })
@@ -17,7 +17,7 @@ Package.onUse((api) => {
   api.use('tracker')
   api.use('ecmascript')
   api.use('typescript')
-  api.use('zodern:types', 'server')
+  api.use('zodern:types@1.0.13', 'server')
 
   api.mainModule('index.ts', ['client', 'server'], { lazy: true })
 })
