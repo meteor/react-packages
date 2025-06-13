@@ -72,24 +72,23 @@ const fetchData = <T>(cursor: Mongo.Cursor<T>) => {
 }
 
 const useSyncEffect = (effect, deps) => {
-  const [cleanup, timeoutId] = useMemo(
-    () => {
-      const cleanup = effect();
-      const timeoutId = setTimeout(cleanup, 1000);
-      return [cleanup, timeoutId];
-    },
-    deps
-  );
+   const [cleanup, timeoutId] = useMemo(
+     () => {
+       const cleanup = effect();
+       const timeoutId = setTimeout(cleanup, 1000);
+       return [cleanup, timeoutId];
+     },
+     deps
+   );
 
-  useEffect(() => {
-    clearTimeout(timeoutId);
+   useEffect(() => {
+     clearTimeout(timeoutId);
 
-    return cleanup;
-  }, [cleanup]);
-};
+     return cleanup;
+   }, [cleanup]);
+ };
 
-
-const useFindClient = <T = any>(factory: () => (Mongo.Cursor<T> | undefined | null), deps: DependencyList = []) => {
+const useFindClient = <T = any>(factory: () => (Mongo.Cursor<T> | undefined | null), deps: DependencyList) => {
   const cursor = useMemo(() => {
     // To avoid creating side effects in render, opt out
     // of Tracker integration altogether.
