@@ -1,4 +1,4 @@
-import isEqual from 'lodash.isequal'
+import { strictDeepEqual } from 'fast-equals'
 import { Tracker } from 'meteor/tracker'
 import { type EJSON } from 'meteor/ejson'
 import { type DependencyList, useEffect, useMemo, useReducer, useRef } from 'react'
@@ -55,7 +55,7 @@ function resolveAsync<T>(key: string, promise: Promise<T> | null, deps: Dependen
   useEffect(() =>
     () => {
       setTimeout(() => {
-        if (cached !== undefined && isEqual(cached.deps, deps)) cacheMap.delete(key)
+        if (cached !== undefined && strictDeepEqual(cached.deps, deps)) cacheMap.delete(key)
       }, 0)
     }, [cached, key, ...deps])
 
