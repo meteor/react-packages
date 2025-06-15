@@ -9,7 +9,7 @@ Package.describe({
 })
 
 Npm.depends({
-  'lodash.isequal': '4.5.0'
+  'fast-equals': '5.2.2'
 })
 
 Package.onUse((api) => {
