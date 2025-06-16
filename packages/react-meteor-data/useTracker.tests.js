@@ -763,6 +763,26 @@ if (Meteor.isClient) {
     completed();
   });
 
+  Tinytest.addAsync('useTracker - No useless double render', async function (test, completed) {
+    const container = document.createElement("DIV");
+    let renderCount = 0;
+    const Test = ({ afterMountInc = false }) => {
+      renderCount++;
+      value = useTracker(() => {
+        return null;
+      }, []);
+      return <span>{renderCount}</span>;
+    };
+
+    ReactDOM.render(<Test />, container);
+
+    test.equal(renderCount, 1, "Should have rendered only once before mount");
+    await waitFor(() => {}, { container, timeout: 250 });
+    test.equal(renderCount, 1, "Should have rendered only once after mount");
+
+    completed();
+  });
+
   // Tinytest.add(
   //   "useTracker - print warning if return cursor from useTracker",
   //   function (test) {
