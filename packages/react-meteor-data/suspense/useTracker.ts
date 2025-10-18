@@ -38,7 +38,7 @@ interface Entry {
 // Used to create a forceUpdate from useReducer. Forces update by
 // incrementing a number whenever the dispatch method is invoked.
 const fur = (x: number): number => x + 1
-const useForceUpdate = () => useReducer(fur, 0)[1]
+const useForceUpdate = () => useReducer(fur, 0)
 
 export type IReactiveFn<T> = (c?: Tracker.Computation) => Promise<T>
 
@@ -93,7 +93,7 @@ export function useTrackerSuspenseNoDeps<T = any>(key: string, reactiveFn: IReac
     isMounted: false,
     trackerData: null
   })
-  const forceUpdate = useForceUpdate()
+  const [, forceUpdate] = useForceUpdate()
 
   // Use Tracker.nonreactive in case we are inside a Tracker Computation.
   // This can happen if someone calls `ReactDOM.render` inside a Computation.
@@ -139,7 +139,7 @@ export function useTrackerSuspenseNoDeps<T = any>(key: string, reactiveFn: IReac
 
 export const useTrackerSuspenseWithDeps =
   <T = any>(key: string, reactiveFn: IReactiveFn<T>, deps: DependencyList, skipUpdate?: ISkipUpdate<T> = null): T => {
-    const forceUpdate = useForceUpdate()
+    const [version, forceUpdate] = useForceUpdate()
 
     const { current: refs } = useRef<{
       reactiveFn: IReactiveFn<T>
@@ -178,7 +178,7 @@ export const useTrackerSuspenseWithDeps =
           }
         })
       )
-    }, deps)
+    }, [...deps, version])
 
     useEffect(() => {
       // Let subsequent renders know we are mounted (render is committed).
