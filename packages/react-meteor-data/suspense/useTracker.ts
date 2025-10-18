@@ -114,11 +114,14 @@ export function useTrackerSuspenseNoDeps<T = any>(key: string, reactiveFn: IReac
       if (comp.firstRun) {
         // Always run the reactiveFn on firstRun
         refs.trackerData = data
-      } else if (!skipUpdate || !skipUpdate(await refs.trackerData, await data)) {
-        cacheMap.delete(key)
+      } else {
+        const dataResult = await data;
 
-        // For any reactive change, forceUpdate and let the next render rebuild the computation.
-        refs.isMounted && forceUpdate()
+        if (!skipUpdate || !skipUpdate(await refs.trackerData, dataResult)) {
+          const cached = cacheMap.get(key);
+          cached && (cached.result = dataResult);
+          refs.isMounted && forceUpdate()
+        }
       }
   }))
 
@@ -171,10 +174,14 @@ export const useTrackerSuspenseWithDeps =
 
           if (comp.firstRun) {
             refs.trackerData = data
-          } else if (!skipUpdate || !skipUpdate(await refs.trackerData, await data)) {
-            cacheMap.delete(key)
-            
-            refs.isMounted && forceUpdate()
+          } else {
+            const dataResult = await data;
+
+            if (!skipUpdate || !skipUpdate(await refs.trackerData, dataResult)) {
+              const cached = cacheMap.get(key);
+              cached && (cached.result = dataResult);
+              refs.isMounted && forceUpdate()
+            }
           }
         })
       )

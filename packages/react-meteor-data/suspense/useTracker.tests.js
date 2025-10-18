@@ -85,7 +85,7 @@ runForVariants(
   }
 );
 
-runForVariants(
+Meteor.isServer && runForVariants(
   'suspense/useTracker - Test proper cache invalidation',
   async function (test, useTrackerFn) {
     const { Coll, simpleFetch } = setupTest();
@@ -147,6 +147,74 @@ runForVariants(
         <Test />
       </TestSuspense>
     );
+    renderToString(
+      <TestSuspense>
+        <Test />
+      </TestSuspense>
+    );
+
+    test.equal(
+      returnValue[0].updated,
+      1,
+      'Return value should be an array with one document with value updated'
+    );
+
+    await clearCache();
+  }
+);
+
+Meteor.isClient && runForVariants(
+  'suspense/useTracker - Test responsive behavior',
+  async function (test, useTrackerFn) {
+    const { Coll, simpleFetch } = setupTest();
+
+    let returnValue;
+
+    const Test = () => {
+      returnValue = useTrackerFn('TestDocs', simpleFetch);
+      return null;
+    };
+
+    // first return promise
+    renderToString(
+      <TestSuspense>
+        <Test />
+      </TestSuspense>
+    );
+    // wait promise
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    // return data
+    renderToString(
+      <TestSuspense>
+        <Test />
+      </TestSuspense>
+    );
+
+    test.equal(
+      returnValue[0].updated,
+      0,
+      'Return value should be an array with initial value as find promise resolved'
+    );
+
+    Coll.updateAsync({ id: 0 }, { $inc: { updated: 1 } });
+  
+    // second await promise
+    renderToString(
+      <TestSuspense>
+        <Test />
+      </TestSuspense>
+    );
+
+    test.equal(
+      returnValue[0].updated,
+      0,
+      'Return value should still not updated as second find promise unresolved'
+    );
+
+    // wait promise
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // return data
     renderToString(
       <TestSuspense>
         <Test />
