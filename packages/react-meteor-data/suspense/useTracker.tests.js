@@ -21,18 +21,37 @@ const TestSuspense = ({ children }) => {
   return <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>;
 };
 
+const trackerVariants = [
+  {
+    label: 'default',
+    useTrackerFn: (key, fn, skipUpdate) => useTracker(key, fn, skipUpdate),
+  },
+  {
+    label: 'with deps',
+    useTrackerFn: (key, fn, skipUpdate) => useTracker(key, fn, [], skipUpdate),
+  },
+];
+
+const runForVariants = (name, testBody) => {
+  trackerVariants.forEach(({ label, useTrackerFn }) => {
+    Tinytest.addAsync(`${name} [${label}]`, (test) =>
+      testBody(test, useTrackerFn)
+    );
+  });
+};
+
 /**
  * Test for useTracker with Suspense
  */
-Tinytest.addAsync(
+runForVariants(
   'suspense/useTracker - Data query validation',
-  async (test) => {
+  async (test, useTrackerFn) => {
     const { simpleFetch } = setupTest();
 
     let returnValue;
 
     const Test = () => {
-      returnValue = useTracker('TestDocs', simpleFetch);
+      returnValue = useTrackerFn('TestDocs', simpleFetch);
 
       return null;
     };
@@ -66,15 +85,15 @@ Tinytest.addAsync(
   }
 );
 
-Tinytest.addAsync(
+Meteor.isServer && runForVariants(
   'suspense/useTracker - Test proper cache invalidation',
-  async function (test) {
+  async function (test, useTrackerFn) {
     const { Coll, simpleFetch } = setupTest();
 
     let returnValue;
 
     const Test = () => {
-      returnValue = useTracker('TestDocs', simpleFetch);
+      returnValue = useTrackerFn('TestDocs', simpleFetch);
       return null;
     };
 
@@ -144,16 +163,84 @@ Tinytest.addAsync(
   }
 );
 
+Meteor.isClient && runForVariants(
+  'suspense/useTracker - Test responsive behavior',
+  async function (test, useTrackerFn) {
+    const { Coll, simpleFetch } = setupTest();
+
+    let returnValue;
+
+    const Test = () => {
+      returnValue = useTrackerFn('TestDocs', simpleFetch);
+      return null;
+    };
+
+    // first return promise
+    renderToString(
+      <TestSuspense>
+        <Test />
+      </TestSuspense>
+    );
+    // wait promise
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    // return data
+    renderToString(
+      <TestSuspense>
+        <Test />
+      </TestSuspense>
+    );
+
+    test.equal(
+      returnValue[0].updated,
+      0,
+      'Return value should be an array with initial value as find promise resolved'
+    );
+
+    Coll.updateAsync({ id: 0 }, { $inc: { updated: 1 } });
+  
+    // second await promise
+    renderToString(
+      <TestSuspense>
+        <Test />
+      </TestSuspense>
+    );
+
+    test.equal(
+      returnValue[0].updated,
+      0,
+      'Return value should still not updated as second find promise unresolved'
+    );
+
+    // wait promise
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // return data
+    renderToString(
+      <TestSuspense>
+        <Test />
+      </TestSuspense>
+    );
+
+    test.equal(
+      returnValue[0].updated,
+      1,
+      'Return value should be an array with one document with value updated'
+    );
+
+    await clearCache();
+  }
+);
+
 Meteor.isClient &&
-  Tinytest.addAsync(
+  runForVariants(
     'suspense/useTracker - Test useTracker with skipUpdate',
-    async function (test) {
+    async function (test, useTrackerFn) {
       const { Coll, simpleFetch } = setupTest({ id: 0, updated: 0, other: 0 });
 
       let returnValue;
 
       const Test = () => {
-        returnValue = useTracker('TestDocs', simpleFetch, (prev, next) => {
+        returnValue = useTrackerFn('TestDocs', simpleFetch, (prev, next) => {
           // Skip update if the document has not changed
           return prev[0].updated === next[0].updated;
         });
@@ -212,9 +299,9 @@ Meteor.isClient &&
 
 // https://github.com/meteor/react-packages/issues/454
 Meteor.isClient &&
-  Tinytest.addAsync(
+  runForVariants(
     'suspense/useTracker - Testing performance with multiple Trackers',
-    async (test) => {
+    async (test, useTrackerFn) => {
       const TestCollections = [];
       let returnDocs = new Map();
 
@@ -229,7 +316,7 @@ Meteor.isClient &&
       }
 
       const Test = ({ collection, index }) => {
-        const docsCount = useTracker(`TestDocs${index}`, () =>
+        const docsCount = useTrackerFn(`TestDocs${index}`, () =>
           collection.find().fetchAsync()
         ).length;
 
@@ -268,15 +355,15 @@ Meteor.isClient &&
   );
 
 Meteor.isServer &&
-  Tinytest.addAsync(
+  runForVariants(
     'suspense/useTracker - Test no memory leaks',
-    async function (test) {
+    async function (test, useTrackerFn) {
       const { simpleFetch } = setupTest();
 
       let returnValue;
 
       const Test = () => {
-        returnValue = useTracker('TestDocs', simpleFetch);
+        returnValue = useTrackerFn('TestDocs', simpleFetch);
 
         return null;
       };
@@ -307,13 +394,13 @@ Meteor.isServer &&
   );
 
 Meteor.isClient &&
-  Tinytest.addAsync(
+  runForVariants(
     'suspense/useTracker - Test no memory leaks',
-    async function (test) {
+    async function (test, useTrackerFn) {
       const { simpleFetch } = setupTest({ id: 0, name: 'a' });
 
       const Test = () => {
-        const docs = useTracker('TestDocs', simpleFetch);
+        const docs = useTrackerFn('TestDocs', simpleFetch);
 
         return <div>{docs[0]?.name}</div>;
       };
