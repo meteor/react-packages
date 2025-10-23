@@ -131,8 +131,11 @@ export function useTrackerSuspenseNoDeps<T = any>(key: string, reactiveFn: IReac
 
     // stop the computation on unmount
     return () => {
-      refs.computation?.stop()
-      delete refs.computation
+      if (refs.computation) {
+        refs.computation.stop()
+        delete refs.computation
+      }
+
       refs.isMounted = false
     }
   }, [])
@@ -192,8 +195,11 @@ export const useTrackerSuspenseWithDeps =
       refs.isMounted = true
 
       return () => {
-        refs.computation.stop()
-        delete refs.computation
+        if (refs.computation) {
+          refs.computation.stop()
+          delete refs.computation
+        }
+
         refs.isMounted = false
       }
     }, deps)

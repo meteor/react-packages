@@ -428,3 +428,29 @@ Meteor.isClient &&
       );
     }
   );
+
+Meteor.isClient &&
+  runForVariants(
+    'suspense/useTracker - component unmount in Strict Mode',
+    async function (test, useTrackerFn) {
+      const { simpleFetch } = setupTest();
+
+      const Test = () => {
+        useTrackerFn('TestDocs', simpleFetch);
+
+        return null;
+      };
+
+      const { queryByText, findByText, unmount } = render(<Test />, {
+        container: document.createElement('container'),
+        wrapper: TestSuspense,
+        reactStrictMode: true,
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      unmount();
+
+      test.isTrue(true, 'should handle unmount correctly in Strict Mode');
+    }
+  );
