@@ -1,4 +1,4 @@
-import { strictDeepEqual } from 'fast-equals'
+import { deepEqual, strictDeepEqual } from 'fast-equals'
 import { Tracker } from 'meteor/tracker'
 import { type EJSON } from 'meteor/ejson'
 import { type DependencyList, useEffect, useMemo, useReducer, useRef } from 'react'
@@ -115,6 +115,14 @@ export function useTrackerSuspenseNoDeps<T = any>(key: string, reactiveFn: IReac
       if (comp.firstRun) {
         // Always run the reactiveFn on firstRun
         refs.trackerData = data
+
+        // The NoDeps version cannot detect variable changes, so we deep compare the value to avoid
+        // frequently throwing Promises and pausing suspense. Only on actual value change, we throw again.
+        const cached = cacheMap.get(key)
+        if (cached && !deepEqual(cached.result, await data)) {
+          cacheMap.delete(key)
+          refs.isMounted && forceUpdate()
+        }
       } else {
         const dataResult = await data;
 
@@ -187,6 +195,12 @@ export const useTrackerSuspenseWithDeps =
 
           if (comp.firstRun) {
             refs.trackerData = data
+
+            // When deps change, re-throw the Promise to get new data.
+            const cached = cacheMap.get(key)
+            if (cached && !strictDeepEqual(cached.deps, deps)) {
+              cacheMap.delete(key)
+            }
           } else {
             const dataResult = await data;
 
