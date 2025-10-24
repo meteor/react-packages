@@ -89,6 +89,7 @@ export function useTrackerSuspenseNoDeps<T = any>(key: string, reactiveFn: IReac
     isMounted: boolean
     computation?: Tracker.Computation
     trackerData: any
+    cleanupTimoutId?: number
   }>({
     isMounted: false,
     trackerData: null
@@ -129,14 +130,22 @@ export function useTrackerSuspenseNoDeps<T = any>(key: string, reactiveFn: IReac
     // Let subsequent renders know we are mounted (render is committed).
     refs.isMounted = true
 
-    // stop the computation on unmount
-    return () => {
-      if (refs.computation) {
-        refs.computation.stop()
-        delete refs.computation
-      }
+    // In strict mode (development only), `useEffect` may run 1-2 times.
+    // To avoid this, check the `timeout` to ensure cleanup only occurs after unmount.
+    if (refs.cleanupTimoutId) {
+      clearTimeout(refs.cleanupTimoutId)
+      delete refs.cleanupTimoutId
+    }
 
-      refs.isMounted = false
+    return () => {
+      refs.cleanupTimoutId = setTimeout(() => {
+        if (refs.computation) {
+          refs.computation.stop()
+          delete refs.computation
+        }
+        refs.isMounted = false
+        delete refs.cleanupTimoutId
+      }, 0)
     }
   }, [])
 
@@ -152,6 +161,7 @@ export const useTrackerSuspenseWithDeps =
       isMounted: boolean
       trackerData?: Promise<T>
       computation?: Tracker.Computation
+      cleanupTimoutId?: number
     }>({ 
       reactiveFn, 
       isMounted: false,
@@ -194,13 +204,22 @@ export const useTrackerSuspenseWithDeps =
       // Let subsequent renders know we are mounted (render is committed).
       refs.isMounted = true
 
-      return () => {
-        if (refs.computation) {
-          refs.computation.stop()
-          delete refs.computation
-        }
+      // In strict mode (development only), `useEffect` may run 1-2 times.
+      // To avoid this, check the `timeout` to ensure cleanup only occurs after unmount.
+      if (refs.cleanupTimoutId) {
+        clearTimeout(refs.cleanupTimoutId)
+        delete refs.cleanupTimoutId
+      }
 
-        refs.isMounted = false
+      return () => {
+        refs.cleanupTimoutId = setTimeout(() => {
+          if (refs.computation) {
+            refs.computation.stop()
+            delete refs.computation
+          }
+          refs.isMounted = false
+          delete refs.cleanupTimoutId
+        }, 0)
       }
     }, deps)
 

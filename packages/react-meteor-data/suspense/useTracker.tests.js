@@ -85,6 +85,29 @@ runForVariants(
   }
 );
 
+Meteor.isClient && runForVariants(
+  'suspense/useTracker - Data query validation with Strict Mode',
+  async function (test, useTrackerFn) {
+    const { simpleFetch } = setupTest({ id: 0, name: 'a' });
+
+    const Test = () => {
+      const docs = useTrackerFn('TestDocs', simpleFetch);
+
+      return <div>{docs[0]?.name}</div>;
+    };
+
+    const { findByText } = render(<Test />, {
+      container: document.createElement('container'),
+      wrapper: TestSuspense,
+      reactStrictMode: true,
+    });
+
+    test.isTrue(await findByText('a'), 'Need to return data');
+
+    await clearCache();
+  }
+);
+
 Meteor.isServer && runForVariants(
   'suspense/useTracker - Test proper cache invalidation',
   async function (test, useTrackerFn) {
@@ -226,6 +249,33 @@ Meteor.isClient && runForVariants(
       1,
       'Return value should be an array with one document with value updated'
     );
+
+    await clearCache();
+  }
+);
+
+Meteor.isClient && runForVariants(
+  'suspense/useTracker - Test responsive behavior with Strict Mode',
+  async function (test, useTrackerFn) {
+    const { Coll, simpleFetch } = setupTest({ id: 0, name: 'a' });
+
+    const Test = () => {
+      const docs = useTrackerFn('TestDocs', simpleFetch);
+
+      return <div>{docs[0]?.name}</div>;
+    };
+
+    const { findByText } = render(<Test />, {
+      container: document.createElement('container'),
+      wrapper: TestSuspense,
+      reactStrictMode: true,
+    });
+
+    test.isTrue(await findByText('a'), 'Need to return data');
+
+    Coll.updateAsync({ id: 0 }, { $set: { name: 'b' } });
+
+    test.isTrue(await findByText('b'), 'Need to return data');
 
     await clearCache();
   }
