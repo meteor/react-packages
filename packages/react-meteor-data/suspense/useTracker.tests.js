@@ -24,11 +24,13 @@ const TestSuspense = ({ children }) => {
 const trackerVariants = [
   {
     label: 'default',
-    useTrackerFn: (key, fn, skipUpdate, _deps) => useTracker(key, fn, skipUpdate),
+    useTrackerFn: (key, fn, skipUpdate, _deps) =>
+      useTracker(key, fn, skipUpdate),
   },
   {
     label: 'with deps',
-    useTrackerFn: (key, fn, skipUpdate, deps = []) => useTracker(key, fn, deps, skipUpdate),
+    useTrackerFn: (key, fn, skipUpdate, deps = []) =>
+      useTracker(key, fn, deps, skipUpdate),
   },
 ];
 
@@ -85,159 +87,163 @@ runForVariants(
   }
 );
 
-Meteor.isClient && runForVariants(
-  'suspense/useTracker - Data query validation with Strict Mode',
-  async function (test, useTrackerFn) {
-    const { simpleFetch } = setupTest({ id: 0, name: 'a' });
+Meteor.isClient &&
+  runForVariants(
+    'suspense/useTracker - Data query validation with Strict Mode',
+    async function (test, useTrackerFn) {
+      const { simpleFetch } = setupTest({ id: 0, name: 'a' });
 
-    const Test = () => {
-      const docs = useTrackerFn('TestDocs', simpleFetch);
+      const Test = () => {
+        const docs = useTrackerFn('TestDocs', simpleFetch);
 
-      return <div>{docs[0]?.name}</div>;
-    };
+        return <div>{docs[0]?.name}</div>;
+      };
 
-    const { findByText } = render(<Test />, {
-      container: document.createElement('container'),
-      wrapper: TestSuspense,
-      reactStrictMode: true,
-    });
+      const { findByText } = render(<Test />, {
+        container: document.createElement('container'),
+        wrapper: TestSuspense,
+        reactStrictMode: true,
+      });
 
-    test.isTrue(await findByText('a'), 'Need to return data');
+      test.isTrue(await findByText('a'), 'Need to return data');
 
-    await clearCache();
-  }
-);
+      await clearCache();
+    }
+  );
 
-Meteor.isServer && runForVariants(
-  'suspense/useTracker - Test proper cache invalidation',
-  async function (test, useTrackerFn) {
-    const { Coll, simpleFetch } = setupTest();
+Meteor.isServer &&
+  runForVariants(
+    'suspense/useTracker - Test proper cache invalidation',
+    async function (test, useTrackerFn) {
+      const { Coll, simpleFetch } = setupTest();
 
-    let returnValue;
+      let returnValue;
 
-    const Test = () => {
-      returnValue = useTrackerFn('TestDocs', simpleFetch);
-      return null;
-    };
+      const Test = () => {
+        returnValue = useTrackerFn('TestDocs', simpleFetch);
+        return null;
+      };
 
-    // first return promise
-    renderToString(
-      <TestSuspense>
-        <Test />
-      </TestSuspense>
-    );
-    // wait promise
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    // return data
-    renderToString(
-      <TestSuspense>
-        <Test />
-      </TestSuspense>
-    );
+      // first return promise
+      renderToString(
+        <TestSuspense>
+          <Test />
+        </TestSuspense>
+      );
+      // wait promise
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      // return data
+      renderToString(
+        <TestSuspense>
+          <Test />
+        </TestSuspense>
+      );
 
-    test.equal(
-      returnValue[0].updated,
-      0,
-      'Return value should be an array with initial value as find promise resolved'
-    );
+      test.equal(
+        returnValue[0].updated,
+        0,
+        'Return value should be an array with initial value as find promise resolved'
+      );
 
-    Coll.updateAsync({ id: 0 }, { $inc: { updated: 1 } });
-    await new Promise((resolve) => setTimeout(resolve, 100));
+      Coll.updateAsync({ id: 0 }, { $inc: { updated: 1 } });
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
-    // second return promise
-    renderToString(
-      <TestSuspense>
-        <Test />
-      </TestSuspense>
-    );
+      // second return promise
+      renderToString(
+        <TestSuspense>
+          <Test />
+        </TestSuspense>
+      );
 
-    test.equal(
-      returnValue[0].updated,
-      0,
-      'Return value should still not updated as second find promise unresolved'
-    );
+      test.equal(
+        returnValue[0].updated,
+        0,
+        'Return value should still not updated as second find promise unresolved'
+      );
 
-    // wait promise
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    // return data
-    renderToString(
-      <TestSuspense>
-        <Test />
-      </TestSuspense>
-    );
-    renderToString(
-      <TestSuspense>
-        <Test />
-      </TestSuspense>
-    );
-    renderToString(
-      <TestSuspense>
-        <Test />
-      </TestSuspense>
-    );
+      // wait promise
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      // return data
+      renderToString(
+        <TestSuspense>
+          <Test />
+        </TestSuspense>
+      );
+      renderToString(
+        <TestSuspense>
+          <Test />
+        </TestSuspense>
+      );
+      renderToString(
+        <TestSuspense>
+          <Test />
+        </TestSuspense>
+      );
 
-    test.equal(
-      returnValue[0].updated,
-      1,
-      'Return value should be an array with one document with value updated'
-    );
+      test.equal(
+        returnValue[0].updated,
+        1,
+        'Return value should be an array with one document with value updated'
+      );
 
-    await clearCache();
-  }
-);
+      await clearCache();
+    }
+  );
 
-Meteor.isClient && runForVariants(
-  'suspense/useTracker - Test responsive behavior',
-  async function (test, useTrackerFn) {
-    const { Coll, simpleFetch } = setupTest();
+Meteor.isClient &&
+  runForVariants(
+    'suspense/useTracker - Test responsive behavior',
+    async function (test, useTrackerFn) {
+      const { Coll, simpleFetch } = setupTest();
 
-    const Test = () => {
-      const docs = useTrackerFn('TestDocs', simpleFetch);
-      return <div>{docs[0]?.updated}</div>;
-    };
+      const Test = () => {
+        const docs = useTrackerFn('TestDocs', simpleFetch);
+        return <div>{docs[0]?.updated}</div>;
+      };
 
-    const { findByText } = render(<Test />, {
-      container: document.createElement('container'),
-      wrapper: TestSuspense,
-      reactStrictMode: true,
-    });
+      const { findByText } = render(<Test />, {
+        container: document.createElement('container'),
+        wrapper: TestSuspense,
+        reactStrictMode: true,
+      });
 
-    test.isTrue(await findByText('0'), 'Need to return data');
+      test.isTrue(await findByText('0'), 'Need to return data');
 
-    Coll.updateAsync({ id: 0 }, { $inc: { updated: 1 } });
+      Coll.updateAsync({ id: 0 }, { $inc: { updated: 1 } });
 
-    test.isTrue(await findByText('1'), 'Need to return data');
+      test.isTrue(await findByText('1'), 'Need to return data');
 
-    await clearCache();
-  }
-);
+      await clearCache();
+    }
+  );
 
-Meteor.isClient && runForVariants(
-  'suspense/useTracker - Test responsive behavior with Strict Mode',
-  async function (test, useTrackerFn) {
-    const { Coll, simpleFetch } = setupTest({ id: 0, name: 'a' });
+Meteor.isClient &&
+  runForVariants(
+    'suspense/useTracker - Test responsive behavior with Strict Mode',
+    async function (test, useTrackerFn) {
+      const { Coll, simpleFetch } = setupTest({ id: 0, name: 'a' });
 
-    const Test = () => {
-      const docs = useTrackerFn('TestDocs', simpleFetch);
+      const Test = () => {
+        const docs = useTrackerFn('TestDocs', simpleFetch);
 
-      return <div>{docs[0]?.name}</div>;
-    };
+        return <div>{docs[0]?.name}</div>;
+      };
 
-    const { findByText } = render(<Test />, {
-      container: document.createElement('container'),
-      wrapper: TestSuspense,
-      reactStrictMode: true,
-    });
+      const { findByText } = render(<Test />, {
+        container: document.createElement('container'),
+        wrapper: TestSuspense,
+        reactStrictMode: true,
+      });
 
-    test.isTrue(await findByText('a'), 'Need to return data');
+      test.isTrue(await findByText('a'), 'Need to return data');
 
-    Coll.updateAsync({ id: 0 }, { $set: { name: 'b' } });
+      Coll.updateAsync({ id: 0 }, { $set: { name: 'b' } });
 
-    test.isTrue(await findByText('b'), 'Need to return data');
+      test.isTrue(await findByText('b'), 'Need to return data');
 
-    await clearCache();
-  }
-);
+      await clearCache();
+    }
+  );
 
 Meteor.isClient &&
   runForVariants(
