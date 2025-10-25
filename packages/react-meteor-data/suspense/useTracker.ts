@@ -105,7 +105,7 @@ export function useTrackerSuspenseNoDeps<T = any>(key: string, reactiveFn: IReac
     Tracker.autorun(async (comp: Tracker.Computation) => {
       if (refs.computation) {
         refs.computation.stop()
-        delete refs.computation
+        refs.computation = undefined
       }
 
       refs.computation = comp
@@ -142,17 +142,17 @@ export function useTrackerSuspenseNoDeps<T = any>(key: string, reactiveFn: IReac
     // To avoid this, check the `timeout` to ensure cleanup only occurs after unmount.
     if (refs.cleanupTimoutId) {
       clearTimeout(refs.cleanupTimoutId)
-      delete refs.cleanupTimoutId
+      refs.cleanupTimoutId = undefined
     }
 
     return () => {
       refs.cleanupTimoutId = setTimeout(() => {
         if (refs.computation) {
           refs.computation.stop()
-          delete refs.computation
+          refs.computation = undefined
         }
         refs.isMounted = false
-        delete refs.cleanupTimoutId
+        refs.cleanupTimoutId = undefined
       }, 0)
     }
   }, [])
@@ -186,7 +186,7 @@ export const useTrackerSuspenseWithDeps =
         () => Tracker.autorun(async (comp: Tracker.Computation) => {
           if (refs.computation) {
             refs.computation.stop()
-            delete refs.computation
+            refs.computation = undefined
           }
 
           refs.computation = comp
@@ -222,17 +222,17 @@ export const useTrackerSuspenseWithDeps =
       // To avoid this, check the `timeout` to ensure cleanup only occurs after unmount.
       if (refs.cleanupTimoutId) {
         clearTimeout(refs.cleanupTimoutId)
-        delete refs.cleanupTimoutId
+        refs.cleanupTimoutId = undefined
       }
 
       return () => {
         refs.cleanupTimoutId = setTimeout(() => {
           if (refs.computation) {
             refs.computation.stop()
-            delete refs.computation
+            refs.computation = undefined
           }
           refs.isMounted = false
-          delete refs.cleanupTimoutId
+          refs.cleanupTimoutId = undefined
         }, 0)
       }
     }, deps)
