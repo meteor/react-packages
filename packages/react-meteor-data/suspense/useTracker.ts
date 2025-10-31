@@ -1,4 +1,4 @@
-import { strictDeepEqual } from 'fast-equals'
+import { deepEqual, strictDeepEqual } from 'fast-equals'
 import { Tracker } from 'meteor/tracker'
 import { type EJSON } from 'meteor/ejson'
 import { type DependencyList, useEffect, useMemo, useReducer, useRef } from 'react'
@@ -89,6 +89,7 @@ export function useTrackerSuspenseNoDeps<T = any>(key: string, reactiveFn: IReac
     isMounted: boolean
     computation?: Tracker.Computation
     trackerData: any
+    cleanupTimoutId?: number
   }>({
     isMounted: false,
     trackerData: null
@@ -104,7 +105,7 @@ export function useTrackerSuspenseNoDeps<T = any>(key: string, reactiveFn: IReac
     Tracker.autorun(async (comp: Tracker.Computation) => {
       if (refs.computation) {
         refs.computation.stop()
-        delete refs.computation
+        refs.computation = undefined
       }
 
       refs.computation = comp
@@ -114,6 +115,14 @@ export function useTrackerSuspenseNoDeps<T = any>(key: string, reactiveFn: IReac
       if (comp.firstRun) {
         // Always run the reactiveFn on firstRun
         refs.trackerData = data
+
+        // The NoDeps version cannot detect variable changes, so we deep compare the value to avoid
+        // frequently throwing Promises and pausing suspense. Only on actual value change, we throw again.
+        const cached = cacheMap.get(key)
+        if (cached && !deepEqual(cached.result, await data)) {
+          cacheMap.delete(key)
+          refs.isMounted && forceUpdate()
+        }
       } else {
         const dataResult = await data;
 
@@ -129,14 +138,22 @@ export function useTrackerSuspenseNoDeps<T = any>(key: string, reactiveFn: IReac
     // Let subsequent renders know we are mounted (render is committed).
     refs.isMounted = true
 
-    // stop the computation on unmount
-    return () => {
-      if (refs.computation) {
-        refs.computation.stop()
-        delete refs.computation
-      }
+    // In strict mode (development only), `useEffect` may run 1-2 times.
+    // To avoid this, check the `timeout` to ensure cleanup only occurs after unmount.
+    if (refs.cleanupTimoutId) {
+      clearTimeout(refs.cleanupTimoutId)
+      refs.cleanupTimoutId = undefined
+    }
 
-      refs.isMounted = false
+    return () => {
+      refs.cleanupTimoutId = setTimeout(() => {
+        if (refs.computation) {
+          refs.computation.stop()
+          refs.computation = undefined
+        }
+        refs.isMounted = false
+        refs.cleanupTimoutId = undefined
+      }, 0)
     }
   }, [])
 
@@ -152,6 +169,7 @@ export const useTrackerSuspenseWithDeps =
       isMounted: boolean
       trackerData?: Promise<T>
       computation?: Tracker.Computation
+      cleanupTimoutId?: number
     }>({ 
       reactiveFn, 
       isMounted: false,
@@ -168,7 +186,7 @@ export const useTrackerSuspenseWithDeps =
         () => Tracker.autorun(async (comp: Tracker.Computation) => {
           if (refs.computation) {
             refs.computation.stop()
-            delete refs.computation
+            refs.computation = undefined
           }
 
           refs.computation = comp
@@ -177,6 +195,12 @@ export const useTrackerSuspenseWithDeps =
 
           if (comp.firstRun) {
             refs.trackerData = data
+
+            // When deps change, re-throw the Promise to get new data.
+            const cached = cacheMap.get(key)
+            if (cached && !strictDeepEqual(cached.deps, deps)) {
+              cacheMap.delete(key)
+            }
           } else {
             const dataResult = await data;
 
@@ -194,13 +218,22 @@ export const useTrackerSuspenseWithDeps =
       // Let subsequent renders know we are mounted (render is committed).
       refs.isMounted = true
 
-      return () => {
-        if (refs.computation) {
-          refs.computation.stop()
-          delete refs.computation
-        }
+      // In strict mode (development only), `useEffect` may run 1-2 times.
+      // To avoid this, check the `timeout` to ensure cleanup only occurs after unmount.
+      if (refs.cleanupTimoutId) {
+        clearTimeout(refs.cleanupTimoutId)
+        refs.cleanupTimoutId = undefined
+      }
 
-        refs.isMounted = false
+      return () => {
+        refs.cleanupTimoutId = setTimeout(() => {
+          if (refs.computation) {
+            refs.computation.stop()
+            refs.computation = undefined
+          }
+          refs.isMounted = false
+          refs.cleanupTimoutId = undefined
+        }, 0)
       }
     }, deps)
 
