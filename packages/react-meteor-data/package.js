@@ -3,13 +3,13 @@
 Package.describe({
   name: 'react-meteor-data',
   summary: 'React hook for reactively tracking Meteor data',
-  version: '4.0.0',
+  version: '4.0.1',
   documentation: 'README.md',
   git: 'https://github.com/meteor/react-packages'
 })
 
 Npm.depends({
-  'lodash.isequal': '4.5.0'
+  'fast-equals': '5.2.2'
 })
 
 Package.onUse((api) => {

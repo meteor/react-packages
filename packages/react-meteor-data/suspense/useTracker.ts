@@ -1,4 +1,4 @@
-import isEqual from 'lodash.isequal'
+import { deepEqual, strictDeepEqual } from 'fast-equals'
 import { Tracker } from 'meteor/tracker'
 import { type EJSON } from 'meteor/ejson'
 import { type DependencyList, useEffect, useMemo, useReducer, useRef } from 'react'
@@ -38,38 +38,31 @@ interface Entry {
 // Used to create a forceUpdate from useReducer. Forces update by
 // incrementing a number whenever the dispatch method is invoked.
 const fur = (x: number): number => x + 1
-const useForceUpdate = () => useReducer(fur, 0)[1]
+const useForceUpdate = () => useReducer(fur, 0)
 
 export type IReactiveFn<T> = (c?: Tracker.Computation) => Promise<T>
 
 export type ISkipUpdate<T> = <T>(prev: T, next: T) => boolean
-
-interface TrackerRefs {
-  computation?: Tracker.Computation
-  isMounted: boolean
-  trackerData: any
-}
 
 function resolveAsync<T>(key: string, promise: Promise<T> | null, deps: DependencyList = []): typeof promise extends null ? null : T {
   const cached = cacheMap.get(key)
   useEffect(() =>
     () => {
       setTimeout(() => {
-        if (cached !== undefined && isEqual(cached.deps, deps)) cacheMap.delete(key)
+        if (cached !== undefined && strictDeepEqual(cached.deps, deps)) cacheMap.delete(key)
       }, 0)
     }, [cached, key, ...deps])
 
   if (promise === null) return null
 
   if (cached !== undefined) {
-    if ('error' in cached) throw cached.error
-    if ('result' in cached) {
-      const result = cached.result as T
+    if (Meteor.isServer && ('error' in cached || 'result' in cached)) {
       setTimeout(() => {
         cacheMap.delete(key)
       }, 0)
-      return result
     }
+    if ('error' in cached) throw cached.error
+    if ('result' in cached) return cached.result as T
     throw cached.promise
   }
 
@@ -91,19 +84,17 @@ function resolveAsync<T>(key: string, promise: Promise<T> | null, deps: Dependen
   throw entry.promise
 }
 
-export function useTrackerNoDeps<T = any>(key: string, reactiveFn: IReactiveFn<T>, skipUpdate: ISkipUpdate<T> = null): T {
-  const { current: refs } = useRef<TrackerRefs>({
+export function useTrackerSuspenseNoDeps<T = any>(key: string, reactiveFn: IReactiveFn<T>, skipUpdate: ISkipUpdate<T> = null): T {
+  const { current: refs } = useRef<{
+    isMounted: boolean
+    computation?: Tracker.Computation
+    trackerData: any
+    cleanupTimoutId?: number
+  }>({
     isMounted: false,
     trackerData: null
   })
-  const forceUpdate = useForceUpdate()
-
-  // Without deps, always dispose and recreate the computation with every render.
-  if (refs.computation != null) {
-    refs.computation.stop()
-    // @ts-expect-error This makes TS think ref.computation is "never" set
-    delete refs.computation
-  }
+  const [, forceUpdate] = useForceUpdate()
 
   // Use Tracker.nonreactive in case we are inside a Tracker Computation.
   // This can happen if someone calls `ReactDOM.render` inside a Computation.
@@ -111,76 +102,79 @@ export function useTrackerNoDeps<T = any>(key: string, reactiveFn: IReactiveFn<T
   // Computations, where if the outer one is invalidated or stopped,
   // it stops the inner one.
   Tracker.nonreactive(() =>
-    Tracker.autorun(async (c: Tracker.Computation) => {
-      refs.computation = c
+    Tracker.autorun(async (comp: Tracker.Computation) => {
+      if (refs.computation) {
+        refs.computation.stop()
+        refs.computation = undefined
+      }
 
-      const data: Promise<any> = Tracker.withComputation(c, async () => reactiveFn(c))
-      if (c.firstRun) {
+      refs.computation = comp
+
+      const data: Promise<any> = Tracker.withComputation(comp, async () => reactiveFn(comp))
+
+      if (comp.firstRun) {
         // Always run the reactiveFn on firstRun
         refs.trackerData = data
-      } else if (!skipUpdate || !skipUpdate(await refs.trackerData, await data)) {
-        // For any reactive change, forceUpdate and let the next render rebuild the computation.
-        forceUpdate()
-      }
-    }))
 
-  // To clean up side effects in render, stop the computation immediately
-  if (!refs.isMounted) {
-    Meteor.defer(() => {
-      if (!refs.isMounted && (refs.computation != null)) {
-        refs.computation.stop()
-        delete refs.computation
+        // The NoDeps version cannot detect variable changes, so we deep compare the value to avoid
+        // frequently throwing Promises and pausing suspense. Only on actual value change, we throw again.
+        const cached = cacheMap.get(key)
+        if (cached && !deepEqual(cached.result, await data)) {
+          cacheMap.delete(key)
+          refs.isMounted && forceUpdate()
+        }
+      } else {
+        const dataResult = await data;
+
+        if (!skipUpdate || !skipUpdate(await refs.trackerData, dataResult)) {
+          const cached = cacheMap.get(key);
+          cached && (cached.result = dataResult);
+          refs.isMounted && forceUpdate()
+        }
       }
-    })
-  }
+  }))
 
   useEffect(() => {
     // Let subsequent renders know we are mounted (render is committed).
     refs.isMounted = true
 
-    // In some cases, the useEffect hook will run before Meteor.defer, such as
-    // when React.lazy is used. In those cases, we might as well leave the
-    // computation alone!
-    if (refs.computation == null) {
-      // Render is committed, but we no longer have a computation. Invoke
-      // forceUpdate and let the next render recreate the computation.
-      if (!skipUpdate) {
-        forceUpdate()
-      } else {
-        Tracker.nonreactive(() =>
-          Tracker.autorun(async (c: Tracker.Computation) => {
-            const data = Tracker.withComputation(c, async () => reactiveFn(c))
-
-            refs.computation = c
-            if (!skipUpdate(await refs.trackerData, await data)) {
-              // For any reactive change, forceUpdate and let the next render rebuild the computation.
-              forceUpdate()
-            }
-          }))
-      }
+    // In strict mode (development only), `useEffect` may run 1-2 times.
+    // To avoid this, check the `timeout` to ensure cleanup only occurs after unmount.
+    if (refs.cleanupTimoutId) {
+      clearTimeout(refs.cleanupTimoutId)
+      refs.cleanupTimoutId = undefined
     }
 
-    // stop the computation on unmount
     return () => {
-      refs.computation?.stop()
-      delete refs.computation
-      refs.isMounted = false
+      refs.cleanupTimoutId = setTimeout(() => {
+        if (refs.computation) {
+          refs.computation.stop()
+          refs.computation = undefined
+        }
+        refs.isMounted = false
+        refs.cleanupTimoutId = undefined
+      }, 0)
     }
   }, [])
 
   return resolveAsync(key, refs.trackerData)
 }
 
-export const useTrackerWithDeps =
-  <T = any>(key: string, reactiveFn: IReactiveFn<T>, deps: DependencyList, skipUpdate: ISkipUpdate<T> = null): T => {
-    const forceUpdate = useForceUpdate()
+export const useTrackerSuspenseWithDeps =
+  <T = any>(key: string, reactiveFn: IReactiveFn<T>, deps: DependencyList, skipUpdate?: ISkipUpdate<T> = null): T => {
+    const [version, forceUpdate] = useForceUpdate()
 
     const { current: refs } = useRef<{
       reactiveFn: IReactiveFn<T>
-      data?: Promise<T>
-      comp?: Tracker.Computation
-      isMounted?: boolean
-    }>({ reactiveFn })
+      isMounted: boolean
+      trackerData?: Promise<T>
+      computation?: Tracker.Computation
+      cleanupTimoutId?: number
+    }>({ 
+      reactiveFn, 
+      isMounted: false,
+      trackerData: null
+    })
 
     // keep reactiveFn ref fresh
     refs.reactiveFn = reactiveFn
@@ -188,88 +182,88 @@ export const useTrackerWithDeps =
     useMemo(() => {
       // To jive with the lifecycle interplay between Tracker/Subscribe, run the
       // reactive function in a computation, then stop it, to force flush cycle.
-      const comp = Tracker.nonreactive(
-        () => Tracker.autorun(async (c: Tracker.Computation) => {
-          const data = Tracker.withComputation(c, async () => refs.reactiveFn(c))
-          if (c.firstRun) {
-            refs.data = data
-          } else if (!skipUpdate || !skipUpdate(await refs.data, await data)) {
-            refs.data = data
-            forceUpdate()
+      Tracker.nonreactive(
+        () => Tracker.autorun(async (comp: Tracker.Computation) => {
+          if (refs.computation) {
+            refs.computation.stop()
+            refs.computation = undefined
+          }
+
+          refs.computation = comp
+
+          const data = Tracker.withComputation(comp, async () => refs.reactiveFn(comp))
+
+          if (comp.firstRun) {
+            refs.trackerData = data
+
+            // When deps change, re-throw the Promise to get new data.
+            const cached = cacheMap.get(key)
+            if (cached && !strictDeepEqual(cached.deps, deps)) {
+              cacheMap.delete(key)
+            }
+          } else {
+            const dataResult = await data;
+
+            if (!skipUpdate || !skipUpdate(await refs.trackerData, dataResult)) {
+              const cached = cacheMap.get(key);
+              cached && (cached.result = dataResult);
+              refs.isMounted && forceUpdate()
+            }
           }
         })
       )
-
-      // Stop the computation immediately to avoid creating side effects in render.
-      // refers to this issues:
-      // https://github.com/meteor/react-packages/issues/382
-      // https://github.com/meteor/react-packages/issues/381
-      if (refs.comp != null) refs.comp.stop()
-
-      // In some cases, the useEffect hook will run before Meteor.defer, such as
-      // when React.lazy is used. This will allow it to be stopped earlier in
-      // useEffect if needed.
-      refs.comp = comp
-      // To avoid creating side effects in render, stop the computation immediately
-      Meteor.defer(() => {
-        if (!refs.isMounted && (refs.comp != null)) {
-          refs.comp.stop()
-          delete refs.comp
-        }
-      })
-    }, deps)
+    }, [...deps, version])
 
     useEffect(() => {
       // Let subsequent renders know we are mounted (render is committed).
       refs.isMounted = true
 
-      if (refs.comp == null) {
-        refs.comp = Tracker.nonreactive(
-          () => Tracker.autorun(async (c) => {
-            const data: Promise<T> = Tracker.withComputation(c, async () => refs.reactiveFn())
-            if (!skipUpdate || !skipUpdate(await refs.data, await data)) {
-              refs.data = data
-              forceUpdate()
-            }
-          })
-        )
+      // In strict mode (development only), `useEffect` may run 1-2 times.
+      // To avoid this, check the `timeout` to ensure cleanup only occurs after unmount.
+      if (refs.cleanupTimoutId) {
+        clearTimeout(refs.cleanupTimoutId)
+        refs.cleanupTimoutId = undefined
       }
 
       return () => {
-        // @ts-expect-error
-        refs.comp.stop()
-        delete refs.comp
-        refs.isMounted = false
+        refs.cleanupTimoutId = setTimeout(() => {
+          if (refs.computation) {
+            refs.computation.stop()
+            refs.computation = undefined
+          }
+          refs.isMounted = false
+          refs.cleanupTimoutId = undefined
+        }, 0)
       }
     }, deps)
 
-    return resolveAsync(key, refs.data as Promise<T>, deps)
+    return resolveAsync(key, refs.trackerData, deps)
   }
 
-function useTrackerClient<T = any>(key: string, reactiveFn: IReactiveFn<T>, skipUpdate?: ISkipUpdate<T>): T
-function useTrackerClient<T = any>(key: string, reactiveFn: IReactiveFn<T>, deps?: DependencyList, skipUpdate?: ISkipUpdate<T>): T
-function useTrackerClient<T = any>(key: string, reactiveFn: IReactiveFn<T>, deps: DependencyList | ISkipUpdate<T> = null, skipUpdate: ISkipUpdate<T> = null): T {
+export function useTrackerSuspenseClient<T = any>(key: string, reactiveFn: IReactiveFn<T>, skipUpdate?: ISkipUpdate<T>): T
+export function useTrackerSuspenseClient<T = any>(key: string, reactiveFn: IReactiveFn<T>, deps?: DependencyList, skipUpdate?: ISkipUpdate<T>): T
+export function useTrackerSuspenseClient<T = any>(key: string, reactiveFn: IReactiveFn<T>, deps: DependencyList | ISkipUpdate<T> = null, skipUpdate: ISkipUpdate<T> = null): T {
   if (deps === null || deps === undefined || !Array.isArray(deps)) {
     if (typeof deps === 'function') {
       skipUpdate = deps
     }
-    return useTrackerNoDeps(key, reactiveFn, skipUpdate)
+    return useTrackerSuspenseNoDeps(key, reactiveFn, skipUpdate)
   } else {
-    return useTrackerWithDeps(key, reactiveFn, deps, skipUpdate)
+    return useTrackerSuspenseWithDeps(key, reactiveFn, deps, skipUpdate)
   }
 }
 
-const useTrackerServer: typeof useTrackerClient = (key, reactiveFn) => {
+export const useTrackerSuspenseServer: typeof useTrackerSuspenseClient = (key, reactiveFn) => {
   return resolveAsync(key, Tracker.nonreactive(reactiveFn))
 }
 
 // When rendering on the server, we don't want to use the Tracker.
 // We only do the first rendering on the server so we can get the data right away
-const _useTracker = Meteor.isServer
-  ? useTrackerServer
-  : useTrackerClient
+export const useTracker = Meteor.isServer
+  ? useTrackerSuspenseServer
+  : useTrackerSuspenseClient
 
-function useTrackerDev(key: string, reactiveFn, deps: DependencyList | null = null, skipUpdate = null) {
+function useTrackerDev(key: string, reactiveFn: any, deps: DependencyList | null = null, skipUpdate = null) {
   function warn(expects: string, pos: string, arg: string, type: string) {
     console.warn(
       `Warning: useTracker expected a ${expects} in it\'s ${pos} argument ` +
@@ -293,11 +287,11 @@ function useTrackerDev(key: string, reactiveFn, deps: DependencyList | null = nu
     }
   }
 
-  const data = _useTracker(key, reactiveFn, deps, skipUpdate)
+  const data = useTracker(key, reactiveFn, deps, skipUpdate)
   checkCursor(data)
   return data
 }
 
-export const useTracker = Meteor.isDevelopment
-  ? useTrackerDev as typeof useTrackerClient
-  : _useTracker
+export default Meteor.isDevelopment
+  ? useTrackerDev
+  : useTracker
