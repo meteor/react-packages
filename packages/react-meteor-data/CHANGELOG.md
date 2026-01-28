@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v4.0.1, 2026-1-30
+
+*  Fix performance issues with suspense trackers for stability and performance. [PR#455](https://github.com/meteor/react-packages/pull/455) and [PR#458](https://github.com/meteor/react-packages/pull/458)
+*  Refactor: replace lodash with fast-equals to improve performance. [PR#451](https://github.com/meteor/react-packages/pull/451)
+
 ## v3.0.3, 2024-12-30
 *  Add `useSubscribeSuspenseServer` hook to be used in SSR.
 
