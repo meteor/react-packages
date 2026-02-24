@@ -2,6 +2,7 @@ declare var Package: any
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { useReducer, useEffect, useRef, useMemo, DependencyList } from 'react';
+import useSyncEffect from './useSyncEffect'
 
 // Warns if data is a Mongo.Cursor or a POJO containing a Mongo.Cursor.
 function checkCursor (data: any): void {
@@ -45,154 +46,41 @@ type TrackerRefs = {
   trackerData: any;
 }
 
-const useTrackerNoDeps = <T = any>(reactiveFn: IReactiveFn<T>, skipUpdate: ISkipUpdate<T> = null) => {
-  const { current: refs } = useRef<TrackerRefs>({
-    isMounted: false,
-    trackerData: null
-  });
-  const forceUpdate = useForceUpdate();
-
-  // Without deps, always dispose and recreate the computation with every render.
-  if (refs.computation) {
-    refs.computation.stop();
-    // @ts-ignore This makes TS think ref.computation is "never" set
-    delete refs.computation;
-  }
-
-  // Use Tracker.nonreactive in case we are inside a Tracker Computation.
-  // This can happen if someone calls `ReactDOM.render` inside a Computation.
-  // In that case, we want to opt out of the normal behavior of nested
-  // Computations, where if the outer one is invalidated or stopped,
-  // it stops the inner one.
-  Tracker.nonreactive(() => Tracker.autorun((c: Tracker.Computation) => {
-    refs.computation = c;
-    const data = reactiveFn(c);
-    if (c.firstRun) {
-      // Always run the reactiveFn on firstRun
-      refs.trackerData = data;
-    } else if (!skipUpdate || !skipUpdate(refs.trackerData, data)) {
-      // For any reactive change, forceUpdate and let the next render rebuild the computation.
-      forceUpdate();
-    }
-  }));
-
-  // To clean up side effects in render, stop the computation immediately
-  if (!refs.isMounted) {
-    Meteor.defer(() => {
-      if (!refs.isMounted && refs.computation) {
-        refs.computation.stop();
-        delete refs.computation;
-      }
-    });
-  }
-
-  useEffect(() => {
-    // Let subsequent renders know we are mounted (render is committed).
-    refs.isMounted = true;
-
-    // In some cases, the useEffect hook will run before Meteor.defer, such as
-    // when React.lazy is used. In those cases, we might as well leave the
-    // computation alone!
-    if (!refs.computation) {
-      // Render is committed, but we no longer have a computation. Invoke
-      // forceUpdate and let the next render recreate the computation.
-      if (!skipUpdate) {
-        forceUpdate();
-      } else {
-        Tracker.nonreactive(() => Tracker.autorun((c: Tracker.Computation) => {
-          const data = reactiveFn(c);
-          refs.computation = c;
-          if (!skipUpdate(refs.trackerData, data)) {
-            // For any reactive change, forceUpdate and let the next render rebuild the computation.
-            forceUpdate();
-          }
-        }));
-      }
-    }
-
-    // stop the computation on unmount
-    return () =>{
-      refs.computation?.stop();
-      delete refs.computation;
-      refs.isMounted = false;
-    }
-  }, []);
-
-  return refs.trackerData;
-}
-
 const useTrackerWithDeps = <T = any>(reactiveFn: IReactiveFn<T>, deps: DependencyList, skipUpdate: ISkipUpdate<T> = null): T => {
   const forceUpdate = useForceUpdate();
 
   const { current: refs } = useRef<{
-    reactiveFn: IReactiveFn<T>;
-    data?: T;
-    comp?: Tracker.Computation;
-    isMounted?: boolean;
-  }>({ reactiveFn });
+    trackerData?: T;
+    skipUpdate?: ISkipUpdate<T>;
+  }>({ reactiveFn, skipUpdate });
 
-  // keep reactiveFn ref fresh
+  refs.skipUpdate = skipUpdate;
   refs.reactiveFn = reactiveFn;
 
-  useMemo(() => {
-    // To jive with the lifecycle interplay between Tracker/Subscribe, run the
-    // reactive function in a computation, then stop it, to force flush cycle.
-    const comp = Tracker.nonreactive(
-      () => Tracker.autorun((c: Tracker.Computation) => {
-        const data = refs.reactiveFn();
-        if (c.firstRun) {
-          refs.data = data;
-        } else if (!skipUpdate || !skipUpdate(refs.data, data)) {
-          refs.data = data;
-          forceUpdate();
-        }
-      })
-    );
+  useSyncEffect(() => {
+    const computation = Tracker.nonreactive(() => Tracker.autorun((computation: Tracker.Computation) => {
+      const data = refs.reactiveFn(computation);
+      // console.log('reactiveFn()', data);
 
-    // Stop the computation immediately to avoid creating side effects in render.
-    // refers to this issues:
-    // https://github.com/meteor/react-packages/issues/382
-    // https://github.com/meteor/react-packages/issues/381
-    if (refs.comp) refs.comp.stop();
-
-    // In some cases, the useEffect hook will run before Meteor.defer, such as
-    // when React.lazy is used. This will allow it to be stopped earlier in
-    // useEffect if needed.
-    refs.comp = comp;
-    // To avoid creating side effects in render, stop the computation immediately
-    Meteor.defer(() => {
-      if (!refs.isMounted && refs.comp) {
-        refs.comp.stop();
-        delete refs.comp;
+      if (computation.firstRun) {
+        refs.trackerData = data;
+      } else if (!refs.skipUpdate || !refs.skipUpdate(refs.trackerData, data)) {
+        refs.trackerData = data;
+        forceUpdate();
       }
-    });
-  }, deps);
-
-  useEffect(() => {
-    // Let subsequent renders know we are mounted (render is committed).
-    refs.isMounted = true;
-
-    if (!refs.comp) {
-      refs.comp = Tracker.nonreactive(
-        () => Tracker.autorun((c) => {
-          const data: T = refs.reactiveFn(c);
-          if (!skipUpdate || !skipUpdate(refs.data, data)) {
-            refs.data = data;
-            forceUpdate();
-          }
-        })
-      );
-    }
+    }));
 
     return () => {
-      refs.comp.stop();
-      delete refs.comp;
-      refs.isMounted = false;
+      computation.stop();
     };
   }, deps);
 
-  return refs.data as T;
+  return refs.trackerData as T;
 };
+
+const useTrackerNoDeps = <T = any>(reactiveFn: IReactiveFn<T>, skipUpdate: ISkipUpdate<T> = null) => (
+  useTrackerWithDeps(reactiveFn, undefined, skipUpdate)
+)
 
 function useTrackerClient <T = any>(reactiveFn: IReactiveFn<T>, skipUpdate?: ISkipUpdate<T>): T;
 function useTrackerClient <T = any>(reactiveFn: IReactiveFn<T>, deps?: DependencyList, skipUpdate?: ISkipUpdate<T>): T;
