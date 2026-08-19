@@ -3,7 +3,7 @@
 Package.describe({
   name: 'react-meteor-data',
   summary: 'React hook for reactively tracking Meteor data',
-  version: '4.1.0-beta.0',
+  version: '4.1.0-beta.1',
   documentation: 'README.md',
   git: 'https://github.com/meteor/react-packages'
 })
@@ -18,8 +18,9 @@ Npm.depends({
 // be pulled in through `versionsFrom`. The 3.7.0/4.1.2/4.3.2/5.4.3 entries
 // mirror the typescript versions shipped by the releases listed in
 // `versionsFrom` below; 6.0.0 adds compatibility with releases on TypeScript 6
-// (see meteor/meteor#14560).
-const TYPESCRIPT_VERSIONS = 'typescript@3.7.0 || 4.1.2 || 4.3.2 || 5.4.3 || 6.0.0'
+// (see meteor/meteor#14560). The 7.0.2 entry supports Meteor releases built
+// against TypeScript 7 (see meteor/meteor#14319).
+const TYPESCRIPT_VERSIONS = 'typescript@3.7.0 || 4.1.2 || 4.3.2 || 5.4.3 || 6.0.0 || 7.0.2'
 
 Package.onUse((api) => {
   api.versionsFrom(['1.8.2', '1.12', '2.0', '2.3', '3.0'])
