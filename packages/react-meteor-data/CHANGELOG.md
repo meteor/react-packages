@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## v4.1.0-beta.0, 2026-08-19
+* Add compatibility with the `typescript@7.x` Meteor package so the package can
+  be used on Meteor releases built against TypeScript 7 (see
+  [meteor/meteor#14319](https://github.com/meteor/meteor/pull/14319)). The
+  supported `typescript` range is set explicitly in `package.js` because
+  TypeScript 7 is not yet part of a published release and can't be pulled in
+  through `api.versionsFrom`.
+
 ## v4.0.1, 2026-1-30
 
 *  Fix performance issues with suspense trackers for stability and performance. [PR#455](https://github.com/meteor/react-packages/pull/455) and [PR#458](https://github.com/meteor/react-packages/pull/458)
