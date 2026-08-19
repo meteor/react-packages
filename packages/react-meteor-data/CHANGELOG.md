@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v4.1.0-beta.0, 2026-08-19
+## v4.1.0-beta.1, 2026-08-19
 * Add compatibility with the `typescript@7.x` Meteor package so the package can
   be used on Meteor releases built against TypeScript 7 (see
   [meteor/meteor#14319](https://github.com/meteor/meteor/pull/14319)). The
