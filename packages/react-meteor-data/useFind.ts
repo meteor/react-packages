@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
 import { useReducer, useMemo, useEffect, Reducer, DependencyList, useRef } from 'react'
 import { Tracker } from 'meteor/tracker'
+import useSyncEffect from './useSyncEffect'
 
 type useFindActions<T> =
   | { type: 'refresh', data: T[] }
@@ -70,24 +71,6 @@ const fetchData = <T>(cursor: Mongo.Cursor<T>) => {
   observer.stop()
   return data
 }
-
-const useSyncEffect = (effect, deps) => {
-  const [cleanup, timeoutId] = useMemo(
-    () => {
-      const cleanup = effect();
-      const timeoutId = setTimeout(cleanup, 1000);
-      return [cleanup, timeoutId];
-    },
-    deps
-  );
-
-  useEffect(() => {
-    clearTimeout(timeoutId);
-
-    return cleanup;
-  }, [cleanup]);
-};
-
 
 const useFindClient = <T = any>(factory: () => (Mongo.Cursor<T> | undefined | null), deps: DependencyList = []) => {
   const cursor = useMemo(() => {
