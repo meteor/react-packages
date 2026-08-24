@@ -2,6 +2,12 @@
 
 Release versions follow [Semantic Versioning 2.0.0 guidelines](https://semver.org/).
 
+## v1.1.0-beta.0
+
+Add compatibility with the `typescript@7.x` Meteor package. The TypeScript
+compiler remains a package dependency because `react-meteor-accounts` is
+implemented in TypeScript.
+
 ## v1.0.3
 
 Update api.versionsFrom() adding `3.0` to support Meteor 3.0 official.
