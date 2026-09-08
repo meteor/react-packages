@@ -506,8 +506,7 @@ if (Meteor.isClient) {
       self.Foo = () => {
         const data = useTracker(() => {
           self.handle =
-            Meteor.subscribe("useTrackerLegacy-mixin-sub",
-                             self.num.get());
+            Meteor.subscribe("useTrackerLegacy-mixin-sub", self.num.get());
 
           return {
             v: self.someOtherVar.get(),
@@ -526,8 +525,9 @@ if (Meteor.isClient) {
       var handle = self.handle;
       test.isFalse(handle.ready(), 'handle.ready() should be false');
 
-      waitForTracker(() => handle.ready(),
-              expect());
+      waitForTracker(() => {
+        return handle.ready();
+      }, expect());
     },
     function (test, expect) {
       var self = this;
