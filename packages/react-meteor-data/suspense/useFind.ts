@@ -2,11 +2,10 @@ import { Meteor } from 'meteor/meteor'
 import { EJSON } from 'meteor/ejson'
 import { Mongo } from 'meteor/mongo'
 import type React from 'react'
-import { useReducer, useMemo, useEffect, type Reducer, type DependencyList, useRef } from 'react'
+import { useMemo, useSyncExternalStore, type DependencyList } from 'react'
 import { Tracker } from 'meteor/tracker'
 
 type useFindActions<T> =
-    | { type: 'refresh', data: T[] }
     | { type: 'addedAt', document: T, atIndex: number }
     | { type: 'changedAt', document: T, atIndex: number }
     | { type: 'removedAt', atIndex: number }
@@ -14,8 +13,6 @@ type useFindActions<T> =
 
 const useFindReducer = <T>(data: T[], action: useFindActions<T>): T[] => {
   switch (action.type) {
-    case 'refresh':
-      return action.data
     case 'addedAt':
       return [
         ...data.slice(0, action.atIndex),
@@ -100,60 +97,57 @@ export const useFindSuspenseClient = <T = any>(
     return cursor
   }, [findArgsKey, ...deps])
 
-  const [data, dispatch] = useReducer<Reducer<T[], useFindActions<T>>, null>(
-    useFindReducer,
-    null,
-    () => {
+  // One store per cursor. The snapshot is computed synchronously during render,
+  // so the first render after a cursor change already returns the new data.
+  const store = useMemo(() => {
+    let snapshot: T[] = cursor instanceof Mongo.Cursor ? fetchData(cursor) : []
+
+    const getSnapshot = () => snapshot
+
+    const subscribe = (onStoreChange: () => void) => {
       if (!(cursor instanceof Mongo.Cursor)) {
-        return []
+        return () => {}
       }
 
-      return fetchData(cursor)
-    }
-  )
-
-  // Store information about mounting the component.
-  // It will be used to run code only if the component is updated.
-  const didMount = useRef(false)
-
-  useEffect(() => {
-    // Fetch intitial data if cursor was changed.
-    if (didMount.current) {
-      if (!(cursor instanceof Mongo.Cursor)) {
-        return
+      // Catch up on changes that happened between render and subscribe.
+      const next = fetchData(cursor)
+      if (!EJSON.equals(snapshot, next)) {
+        snapshot = next
+        onStoreChange()
       }
 
-      const data = fetchData(cursor)
-      dispatch({ type: 'refresh', data })
-    } else {
-      didMount.current = true
+      const observer = cursor.observe({
+        addedAt(document, atIndex, before) {
+          snapshot = useFindReducer(snapshot, { type: 'addedAt', document, atIndex })
+          onStoreChange()
+        },
+        changedAt(newDocument, oldDocument, atIndex) {
+          snapshot = useFindReducer(snapshot, { type: 'changedAt', document: newDocument, atIndex })
+          onStoreChange()
+        },
+        removedAt(oldDocument, atIndex) {
+          snapshot = useFindReducer(snapshot, { type: 'removedAt', atIndex })
+          onStoreChange()
+        },
+        movedTo(document, fromIndex, toIndex, before) {
+          snapshot = useFindReducer(snapshot, { type: 'movedTo', fromIndex, toIndex })
+          onStoreChange()
+        },
+        // @ts-expect-error
+        _suppress_initial: true
+      })
+
+      return () => {
+        observer.stop()
+      }
     }
 
-    if (!(cursor instanceof Mongo.Cursor)) {
-      return
-    }
-
-    const observer = cursor.observe({
-      addedAt(document, atIndex, before) {
-        dispatch({ type: 'addedAt', document, atIndex })
-      },
-      changedAt(newDocument, oldDocument, atIndex) {
-        dispatch({ type: 'changedAt', document: newDocument, atIndex })
-      },
-      removedAt(oldDocument, atIndex) {
-        dispatch({ type: 'removedAt', atIndex })
-      },
-      movedTo(document, fromIndex, toIndex, before) {
-        dispatch({ type: 'movedTo', fromIndex, toIndex })
-      },
-      // @ts-expect-error
-      _suppress_initial: true
-    })
-
-    return () => {
-      observer.stop()
-    }
+    return { getSnapshot, subscribe }
   }, [cursor])
+
+  // getServerSnapshot is required during hydration; without it React throws
+  // and falls back to client rendering for the whole Suspense boundary.
+  const data = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getSnapshot)
 
   return cursor ? data : cursor
 }
