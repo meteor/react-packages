@@ -6,6 +6,9 @@ on:
       - master
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,7 +26,7 @@ jobs:
           key: meteor-cache
 
       - name: Setup Meteor
-        uses: meteorengineer/setup-meteor@v2
+        uses: meteorengineer/setup-meteor@ea0fcbe01845a4b8b0862301b46e761272378b93 # v2
         with:
           meteor-release: '3.1.2'
 
