@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
-import { useReducer, useMemo, useEffect, Reducer, DependencyList, useRef } from 'react'
+import { EJSON } from 'meteor/ejson'
+import { useReducer, useMemo, useLayoutEffect, Reducer, DependencyList, useRef } from 'react'
 import { Tracker } from 'meteor/tracker'
 
 type useFindActions<T> =
@@ -71,23 +72,58 @@ const fetchData = <T>(cursor: Mongo.Cursor<T>) => {
   return data
 }
 
-const useSyncEffect = (effect, deps) => {
-  const [cleanup, timeoutId] = useMemo(
-    () => {
-      const cleanup = effect();
-      const timeoutId = setTimeout(cleanup, 1000);
-      return [cleanup, timeoutId];
-    },
-    deps
-  );
+const getDocId = (doc: any) => {
+  if (doc && typeof doc === 'object' && '_id' in doc) {
+    return (doc as any)._id
+  }
+  return undefined
+}
 
-  useEffect(() => {
-    clearTimeout(timeoutId);
+const mergeInitialData = <T>(currentData: T[], nextData: T[]): T[] | null => {
+  if (!currentData.length && !nextData.length) {
+    return null
+  }
 
-    return cleanup;
-  }, [cleanup]);
-};
+  // Track docs by _id so we can reuse references for untouched documents.
+  const currentDocsById = new Map<any, T>()
+  currentData.forEach(doc => {
+    const id = getDocId(doc)
+    if (id !== undefined) {
+      currentDocsById.set(id, doc)
+    }
+  })
 
+  let changed = currentData.length !== nextData.length
+  const mergedData = nextData.map((doc, index) => {
+    const id = getDocId(doc)
+    if (id === undefined) {
+      if (!changed && doc !== currentData[index]) {
+        changed = true
+      }
+      return doc
+    }
+
+    const previousDoc = currentDocsById.get(id)
+    if (!previousDoc) {
+      changed = true
+      return doc
+    }
+
+    // Detect order changes.
+    if (!changed && previousDoc !== currentData[index]) {
+      changed = true
+    }
+
+    if (doc === previousDoc || EJSON.equals(doc as any, previousDoc as any)) {
+      return previousDoc
+    }
+
+    changed = true
+    return doc
+  })
+
+  return changed ? mergedData : null
+}
 
 const useFindClient = <T = any>(factory: () => (Mongo.Cursor<T> | undefined | null), deps: DependencyList = []) => {
   const cursor = useMemo(() => {
@@ -112,13 +148,21 @@ const useFindClient = <T = any>(factory: () => (Mongo.Cursor<T> | undefined | nu
     }
   )
 
-  useSyncEffect(() => {
-    if (!(cursor instanceof Mongo.Cursor)) {
-      return
-    }
+  const cleanupRef = useRef<(() => void) | null>(null);
 
+  useLayoutEffect(() => {
+    cleanupRef.current?.(); // stop previous observer now
+
+    if (!(cursor instanceof Mongo.Cursor)) {
+      cleanupRef.current = null;
+      return;
+    }
+    
     const initialData = fetchData(cursor);
-    dispatch({ type: 'refresh', data: initialData });
+    const mergedData = mergeInitialData(data, initialData)
+    if (mergedData) {
+      dispatch({ type: 'refresh', data: mergedData });
+    }
 
     const observer = cursor.observe({
       addedAt(document, atIndex, before) {
@@ -135,11 +179,10 @@ const useFindClient = <T = any>(factory: () => (Mongo.Cursor<T> | undefined | nu
       },
       // @ts-ignore
       _suppress_initial: true
-    })
+    });
 
-    return () => {
-      observer.stop()
-    }
+    cleanupRef.current = () => observer.stop();
+    return cleanupRef.current;
   }, [cursor]);
 
   return cursor ? data : cursor
